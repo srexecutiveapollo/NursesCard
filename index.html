@@ -3,512 +3,328 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#0d9488" />
-<title>Nurse Profile</title>
-
+<title>Apollo Nurse Directory</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js" defer></script>
 
 <style>
-  :root{
-    --teal-900:#0f766e;
-    --teal-700:#0d9488;
-    --teal-500:#14b8a6;
-    --teal-100:#ccfbf1;
-    --teal-50:#f0fdfa;
-    --blue-600:#0284c7;
-    --blue-500:#0ea5e9;
-    --ink:#0f172a;
-    --body:#334155;
-    --muted:#64748b;
-    --soft:#94a3b8;
-    --line:#e2e8f0;
-    --line-soft:#f1f5f9;
-    --card:#ffffff;
-    --success:#10b981;
-    --shadow-md:0 10px 30px rgba(2,132,199,.10);
-    --shadow-lg:0 30px 80px rgba(2,132,199,.14);
+  :root {
+    --apollo-teal: #007C9E;
+    --apollo-teal-dark: #005f7a;
+    --apollo-gold: #F5A623;
+    --bg: #f4f7f9;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --white: #ffffff;
+    --shadow-lg: 0 20px 40px rgba(0,124,158,.15);
   }
 
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    font-family:'Inter',system-ui,-apple-system,sans-serif;
-    color:var(--ink);
-    background:
-      radial-gradient(1200px 600px at 10% -10%, #ccfbf1 0%, transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, #e0f2fe 0%, transparent 55%),
-      linear-gradient(180deg,#f8fafc 0%, var(--teal-50) 100%);
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
-    display:flex; flex-direction:column;
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* ================= TOP BAR ================= */
-  .topbar{
-    position:sticky; top:0; z-index:50;
-    background:rgba(255,255,255,.88);
-    backdrop-filter:blur(14px);
-    border-bottom:1px solid rgba(226,232,240,.9);
+  /* ================= UTILITIES ================= */
+  .hidden { display: none !important; }
+  .btn {
+    padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
+    font: inherit; font-weight: 600; font-size: 14px; transition: all 0.2s;
   }
-  .topbar-inner{
-    max-width:1200px; margin:0 auto;
-    padding:14px 24px;
-    display:flex; align-items:center; gap:18px;
-  }
-  .logo-wrap{
-    display:flex; align-items:center; gap:10px;
-    flex-shrink:0; text-decoration:none;
-    color:var(--teal-900); min-height:44px;
-  }
-  .logo-wrap img{height:44px; width:auto; max-width:220px; object-fit:contain; display:block;}
-  .logo-cross{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:44px; height:44px; border-radius:12px;
-    background:linear-gradient(135deg,var(--teal-500),var(--teal-900));
-    color:#fff; box-shadow:0 6px 18px rgba(20,184,166,.35);
-  }
-  .logo-cross svg{width:22px;height:22px;}
+  .btn-primary { background: var(--apollo-teal); color: white; }
+  .btn-primary:hover { background: var(--apollo-teal-dark); }
+  .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); }
+  .btn-outline:hover { border-color: var(--apollo-teal); color: var(--apollo-teal); }
 
-  .topbar-search{
-    margin-left:auto;
-    display:flex; gap:8px; align-items:center;
-    width:min(460px,55vw);
+  /* ================= LOGIN VIEW ================= */
+  #login-view {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 20px; background: linear-gradient(135deg, #e0f2fe 0%, #f4f7f9 100%);
   }
-  .search-field{position:relative;flex:1;}
-  .search-field svg{
-    position:absolute; left:14px; top:50%; transform:translateY(-50%);
-    width:18px; height:18px; color:var(--muted); pointer-events:none;
+  .login-card {
+    background: var(--white); width: 100%; max-width: 400px;
+    padding: 40px 32px; border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    text-align: center;
   }
-  .search-field input{
-    width:100%; padding:11px 16px 11px 42px;
-    border-radius:12px; border:1.5px solid var(--line);
-    background:#fff; font:inherit; font-size:14px; color:var(--ink);
-    outline:none; transition:border-color .2s, box-shadow .2s;
-    box-shadow:0 1px 2px rgba(15,23,42,.06);
+  .login-card img { height: 50px; margin-bottom: 24px; }
+  .login-card h2 { font-size: 24px; margin-bottom: 8px; color: var(--apollo-teal-dark); }
+  .login-card p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .form-group input {
+    width: 100%; padding: 12px; border: 1px solid var(--line);
+    border-radius: 8px; font: inherit; outline: none; transition: 0.2s;
   }
-  .search-field input:focus{
-    border-color:var(--teal-500);
-    box-shadow:0 0 0 4px rgba(20,184,166,.15);
-  }
-  .topbar-search button{
-    padding:11px 20px; border-radius:12px; border:none; cursor:pointer;
-    background:linear-gradient(135deg,var(--teal-700),var(--teal-900));
-    color:#fff; font:inherit; font-weight:600; font-size:14px;
-    box-shadow:0 6px 16px rgba(13,148,136,.3);
-    transition:transform .2s, box-shadow .2s;
-    white-space:nowrap;
-  }
-  .topbar-search button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(13,148,136,.4);}
-  .topbar-search button:disabled{opacity:.6;cursor:wait;transform:none;}
+  .form-group input:focus { border-color: var(--apollo-teal); box-shadow: 0 0 0 3px rgba(0,124,158,0.1); }
+  .login-card .btn { width: 100%; padding: 14px; font-size: 15px; margin-top: 8px; }
+  .error-msg { color: #dc2626; font-size: 13px; margin-top: 12px; min-height: 20px; }
 
-  /* ================= RESULTS ================= */
-  .results{
-    flex:1;
-    max-width:1200px; width:100%; margin:0 auto;
-    padding:44px 24px 80px;
-    display:flex; justify-content:center; align-items:flex-start;
+  /* ================= HEADER ================= */
+  header {
+    background: var(--white); border-bottom: 1px solid var(--line);
+    padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
   }
+  .header-brand img { height: 40px; }
+  .header-user { display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: 500; }
+  .header-user span { color: var(--apollo-teal); font-weight: 700; }
 
-  .state{
-    text-align:center; padding:56px 20px; color:var(--muted);
-    max-width:440px; margin:32px auto 0;
+  /* ================= CONTROLS ================= */
+  .controls-container {
+    max-width: 1000px; margin: 24px auto; width: 100%; padding: 0 20px;
   }
-  .state .state-icon{
-    width:76px; height:76px; border-radius:22px;
-    margin:0 auto 22px;
-    background:linear-gradient(135deg,var(--teal-100),#e0f2fe);
-    display:grid; place-items:center; color:var(--teal-700);
-    box-shadow:var(--shadow-md);
+  .search-bar {
+    display: flex; gap: 12px; margin-bottom: 20px; background: var(--white);
+    padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
   }
-  .state .state-icon svg{width:34px;height:34px;}
-  .state h3{color:var(--ink);font-size:22px;margin-bottom:10px;font-weight:700;letter-spacing:-.01em;}
-  .state p{font-size:15px;line-height:1.6;}
-  .loader{
-    display:inline-block;width:44px;height:44px;
-    border:3px solid var(--teal-100);border-top-color:var(--teal-500);
-    border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;
+  .search-bar select, .search-bar input {
+    padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; outline: none;
   }
-  @keyframes spin{to{transform:rotate(360deg);}}
+  .search-bar input { flex: 1; }
+  .search-bar select:focus, .search-bar input:focus { border-color: var(--apollo-teal); }
 
-  /* =========================================
-     NURSE CARD
-     ========================================= */
-  .nurse-card{
-    width:100%; max-width:900px;
-    background:var(--card);
-    border-radius:22px; overflow:hidden;
-    border:1px solid var(--line);
-    box-shadow:var(--shadow-lg);
-    animation:cardIn .55s cubic-bezier(.2,.9,.3,1) both;
+  .toggles-container {
+    background: var(--white); padding: 16px 20px; border-radius: 12px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 24px;
   }
-  @keyframes cardIn{
-    from{opacity:0;transform:translateY(18px) scale(.97);}
-    to{opacity:1;transform:translateY(0) scale(1);}
+  .toggles-container h4 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; width: 100%; margin-bottom: -4px; }
+  
+  /* Toggle Switch */
+  .toggle-switch { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 500; user-select: none; }
+  .toggle-switch input { display: none; }
+  .slider {
+    width: 36px; height: 20px; background: #cbd5e1; border-radius: 20px;
+    position: relative; transition: 0.3s; flex-shrink: 0;
   }
-  .nurse-card.capturing{animation:none !important;transform:none !important;}
-  .nurse-card.capturing .footer-actions{visibility:hidden;}
+  .slider::before {
+    content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+    background: white; top: 2px; left: 2px; transition: 0.3s;
+  }
+  .toggle-switch input:checked + .slider { background: var(--apollo-teal); }
+  .toggle-switch input:checked + .slider::before { transform: translateX(16px); }
 
-  /* ---------- HERO ---------- */
-  .card-hero{
-    position:relative;
-    padding:32px 32px 28px;
-    background:linear-gradient(135deg, #f0fdfa 0%, #ffffff 58%, #f0f9ff 100%);
-    border-bottom:1px solid var(--line);
-    overflow:hidden;
+  /* ================= NURSE CARD (Apollo Style) ================= */
+  .results-container { max-width: 1000px; margin: 0 auto 60px; padding: 0 20px; display: flex; justify-content: center; }
+  
+  .nurse-card {
+    width: 100%; max-width: 800px; background: var(--white);
+    border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
+    position: relative; animation: fadeIn 0.5s ease;
   }
-  .card-hero::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:4px;
-    background:linear-gradient(90deg, var(--teal-500) 0%, var(--blue-500) 100%);
-  }
-  .card-hero::after{
-    content:""; position:absolute;
-    top:-70px; right:-70px;
-    width:340px; height:340px; border-radius:50%;
-    background:radial-gradient(circle, rgba(20,184,166,.10) 0%, rgba(20,184,166,0) 70%);
-    pointer-events:none;
-  }
-  .watermark{
-    position:absolute; right:-30px; bottom:-50px;
-    width:240px; height:240px;
-    opacity:.045; color:var(--teal-700);
-    pointer-events:none; z-index:1;
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-  .hero-row{
-    display:flex; gap:24px; align-items:flex-start;
-    position:relative; z-index:2;
+  /* Top Section */
+  .card-top { padding: 40px 40px 30px; position: relative; }
+  
+  .card-title {
+    font-family: 'Playfair Display', serif; font-size: 32px; color: var(--apollo-teal);
+    margin-bottom: 24px; font-weight: 600; letter-spacing: -0.5px;
   }
+  .card-logo { position: absolute; top: 30px; right: 40px; height: 45px; object-fit: contain; }
+  
+  .profile-section { display: flex; gap: 30px; align-items: flex-start; }
+  .profile-photo {
+    width: 140px; height: 140px; border-radius: 50%;
+    border: 4px solid var(--apollo-teal); padding: 4px; flex-shrink: 0;
+    background: var(--white); box-shadow: 0 8px 20px rgba(0,124,158,0.2);
+  }
+  .profile-photo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  
+  .profile-details { flex: 1; }
+  .name-row { margin-bottom: 16px; }
+  .nurse-name { font-size: 26px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .nurse-empid { display: inline-block; background: #e0f2fe; color: var(--apollo-teal-dark); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+  .unit-badge { display: inline-block; background: var(--apollo-teal); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; }
 
-  .hero-avatar{
-    flex-shrink:0;
-    width:130px; height:130px;
-    border-radius:18px; padding:3px;
-    background:linear-gradient(135deg, var(--teal-500), var(--blue-500));
-    box-shadow:0 10px 28px rgba(13,148,136,.22);
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .detail-item { font-size: 15px; color: var(--ink); display: flex; align-items: baseline; gap: 6px; }
+  .detail-label { font-weight: 600; color: var(--muted); font-size: 13px; }
+  .detail-value { font-weight: 600; }
+  
+  .known-for {
+    background: #fffbeb; border-left: 4px solid var(--apollo-gold);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px;
   }
-  .hero-avatar img{
-    width:100%; height:100%; object-fit:cover;
-    border-radius:15px; border:2px solid #fff;
-    background:#e2e8f0; display:block;
-  }
+  .known-for .detail-label { color: #b45309; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+  .known-for p { font-size: 15px; color: #92400e; font-weight: 500; line-height: 1.5; }
 
-  .hero-meta{
-    flex:1; min-width:0; padding-top:2px;
+  /* Curved Bottom Section */
+  .card-bottom {
+    background: var(--apollo-teal); padding: 40px 40px 30px; color: white;
+    position: relative; margin-top: 20px;
   }
+  /* Creates the curved top effect */
+  .card-bottom::before {
+    content: ''; position: absolute; top: -25px; left: 0; width: 100%; height: 50px;
+    background: var(--white); border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  }
+  .card-bottom::after {
+    content: ''; position: absolute; top: -24px; left: 0; width: 100%; height: 50px;
+    background: var(--apollo-gold); border-radius: 0 0 50% 50% / 0 0 100% 100%; z-index: -1;
+  }
+  
+  .testimonial-block { text-align: center; margin-bottom: 30px; position: relative; z-index: 1; }
+  .testimonial-title {
+    font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .testimonial-title::before, .testimonial-title::after {
+    content: ''; height: 1px; background: rgba(255,255,255,0.3); width: 40px;
+  }
+  .testimonial-text {
+    font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic;
+    line-height: 1.6; margin-bottom: 16px; color: #e0f2fe; position: relative;
+  }
+  .testimonial-text::before { content: '“'; font-size: 50px; color: var(--apollo-gold); position: absolute; left: -20px; top: -20px; opacity: 0.8; }
+  .testimonial-author { font-size: 14px; font-weight: 600; letter-spacing: 1px; color: var(--apollo-gold); text-transform: uppercase; }
 
-  .verified-tag{
-    display:inline-flex; align-items:center; gap:5px;
-    font-size:11px; font-weight:600; letter-spacing:.02em;
-    color:var(--teal-700);
-    margin-bottom:8px;
-  }
-  .verified-tag svg{width:13px;height:13px;}
+  .card-footer-info { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
+  .card-footer-info p { font-size: 15px; font-weight: 500; }
+  .card-footer-info strong { font-weight: 700; font-size: 16px; }
 
-  .nurse-name{
-    font-family:'Playfair Display',serif;
-    font-size:clamp(26px,3.2vw,32px);
-    font-weight:700; letter-spacing:-.01em;
-    line-height:1.15; color:var(--ink);
-    word-break:break-word;
+  /* Action Bar */
+  .action-bar {
+    display: flex; justify-content: flex-end; gap: 12px; padding: 20px 40px;
+    background: #f8fafc; border-top: 1px solid var(--line); border-radius: 0 0 20px 20px;
   }
+  .nurse-card.capturing .action-bar { visibility: hidden; } /* Hide buttons during capture */
 
-  /* DOB | Age | Gender line under name */
-  .meta-line{
-    display:flex; align-items:center; flex-wrap:wrap;
-    gap:12px; margin-top:12px;
-    font-size:14px;
-  }
-  .meta-item{
-    display:inline-flex; align-items:baseline; gap:5px;
-    line-height:1.4;
-  }
-  .meta-label{
-    font-size:13px; font-weight:600;
-    color:var(--muted);
-  }
-  .meta-value{
-    font-size:14px; font-weight:600;
-    color:var(--ink);
-  }
-  .meta-sep{
-    width:4px; height:4px; border-radius:50%;
-    background:#cbd5e1; flex-shrink:0;
-  }
+  /* Dynamic Hiding */
+  .hide-age .field-age, .hide-gender .field-gender, .hide-qualification .field-qualification,
+  .hide-designation .field-designation, .hide-languages .field-languages, .hide-reg .field-reg { display: none !important; }
 
-  /* LOGO inside card — larger and prominent */
-  .card-brand{
-    flex-shrink:0;
-    align-self:flex-start;
-    padding-left:16px;
-    padding-top:0;
-    display:flex; align-items:flex-start; justify-content:flex-end;
+  /* Responsive */
+  @media (max-width: 650px) {
+    .profile-section { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+    .card-title { font-size: 24px; margin-bottom: 20px; }
+    .card-logo { position: relative; top: 0; right: 0; margin-bottom: 16px; display: block; margin: 0 auto 20px; }
+    .details-grid { grid-template-columns: 1fr; }
+    .name-row { justify-content: center; display: flex; flex-direction: column; align-items: center; }
+    .card-top, .card-bottom { padding: 24px 20px; }
+    .card-bottom::before, .card-bottom::after { border-radius: 0 0 40% 40% / 0 0 100% 100%; }
+    .action-bar { padding: 16px 20px; justify-content: center; flex-direction: column; }
   }
-  .card-brand img{
-    height:60px;
-    width:auto;
-    max-width:190px;
-    object-fit:contain;
-    display:block;
-  }
-  .card-brand .logo-cross{
-    width:60px; height:60px; border-radius:14px;
-  }
-  .card-brand .logo-cross svg{width:30px;height:30px;}
-
-  /* ---------- PROFESSIONAL SUMMARY ROW ---------- */
-  .pro-summary{
-    display:grid;
-    grid-template-columns:1fr 1px 1fr 1px 1fr;
-    padding:22px 32px;
-    background:#ffffff;
-    border-bottom:1px solid var(--line-soft);
-  }
-  .pro-item{
-    padding:0 22px;
-    text-align:left;
-    min-width:0;
-  }
-  .pro-item:first-child{padding-left:0;}
-  .pro-item:last-child{padding-right:0;}
-  .pro-divider{
-    width:1px; background:var(--line);
-    align-self:stretch; margin:4px 0;
-  }
-  .pro-label{
-    font-size:10.5px; font-weight:700;
-    letter-spacing:.1em; text-transform:uppercase;
-    color:var(--muted); margin-bottom:6px;
-  }
-  .pro-value{
-    font-size:14.5px; font-weight:600;
-    color:var(--ink); line-height:1.45;
-    word-break:break-word;
-  }
-  .pro-value.muted{color:var(--soft);font-weight:500;}
-
-  /* ---------- BODY ---------- */
-  .card-body{
-    padding:28px 32px 32px;
-    display:flex; flex-direction:column; gap:26px;
-  }
-
-  .section-title{
-    display:flex; align-items:center; gap:8px;
-    font-size:11px; font-weight:700;
-    letter-spacing:.1em; text-transform:uppercase;
-    color:var(--teal-900);
-    margin-bottom:12px;
-  }
-  .section-title::before{
-    content:""; width:3px; height:13px;
-    border-radius:2px;
-    background:linear-gradient(180deg, var(--teal-500), var(--blue-500));
-  }
-
-  /* Personal details: label:value grid, no boxes */
-  .details-list{
-    display:grid; gap:10px;
-  }
-  .detail-line{
-    display:grid;
-    grid-template-columns:140px 1fr;
-    gap:8px;
-    font-size:14px; line-height:1.55;
-    align-items:baseline;
-  }
-  .detail-label{
-    color:var(--muted); font-weight:600;
-    font-size:13.5px;
-  }
-  .detail-value{
-    color:var(--ink); font-weight:500;
-    word-break:break-word;
-  }
-  .detail-value.muted{color:var(--soft);font-weight:500;}
-
-  /* Dot-separated inline lists */
-  .dot-list{
-    display:flex; flex-wrap:wrap;
-    gap:10px; align-items:center;
-    font-size:14px; line-height:1.5;
-  }
-  .dot-item{
-    color:var(--ink); font-weight:500;
-  }
-  .dot-item.muted{color:var(--soft);font-weight:500;}
-  .dot-sep{
-    width:4px; height:4px; border-radius:50%;
-    background:var(--soft); flex-shrink:0;
-  }
-
-  /* Responsibilities */
-  .resp-list{
-    list-style:none; padding:0; margin:0;
-    display:flex; flex-direction:column; gap:10px;
-  }
-  .resp-list li{
-    position:relative; padding-left:22px;
-    font-size:14px; line-height:1.6;
-    color:var(--body);
-  }
-  .resp-list li::before{
-    content:""; position:absolute;
-    left:4px; top:9px;
-    width:6px; height:6px; border-radius:50%;
-    background:linear-gradient(135deg, var(--teal-500), var(--blue-500));
-  }
-
-  /* ---------- FOOTER ---------- */
-  .card-footer{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 32px;
-    background:#fafcfb;
-    border-top:1px solid var(--line);
-    gap:16px; flex-wrap:wrap;
-  }
-  .footer-note{
-    font-size:12px; color:var(--muted);
-    display:flex; align-items:center; gap:8px;
-  }
-  .footer-note svg{width:14px;height:14px;color:var(--teal-700);}
-  .footer-actions{display:flex;gap:8px;flex-wrap:wrap;}
-  .btn{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:10px 18px; border-radius:10px;
-    border:1px solid transparent; cursor:pointer;
-    font:inherit; font-weight:600; font-size:13px;
-    transition:transform .2s, background .2s, box-shadow .2s, opacity .2s;
-    white-space:nowrap;
-  }
-  .btn svg{width:15px;height:15px;}
-  .btn.primary{background:var(--ink);color:#fff;}
-  .btn.primary:hover{background:linear-gradient(135deg,var(--teal-700),var(--teal-900));transform:translateY(-1px);}
-  .btn.ghost{background:#fff;color:var(--ink);border-color:var(--line);}
-  .btn.ghost:hover{border-color:#cbd5e1;transform:translateY(-1px);}
-  .btn:disabled{opacity:.6;cursor:wait;transform:none !important;}
-
-  /* ---------- RESPONSIVE ---------- */
-  @media (max-width:720px){
-    .topbar-inner{padding:12px 16px;flex-wrap:wrap;gap:12px;}
-    .topbar-search{width:100%;margin-left:0;order:3;}
-    .logo-wrap img{height:38px;max-width:170px;}
-    .results{padding:24px 14px 60px;}
-
-    .card-hero{padding:24px 20px 22px;}
-    .hero-row{
-      flex-direction:column; align-items:center;
-      text-align:center; gap:16px;
-    }
-    .hero-avatar{width:118px;height:118px;}
-    .card-brand{
-      order:-1; padding-left:0; padding-top:0;
-      justify-content:center; align-self:center;
-    }
-    .card-brand img{height:44px;max-width:150px;}
-    .hero-meta{width:100%;}
-    .meta-line{justify-content:center;}
-
-    .pro-summary{
-      grid-template-columns:1fr;
-      padding:20px; gap:16px;
-    }
-    .pro-item{padding:0;text-align:center;}
-    .pro-divider{display:none;}
-
-    .detail-line{grid-template-columns:1fr;gap:2px;}
-    .card-body{padding:22px 20px 26px;gap:22px;}
-    .card-footer{padding:16px 20px;flex-direction:column;}
-    .footer-actions{width:100%;}
-    .btn{flex:1;justify-content:center;}
-  }
-
-  /* ---------- TOAST ---------- */
-  .toast{
-    position:fixed; bottom:28px; left:50%;
-    transform:translateX(-50%) translateY(90px);
-    background:var(--ink); color:#fff;
-    padding:12px 22px; border-radius:12px;
-    font-size:14px; font-weight:600;
-    box-shadow:var(--shadow-lg);
-    opacity:0; pointer-events:none;
-    transition:all .35s cubic-bezier(.2,.9,.3,1);
-    z-index:999;
-    display:flex; align-items:center; gap:8px;
-    max-width:90vw;
-  }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast svg{width:16px;height:16px;color:var(--success);flex-shrink:0;}
 </style>
 </head>
 <body>
 
-<!-- ================= TOP BAR ================= -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="logo-wrap" href="#" onclick="resetView(event)" aria-label="Home">
-      <img src="./logo.png" alt="Brand Logo" onerror="logoErr(this)" />
-    </a>
-
-    <div class="topbar-search">
-      <div class="search-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="empInput" type="text" placeholder="Enter EMPID (e.g., ahc123)" autocomplete="off" />
+<!-- ================= LOGIN VIEW ================= -->
+<div id="login-view">
+  <div class="login-card">
+    <img src="./logo.png" alt="Apollo Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'" />
+    <h2>Nurse Portal</h2>
+    <p>Sign in to access the directory</p>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label>User ID</label>
+        <input type="text" id="login-id" placeholder="Enter your ID (e.g., corp)" required />
       </div>
-      <button id="searchBtn" onclick="search()">Search</button>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter your password" required />
+      </div>
+      <button type="submit" class="btn btn-primary" id="login-btn">Secure Login</button>
+      <div class="error-msg" id="login-error"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= APP VIEW ================= -->
+<div id="app-view" class="hidden">
+  <header>
+    <div class="header-brand">
+      <img src="./logo.png" alt="Apollo Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'" />
+    </div>
+    <div class="header-user">
+      Logged in as: <span id="display-user">--</span>
+      <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="controls-container">
+    <div class="search-bar">
+      <!-- Unit Selector (Only for Corp) -->
+      <select id="unit-selector" class="hidden">
+        <option value="All Units">All Units</option>
+        <option value="Bangalore">Bangalore</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Guwahati">Guwahati</option>
+        <option value="Hyderabad">Hyderabad</option>
+        <option value="INDORE">INDORE</option>
+        <option value="Kolkata">Kolkata</option>
+        <option value="Madurai">Madurai</option>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Mysore">Mysore</option>
+      </select>
+      
+      <input type="text" id="emp-search" placeholder="Enter EmpID (e.g., ahc123)" autocomplete="off" />
+      <button class="btn btn-primary" onclick="searchNurse()">Search</button>
+    </div>
+
+    <!-- Toggles -->
+    <div class="toggles-container">
+      <h4>Card Display Settings</h4>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-age" checked onchange="updateCardClasses()"> <span class="slider"></span> Age
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-gender" checked onchange="updateCardClasses()"> <span class="slider"></span> Gender
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-qualification" checked onchange="updateCardClasses()"> <span class="slider"></span> Qualification
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-designation" checked onchange="updateCardClasses()"> <span class="slider"></span> Designation
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-languages" checked onchange="updateCardClasses()"> <span class="slider"></span> Languages
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="tog-reg" checked onchange="updateCardClasses()"> <span class="slider"></span> REG No
+      </label>
     </div>
   </div>
-</header>
 
-<!-- ================= RESULTS ================= -->
-<main class="results" id="results"></main>
-
-<!-- Toast -->
-<div class="toast" id="toast">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  <span id="toastText">Copied!</span>
+  <div class="results-container" id="results">
+    <div style="text-align: center; color: var(--muted); margin-top: 40px;">
+      <h3>Ready to search</h3>
+      <p>Enter an EmpID above to view the profile card.</p>
+    </div>
+  </div>
 </div>
 
 <script>
 /* =========================================================================
-   CONFIG
+   CONFIG & STATE
    ========================================================================= */
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?gid=678095587&single=true&output=csv";
-const REFRESH_MS = 60000;
+const SHEET_ID = "1kMbQg3Pz1Hwd1D4BQ9hp0c6SxvUKA4X02iH37a7VHJc";
+const UNITS = ["Bangalore", "Chennai", "Delhi", "Guwahati", "Hyderabad", "INDORE", "Kolkata", "Madurai", "Mumbai", "Mysore"];
+const DEFAULT_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+     <rect width="200" height="200" fill="#e2e8f0"/>
+     <circle cx="100" cy="78" r="36" fill="#94a3b8"/>
+     <path d="M30 190c0-40 30-64 70-64s70 24 70 64z" fill="#94a3b8"/>
+   </svg>`
+);
+
+let userProfiles = [];
+let currentSession = JSON.parse(sessionStorage.getItem("apolloSession")) || null;
+let currentNurseData = null;
 
 /* =========================================================================
-   STATE
-   ========================================================================= */
-let ALL_NURSES = [];
-let COLS = null;
-let LOADED = false;
-let CURRENT_ID = "";
-
-/* =========================================================================
-   LOGO FALLBACK  (./logo.png → ./assets/logo.png → inline cross)
-   ========================================================================= */
-window.logoErr = function (img) {
-  if (!img.dataset.step) {
-    img.dataset.step = "1";
-    img.src = "./assets/logo.png";
-    return;
-  }
-  const wrap = img.parentElement;
-  if (img.parentNode) img.parentNode.removeChild(img);
-  if (wrap && !wrap.querySelector(".logo-cross")) {
-    const s = document.createElement("span");
-    s.className = "logo-cross";
-    s.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>';
-    wrap.appendChild(s);
-  }
-};
-
-/* =========================================================================
-   CSV PARSER
+   CSV PARSER & FETCH UTILS
    ========================================================================= */
 function parseCSV(text) {
   const rows = [];
@@ -531,416 +347,270 @@ function parseCSV(text) {
   return rows;
 }
 
-/* =========================================================================
-   COLUMN RESOLUTION
-   ========================================================================= */
-function resolveColumns(headers) {
-  const H = headers.map(h => (h || "").trim());
-  const first = (re, fallback) => {
-    const i = H.findIndex(h => re.test(h));
-    return i >= 0 ? i : fallback;
-  };
-  const respIdxs = H
-    .map((h, i) => ({ h, i }))
-    .filter(x => /key\s*responsibilit/i.test(x.h))
-    .map(x => x.i);
-
-  return {
-    unit:    first(/^unit$|department/i, 1),
-    empId:   first(/^emp\s*id$/i, 2),
-    name:    first(/^name$/i, 3),
-    dob:     first(/^(dob|date\s*of\s*birth)$/i, 4),
-    age:     first(/^age$/i, 5),
-    gender:  first(/^gender$/i, 6),
-    number:  first(/^(number|phone|contact|mobile|tel)/i, 7),
-    address: first(/^address$/i, 8),
-    qual:    first(/^qualification/i, 9),
-    skills:  first(/skill/i, 10),
-    language:first(/language/i, 11),
-    exp:     first(/experience/i, 12),
-    resp:    respIdxs.length ? respIdxs : [13, 14, 15],
-    soft:    first(/soft\s*skill/i, 16),
-    picture: first(/^(picture|photo|image|profile\s*(pic|image|photo)?)$/i, 18)
-  };
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&_=${Date.now()}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("Fetch failed");
+  const text = await res.text();
+  return parseCSV(text);
 }
 
-/* =========================================================================
-   IMAGE URL NORMALISATION (Drive → direct render)
-   ========================================================================= */
+// Normalize Drive / direct URLs
 function normalizeImageUrl(raw) {
   if (!raw) return "";
   let url = String(raw).trim();
   if (!/^https?:\/\//i.test(url) && /\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(url)) {
     return "./" + url.replace(/^\.?\//, "");
   }
-  const drive =
-    url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]{10,})/) ||
-    url.match(/drive\.google\.com\/(?:open|uc)\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
-    url.match(/docs\.google\.com\/uc\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
-    url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]{10,})/);
+  const drive = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]{10,})/) ||
+                url.match(/drive\.google\.com\/(?:open|uc)\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
+                url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]{10,})/);
   if (drive) return `https://lh3.googleusercontent.com/d/${drive[1]}=w1200`;
   return url;
 }
 
 /* =========================================================================
-   ROW NORMALISATION
+   AUTHENTICATION
    ========================================================================= */
-function normalizeRow(row, cols) {
-  const at = i => (i >= 0 && row[i] != null ? String(row[i]).trim() : "");
-
-  let pic = at(cols.picture);
-  const m = pic.match(/["'](https?:\/\/[^"']+)["']/);
-  if (m) pic = m[1];
-  if (!pic || !/^https?:\/\//i.test(pic)) {
-    if (!pic) {
-      const anyUrl = row.map(v => String(v || "").trim()).find(v => /^https?:\/\//i.test(v));
-      if (anyUrl) pic = anyUrl;
+async function initAuth() {
+  try {
+    const data = await fetchSheet("user profiles");
+    // Headers: S-no (0), Unit (1), ID (2), Password (3)
+    if (data.length > 1) {
+      userProfiles = data.slice(1).filter(r => r[2] && r[3]).map(r => ({
+        unit: r[1].trim(),
+        id: r[2].trim(),
+        pass: r[3].trim()
+      }));
     }
+  } catch (e) {
+    console.error("Failed to load auth profiles", e);
   }
-
-  const resp = cols.resp
-    .map(i => at(i))
-    .filter(v => v && v.length > 0)
-    .slice(0, 3);
-
-  return {
-    empId: at(cols.empId),
-    name: at(cols.name),
-    dob: at(cols.dob),
-    age: at(cols.age),
-    gender: at(cols.gender),
-    number: at(cols.number),
-    address: at(cols.address),
-    qual: at(cols.qual),
-    skills: at(cols.skills),
-    language: at(cols.language),
-    exp: at(cols.exp),
-    resp: resp,
-    soft: at(cols.soft),
-    picture: normalizeImageUrl(pic),
-    unit: at(cols.unit)
-  };
 }
 
-/* =========================================================================
-   FETCH
-   ========================================================================= */
-async function fetchData() {
-  const sep = CSV_URL.includes("?") ? "&" : "?";
-  const res = await fetch(CSV_URL + sep + "_=" + Date.now(), { cache: "no-store" });
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  const text = await res.text();
-  const rows = parseCSV(text);
-  if (!rows.length) throw new Error("Empty sheet");
-  const headers = rows[0].map(h => (h || "").trim());
-  COLS = resolveColumns(headers);
-  ALL_NURSES = rows
-    .slice(1)
-    .filter(r => r.join("").trim().length > 0)
-    .map(r => normalizeRow(r, COLS))
-    .filter(n => n.empId || n.name);
-  LOADED = true;
-}
+document.getElementById("login-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const id = document.getElementById("login-id").value.trim();
+  const pass = document.getElementById("login-pass").value.trim();
+  const errEl = document.getElementById("login-error");
+  errEl.textContent = "";
 
-/* =========================================================================
-   FALLBACK AVATAR (initials)
-   ========================================================================= */
-function initialsAvatar(name) {
-  const initials = String(name || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?";
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <rect width="200" height="200" fill="#e2e8f0"/>
-    <text x="100" y="122" font-family="Inter,Arial,sans-serif" font-size="76" font-weight="700"
-      fill="#64748b" text-anchor="middle">${initials}</text>
-  </svg>`;
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-}
-
-/* =========================================================================
-   SEARCH
-   ========================================================================= */
-async function search() {
-  const q = document.getElementById("empInput").value.trim();
-  if (!q) { showState("empty"); return; }
-
-  const btn = document.getElementById("searchBtn");
-  btn.disabled = true;
-  showState("loading");
-
-  if (!LOADED) {
-    try { await fetchData(); }
-    catch (err) { btn.disabled = false; showState("error"); return; }
-  }
-
-  const nurse = ALL_NURSES.find(n => (n.empId || "").toLowerCase() === q.toLowerCase());
-  btn.disabled = false;
-  if (!nurse) { showState("notfound", q); return; }
-
-  CURRENT_ID = nurse.empId || "";
-  renderCard(nurse);
-  history.replaceState(null, "", "#" + encodeURIComponent(CURRENT_ID));
-}
-
-function resetView(e) {
-  if (e) e.preventDefault();
-  document.getElementById("empInput").value = "";
-  CURRENT_ID = "";
-  showState("initial");
-  history.replaceState(null, "", location.pathname);
-}
-
-/* =========================================================================
-   STATES
-   ========================================================================= */
-function showState(kind, extra) {
-  const r = document.getElementById("results");
-  const icons = {
-    initial: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-    empty:   '<path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/>',
-    notfound:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>',
-    error:   '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'
-  };
-  if (kind === "loading") {
-    r.innerHTML = `<div class="state"><div class="loader"></div>
-      <h3>Fetching profile…</h3><p>Just a moment.</p></div>`;
+  // Corporate Login Check
+  if (id === "corp" && pass === "corp123") {
+    setSession({ id: "corp", role: "corp", unit: "All Units" });
     return;
   }
-  const titles = {
-    initial: "Find your nurse",
-    empty: "Enter an EMPID",
-    notfound: "No nurse found",
-    error: "Couldn't load data"
-  };
-  const descs = {
-    initial: "Enter the employee ID you were given to view a verified profile.",
-    empty: "Please type the employee ID in the search box above.",
-    notfound: `We couldn't find a nurse with EMPID <strong>"${escapeHtml(extra || "")}"</strong>. Please double-check and try again.`,
-    error: "The nurse directory is temporarily unavailable. Please try again shortly."
-  };
-  r.innerHTML = `<div class="state">
-    <div class="state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[kind]}</svg>
-    </div>
-    <h3>${titles[kind]}</h3>
-    <p>${descs[kind]}</p>
-  </div>`;
+
+  // Unit Manager Check
+  const user = userProfiles.find(u => u.id === id && u.pass === pass);
+  if (user) {
+    setSession({ id: user.id, role: "manager", unit: user.unit });
+  } else {
+    errEl.textContent = "Invalid ID or Password. Please try again.";
+  }
+});
+
+function setSession(session) {
+  currentSession = session;
+  sessionStorage.setItem("apolloSession", JSON.stringify(session));
+  showApp();
+}
+
+function logout() {
+  currentSession = null;
+  sessionStorage.removeItem("apolloSession");
+  document.getElementById("login-view").classList.remove("hidden");
+  document.getElementById("app-view").classList.add("hidden");
+  document.getElementById("login-form").reset();
+  document.getElementById("results").innerHTML = `
+    <div style="text-align: center; color: var(--muted); margin-top: 40px;">
+      <h3>Ready to search</h3><p>Enter an EmpID above to view the profile card.</p>
+    </div>`;
+}
+
+function showApp() {
+  document.getElementById("login-view").classList.add("hidden");
+  document.getElementById("app-view").classList.remove("hidden");
+  document.getElementById("display-user").textContent = currentSession.role === "corp" ? "Corporate" : currentSession.id;
+  
+  const unitSelector = document.getElementById("unit-selector");
+  if (currentSession.role === "corp") {
+    unitSelector.classList.remove("hidden");
+  } else {
+    unitSelector.classList.add("hidden");
+  }
 }
 
 /* =========================================================================
-   HELPERS: formatting
+   SEARCH & RENDER
    ========================================================================= */
-function splitList(val) {
-  return String(val || "").split(/[,/&|]/).map(s => s.trim()).filter(Boolean);
+async function searchNurse() {
+  const empIdQuery = document.getElementById("emp-search").value.trim().toLowerCase();
+  if (!empIdQuery) return alert("Please enter an EmpID");
+
+  const resultsEl = document.getElementById("results");
+  resultsEl.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--apollo-teal);"><strong>Searching...</strong></div>`;
+
+  let unitsToFetch = [];
+  if (currentSession.role === "corp") {
+    const selected = document.getElementById("unit-selector").value;
+    unitsToFetch = selected === "All Units" ? UNITS : [selected];
+  } else {
+    unitsToFetch = [currentSession.unit];
+  }
+
+  try {
+    let foundNurse = null;
+
+    // Fetch sequentially to avoid hitting Google rate limits too hard
+    for (const unit of unitsToFetch) {
+      const rows = await fetchSheet(unit);
+      // Skip header row (index 0)
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (r.length < 5) continue;
+        
+        // Strict Column Mapping
+        const empId = (r[4] || "").trim(); 
+        if (empId.toLowerCase() === empIdQuery) {
+          foundNurse = {
+            sno: r[0], unit: r[1], ltc: r[2], name: r[3], empId: empId,
+            staffType: r[5], age: r[6], gender: r[7], qualification: r[8],
+            designation: r[9], languages: r[10], regNo: r[11],
+            knownFor: r[12], patientSays: r[13], patientName: r[14],
+            picture: normalizeImageUrl(r[17]), // Col 18 is index 17
+            supportNo: r[19], // Col 20 is index 19
+            email: r[20]      // Col 21 is index 20
+          };
+          break;
+        }
+      }
+      if (foundNurse) break; // Stop searching other units if found
+    }
+
+    if (foundNurse) {
+      currentNurseData = foundNurse;
+      renderCard(foundNurse);
+      updateCardClasses();
+    } else {
+      resultsEl.innerHTML = `<div style="text-align: center; color: #dc2626; padding: 40px;"><strong>Nurse not found.</strong><br>Please check the EmpID and Unit.</div>`;
+    }
+  } catch (error) {
+    console.error(error);
+    resultsEl.innerHTML = `<div style="text-align: center; color: #dc2626; padding: 40px;">Error loading data. Please try again.</div>`;
+  }
 }
 
-function dotSeparated(values, fallback = "—") {
-  if (!values.length) return `<span class="dot-item muted">${escapeHtml(fallback)}</span>`;
-  return values.map((v, i) =>
-    `<span class="dot-item">${escapeHtml(v)}</span>` +
-    (i < values.length - 1 ? `<span class="dot-sep"></span>` : "")
-  ).join("");
-}
+function renderCard(data) {
+  const imgUrl = data.picture && data.picture.startsWith("http") ? data.picture : DEFAULT_IMG;
+  
+  // Build Fields with strict toggle logic
+  const ageHtml = data.age ? `<div class="detail-item field-age"><span class="detail-label">Age:</span> <span class="detail-value">${escapeHtml(data.age)}</span></div>` : '';
+  const genderHtml = data.gender ? `<div class="detail-item field-gender"><span class="detail-label">Gender:</span> <span class="detail-value">${escapeHtml(data.gender)}</span></div>` : '';
+  const qualHtml = data.qualification ? `<div class="detail-item field-qualification"><span class="detail-label">Education:</span> <span class="detail-value">${escapeHtml(data.qualification)}</span></div>` : '';
+  const desigHtml = data.designation ? `<div class="detail-item field-designation"><span class="detail-label">Designation:</span> <span class="detail-value">${escapeHtml(data.designation)}</span></div>` : '';
+  const langHtml = data.languages ? `<div class="detail-item field-languages"><span class="detail-label">Languages:</span> <span class="detail-value">${escapeHtml(data.languages)}</span></div>` : '';
+  const regHtml = data.regNo ? `<div class="detail-item field-reg"><span class="detail-label">Reg. No:</span> <span class="detail-value">${escapeHtml(data.regNo)}</span></div>` : '';
 
-function valOrDash(v) {
-  return v && String(v).trim() ? escapeHtml(v) : `<span class="detail-value muted" style="color:var(--soft);font-weight:500;">—</span>`;
-}
+  const knownForHtml = data.knownFor ? `
+    <div class="known-for">
+      <span class="detail-label">Known For</span>
+      <p>${escapeHtml(data.knownFor)}</p>
+    </div>` : '';
 
-/* =========================================================================
-   RENDER CARD
-   ========================================================================= */
-function renderCard(n) {
-  const r = document.getElementById("results");
-  const fallback = initialsAvatar(n.name);
-  const picSrc = n.picture && /^https?:\/\//i.test(n.picture) ? n.picture : fallback;
+  const testimonialHtml = data.patientSays ? `
+    <div class="testimonial-block">
+      <div class="testimonial-title">What Patient Says</div>
+      <div class="testimonial-text">${escapeHtml(data.patientSays)}</div>
+      ${data.patientName ? `<div class="testimonial-author">- ${escapeHtml(data.patientName)}</div>` : ''}
+    </div>` : '';
 
-  /* ---- DOB | Age | Gender meta line ---- */
-  const metaItems = [
-    { label: "DOB:", value: n.dob },
-    { label: "Age:", value: n.age },
-    { label: "Gender:", value: n.gender }
-  ].filter(m => m.value && String(m.value).trim());
+  const footerHtml = (data.supportNo || data.email) ? `
+    <div class="card-footer-info">
+      ${data.supportNo ? `<p><strong>CALL:</strong> ${escapeHtml(data.supportNo)}</p>` : ''}
+      ${data.email ? `<p><strong>EMAIL:</strong> ${escapeHtml(data.email)}</p>` : ''}
+    </div>` : '';
 
-  const metaHtml = metaItems.length
-    ? metaItems.map((m, i) =>
-        `<span class="meta-item">
-           <span class="meta-label">${escapeHtml(m.label)}</span>
-           <span class="meta-value">${escapeHtml(m.value)}</span>
-         </span>` +
-        (i < metaItems.length - 1 ? `<span class="meta-sep"></span>` : "")
-      ).join("")
-    : `<span class="meta-item"><span class="meta-label">Details:</span>
-         <span class="meta-value" style="color:var(--soft);">Not provided</span></span>`;
-
-  /* ---- Professional Summary row ---- */
-  const proItems = [
-    { label: "Skill Set", value: n.skills },
-    { label: "Experience", value: n.exp },
-    { label: "Qualification", value: n.qual }
-  ];
-  const proHtml = proItems.map((p, i) => `
-    <div class="pro-item">
-      <div class="pro-label">${escapeHtml(p.label)}</div>
-      <div class="pro-value${p.value ? "" : " muted"}">${p.value ? escapeHtml(p.value) : "—"}</div>
-    </div>
-    ${i < proItems.length - 1 ? '<div class="pro-divider"></div>' : ""}
-  `).join("");
-
-  /* ---- Languages & Soft Skills ---- */
-  const langHtml = dotSeparated(splitList(n.language), "Not specified");
-  const softHtml = dotSeparated(splitList(n.soft), "Not specified");
-
-  /* ---- Responsibilities (only non-empty, hide if all empty) ---- */
-  const respBlock = n.resp.length
-    ? `<div class="section">
-         <div class="section-title">Key Responsibilities</div>
-         <ul class="resp-list">
-           ${n.resp.map(line => `<li>${escapeHtml(line)}</li>`).join("")}
-         </ul>
-       </div>`
-    : "";
-
-  /* ---- Address / Contact ---- */
-  const addressHtml = n.address && n.address.trim()
-    ? escapeHtml(n.address)
-    : `<span class="detail-value muted" style="color:var(--soft);font-weight:500;">—</span>`;
-  const numberHtml = n.number && n.number.trim()
-    ? escapeHtml(n.number)
-    : `<span class="detail-value muted" style="color:var(--soft);font-weight:500;">—</span>`;
-
-  r.innerHTML = `
-    <article class="nurse-card" id="nurseCard">
-
-      <!-- ============ HERO ============ -->
-      <div class="card-hero">
-        <svg class="watermark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v18M3 12h18"/>
-        </svg>
-
-        <div class="hero-row">
-          <div class="hero-avatar">
-            <img id="nursePhoto"
-                 src="${escapeAttr(picSrc)}"
-                 alt="${escapeAttr(n.name || 'Nurse')}"
-                 onerror="this.onerror=null;this.src='${escapeAttr(fallback)}';" />
+  document.getElementById("results").innerHTML = `
+    <article class="nurse-card" id="nurse-card">
+      <div class="card-top">
+        <img class="card-logo" src="./logo.png" alt="Apollo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'">
+        
+        <h1 class="card-title">Know Your Nurse</h1>
+        
+        <div class="profile-section">
+          <div class="profile-photo">
+            <img src="${imgUrl}" alt="${escapeHtml(data.name)}" onerror="this.onerror=null; this.src='${DEFAULT_IMG}'" />
           </div>
-
-          <div class="hero-meta">
-            <span class="verified-tag">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
-                   stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Verified Nurse
-            </span>
-
-            <h2 class="nurse-name">${escapeHtml(n.name || "Unnamed")}</h2>
-
-            <div class="meta-line">${metaHtml}</div>
-          </div>
-
-          <div class="card-brand">
-            <img src="./logo.png" alt="Logo" onerror="logoErr(this)" />
-          </div>
-        </div>
-      </div>
-
-      <!-- ============ PROFESSIONAL SUMMARY ============ -->
-      <div class="pro-summary">${proHtml}</div>
-
-      <!-- ============ BODY ============ -->
-      <div class="card-body">
-        <!-- Personal Details -->
-        <div class="section">
-          <div class="section-title">Personal Details</div>
-          <div class="details-list">
-            <div class="detail-line">
-              <span class="detail-label">Address:</span>
-              <span class="detail-value">${addressHtml}</span>
+          
+          <div class="profile-details">
+            <div class="name-row">
+              <div class="nurse-name">${escapeHtml(data.name || 'N/A')}</div>
+              <span class="nurse-empid">${escapeHtml(data.empId || '')}</span>
+              <span class="unit-badge">${escapeHtml(data.unit || '')}</span>
             </div>
-            <div class="detail-line">
-              <span class="detail-label">Contact Number:</span>
-              <span class="detail-value">${numberHtml}</span>
+            
+            <div class="details-grid">
+              ${qualHtml}
+              ${desigHtml}
+              ${ageHtml}
+              ${genderHtml}
+              ${regHtml}
+              ${langHtml}
             </div>
+
+            ${knownForHtml}
           </div>
         </div>
-
-        <!-- Languages -->
-        <div class="section">
-          <div class="section-title">Languages Known</div>
-          <div class="dot-list">${langHtml}</div>
-        </div>
-
-        <!-- Key Responsibilities -->
-        ${respBlock}
-
-        <!-- Soft Skills -->
-        <div class="section">
-          <div class="section-title">Soft Skills</div>
-          <div class="dot-list">${softHtml}</div>
-        </div>
       </div>
 
-      <!-- ============ FOOTER ============ -->
-      <div class="card-footer">
-        <div class="footer-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          Verified care professional
-        </div>
-        <div class="footer-actions">
-          <button class="btn ghost" onclick="shareProfile('${escapeAttr(n.empId || '')}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-            </svg>
-            Share Link
-          </button>
-          <button class="btn primary" id="copyImgBtn" onclick="copyCardAsImage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="3"/>
-              <circle cx="9" cy="9" r="2"/>
-              <path d="m21 15-5-5L5 21"/>
-            </svg>
-            Copy as Image
-          </button>
-        </div>
+      <div class="card-bottom">
+        ${testimonialHtml}
+        ${footerHtml}
       </div>
 
+      <div class="action-bar">
+        <button class="btn btn-outline" onclick="copyCardAsImage()" id="copy-btn">📸 Copy as Image</button>
+      </div>
     </article>
   `;
 }
 
 /* =========================================================================
-   SHARE LINK
+   TOGGLES & INTERACTIONS
    ========================================================================= */
-function shareProfile(empId) {
-  const url = location.origin + location.pathname + "#" + encodeURIComponent(empId);
-  if (navigator.share) {
-    navigator.share({ title: "Nurse Profile", url }).catch(() => {});
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => showToast("Link copied to clipboard!"));
-  } else {
-    showToast(url);
+function updateCardClasses() {
+  const card = document.getElementById("nurse-card");
+  if (!card) return;
+
+  const toggles = {
+    "tog-age": "hide-age",
+    "tog-gender": "hide-gender",
+    "tog-qualification": "hide-qualification",
+    "tog-designation": "hide-designation",
+    "tog-languages": "hide-languages",
+    "tog-reg": "hide-reg"
+  };
+
+  for (const [id, className] of Object.entries(toggles)) {
+    const isChecked = document.getElementById(id).checked;
+    if (isChecked) {
+      card.classList.remove(className);
+    } else {
+      card.classList.add(className);
+    }
   }
 }
 
-/* =========================================================================
-   COPY CARD AS IMAGE
-   ========================================================================= */
-function ensureHtmlToImage() {
-  return new Promise((resolve, reject) => {
-    if (window.htmlToImage) return resolve(window.htmlToImage);
-    const s = document.createElement("script");
-    s.src = "https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js";
-    s.onload = () => resolve(window.htmlToImage);
-    s.onerror = () => reject(new Error("Failed to load html-to-image"));
-    document.head.appendChild(s);
-  });
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
 }
 
+/* =========================================================================
+   COPY AS IMAGE (With Toggle Support)
+   ========================================================================= */
 function toDataURL(url) {
   return new Promise((resolve, reject) => {
     if (!url) return reject(new Error("no url"));
@@ -962,117 +632,74 @@ function toDataURL(url) {
 }
 
 async function copyCardAsImage() {
-  const card = document.getElementById("nurseCard");
-  const btn = document.getElementById("copyImgBtn");
+  const card = document.getElementById("nurse-card");
+  const btn = document.getElementById("copy-btn");
   if (!card || !btn) return;
 
-  const originalHTML = btn.innerHTML;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = "Capturing...";
   btn.disabled = true;
-  btn.innerHTML = "Preparing…";
-
+  
+  // Hide action bar during capture
   card.classList.add("capturing");
 
+  // Pre-inline images to prevent CORS issues in capture
   const imgs = Array.from(card.querySelectorAll("img"));
-  const savedSrc = imgs.map(i => i.getAttribute("src") || "");
-
+  const savedSrc = imgs.map(i => i.getAttribute("src"));
+  
   await Promise.all(imgs.map(async (img) => {
     try {
-      img.src = await toDataURL(img.getAttribute("src") || "");
+      img.src = await toDataURL(img.getAttribute("src"));
     } catch {
-      if (img.id === "nursePhoto") {
-        const name = card.querySelector(".nurse-name");
-        img.src = initialsAvatar(name ? name.textContent : "?");
-      }
+      img.src = DEFAULT_IMG; // Fallback
     }
   }));
 
-  let htmlToImage;
-  try { htmlToImage = await ensureHtmlToImage(); }
-  catch {
-    card.classList.remove("capturing");
-    imgs.forEach((img, i) => (img.src = savedSrc[i]));
-    btn.disabled = false;
-    btn.innerHTML = originalHTML;
-    showToast("Image library failed to load — try again");
-    return;
-  }
-
-  const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#ffffff" };
-
   try {
+    const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#ffffff" };
     const blob = await htmlToImage.toBlob(card, opts);
-    if (!blob) throw new Error("no blob");
-
+    
     if (navigator.clipboard && window.ClipboardItem) {
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      showToast("Nurse card copied to clipboard!");
+      alert("✅ Nurse card copied to clipboard!");
     } else {
-      throw new Error("clipboard unavailable");
+      throw new Error("Clipboard API unavailable");
     }
   } catch (err) {
+    // Fallback to download
     try {
-      const dataUrl = await htmlToImage.toPng(card, opts);
+      const dataUrl = await htmlToImage.toPng(card, { cacheBust: true, pixelRatio: 2 });
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `nurse-${CURRENT_ID || "profile"}.png`;
-      document.body.appendChild(a);
+      a.download = `nurse-${currentNurseData.empId}.png`;
       a.click();
-      document.body.removeChild(a);
-      showToast("Clipboard blocked — image downloaded instead");
+      alert("Clipboard blocked. Image downloaded instead.");
     } catch (e2) {
-      console.error("Image generation failed:", e2);
-      showToast("Could not generate image. Please try again.");
+      console.error(e2);
+      alert("Failed to generate image.");
     }
   } finally {
+    // Restore UI
     card.classList.remove("capturing");
-    imgs.forEach((img, i) => { if (img && savedSrc[i] != null) img.src = savedSrc[i]; });
+    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
+    btn.innerHTML = originalText;
     btn.disabled = false;
-    btn.innerHTML = originalHTML;
   }
 }
 
 /* =========================================================================
-   TOAST
+   INIT
    ========================================================================= */
-let toastTimer = null;
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  document.getElementById("toastText").textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
-}
-
-/* =========================================================================
-   UTIL
-   ========================================================================= */
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
-}
-function escapeAttr(s) { return escapeHtml(s); }
-
-/* =========================================================================
-   BOOT
-   ========================================================================= */
-(async function boot() {
-  showState("initial");
-  try { await fetchData(); }
-  catch (err) { console.error("Initial fetch failed:", err); showState("error"); }
-
-  if (REFRESH_MS > 0) {
-    setInterval(async () => { try { await fetchData(); } catch { /* silent */ } }, REFRESH_MS);
+(async function init() {
+  await initAuth();
+  
+  if (currentSession) {
+    showApp();
   }
-
-  const hash = decodeURIComponent(location.hash.replace("#", "")).trim();
-  if (hash) {
-    document.getElementById("empInput").value = hash;
-    search();
-  }
-
-  document.getElementById("empInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") { e.preventDefault(); search(); }
+  
+  // Enter key listener for search
+  document.getElementById("emp-search").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") searchNurse();
   });
 })();
 </script>
