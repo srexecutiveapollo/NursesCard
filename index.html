@@ -189,7 +189,6 @@
 /* =========================================================================
    CONFIG & STATE
    ========================================================================= */
-// YOUR UPDATED PUBLISHED CSV URL (Base)
 const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?output=csv";
 const UNITS = ["Bangalore", "Chennai", "Delhi", "Guwahati", "Hyderabad", "INDORE", "Kolkata", "Madurai", "Mumbai", "Mysore"];
 const DEFAULT_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -229,7 +228,6 @@ function parseCSV(text) {
 }
 
 async function fetchSheet(sheetName) {
-  // Append the sheet name to the published CSV URL
   const url = `${BASE_CSV_URL}&sheet=${encodeURIComponent(sheetName)}&_=${Date.now()}`;
   const res = await fetch(url, { cache: "no-store" });
   
@@ -362,19 +360,36 @@ async function searchNurse() {
 
     for (const unit of unitsToFetch) {
       const rows = await fetchSheet(unit);
+      console.log(`--- Data for unit: ${unit} ---`, rows.slice(0, 3)); // DEBUG LOG
       
       for (let i = 1; i < rows.length; i++) {
         const r = rows[i];
         if (r.length < 5) continue;
         
-        const empId = (r[4] || "").trim(); 
+        // FIXED MAPPING: 
+        // Col 1 (0) = S-no, Col 2 (1) = Unit, Col 3 (2) = EmpID, Col 4 (3) = Name
+        const empId = (r[2] || "").trim(); 
+        
         if (empId.toLowerCase() === empIdQuery) {
           foundNurse = {
-            sno: r[0], unit: r[1], ltc: r[2], name: r[3], empId: empId,
-            staffType: r[5], age: r[6], gender: r[7], qualification: r[8],
-            designation: r[9], languages: r[10], regNo: r[11],
-            knownFor: r[12], patientSays: r[13], patientName: r[14],
-            picture: normalizeImageUrl(r[17]), supportNo: r[19], email: r[20]
+            sno: r[0], 
+            unit: r[1], 
+            empId: empId, 
+            name: r[3],
+            ltc: r[4],       // Shifted based on actual sheet
+            staffType: r[5], 
+            age: r[6], 
+            gender: r[7], 
+            qualification: r[8],
+            designation: r[9], 
+            languages: r[10], 
+            regNo: r[11],
+            knownFor: r[12], 
+            patientSays: r[13], 
+            patientName: r[14],
+            picture: normalizeImageUrl(r[17]), 
+            supportNo: r[19], 
+            email: r[20]
           };
           break;
         }
@@ -387,7 +402,7 @@ async function searchNurse() {
       renderCard(foundNurse);
       updateCardClasses();
     } else {
-      resultsEl.innerHTML = `<div style="text-align: center; color: #dc2626; padding: 40px;"><strong>Nurse not found.</strong><br>Please check the EmpID and Unit.</div>`;
+      resultsEl.innerHTML = `<div style="text-align: center; color: #dc2626; padding: 40px;"><strong>Nurse not found.</strong><br>Please check the EmpID and Unit.<br><br><small style="color:#64748b">Tip: Open your browser console (F12) to verify column data.</small></div>`;
     }
   } catch (error) {
     console.error(error);
