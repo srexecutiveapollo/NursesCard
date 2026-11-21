@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nurse Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand-1: #0ea5e9;
+    --brand-2: #0284c7;
+    --brand-3: #0369a1;
+    --accent: #06b6d4;
+    --bg: #f0f9ff;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --success: #10b981;
+    --shadow-md: 0 10px 30px rgba(2,132,199,.12);
+    --shadow-lg: 0 30px 80px rgba(2,132,199,.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #cffafe 0%, transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, #dbeafe 0%, transparent 55%),
+      linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+  }
+
+  /* ============ TOP BAR (logo left, search right) ============ */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(226,232,240,.9);
+  }
+  .topbar-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 18px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none; color: var(--ink); flex-shrink: 0;
+  }
+  .logo img {
+    height: 44px; width: auto; object-fit: contain;
+    display: block;
+  }
+  .logo .fallback-mark {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand-1), var(--brand-3));
+    display: grid; place-items: center;
+    box-shadow: 0 6px 18px rgba(14,165,233,.35);
+  }
+  .logo .fallback-mark svg { width: 22px; height: 22px; color: #fff; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-text strong { font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
+  .logo-text span { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+
+  .topbar-search {
+    margin-left: auto;
+    display: flex; gap: 8px; align-items: center;
+    width: min(460px, 55vw);
+  }
+  .search-field {
+    position: relative; flex: 1;
+  }
+  .search-field svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--muted); pointer-events: none;
+  }
+  .search-field input {
+    width: 100%;
+    padding: 11px 16px 11px 42px;
+    border-radius: 12px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    font: inherit; font-size: 14px; color: var(--ink);
+    outline: none;
+    transition: all .2s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,.06);
+  }
+  .search-field input:focus {
+    border-color: var(--brand-1);
+    box-shadow: 0 0 0 4px rgba(14,165,233,.15);
+  }
+  .topbar-search button {
+    padding: 11px 20px;
+    border-radius: 12px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--brand-2), var(--brand-3));
+    color: #fff; font: inherit; font-weight: 600; font-size: 14px;
+    box-shadow: 0 6px 16px rgba(2,132,199,.3);
+    transition: transform .2s ease, box-shadow .2s ease;
+    white-space: nowrap;
+  }
+  .topbar-search button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(2,132,199,.4); }
+  .topbar-search button:disabled { opacity: .6; cursor: wait; }
+
+  /* ============ RESULTS AREA ============ */
+  .results {
+    flex: 1;
+    max-width: 1200px; width: 100%; margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: flex; justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* ---- States ---- */
+  .state {
+    text-align: center; padding: 60px 20px; color: var(--muted);
+    max-width: 440px; margin: 40px auto 0;
+  }
+  .state .state-icon {
+    width: 76px; height: 76px; border-radius: 22px;
+    margin: 0 auto 22px;
+    background: linear-gradient(135deg, #e0f2fe, #cffafe);
+    display: grid; place-items: center;
+    color: var(--brand-2);
+    box-shadow: var(--shadow-md);
+  }
+  .state .state-icon svg { width: 34px; height: 34px; }
+  .state h3 { color: var(--ink); font-size: 22px; margin-bottom: 10px; font-weight: 700; letter-spacing: -.01em; }
+  .state p { font-size: 15px; line-height: 1.6; }
+  .loader {
+    display: inline-block; width: 44px; height: 44px;
+    border: 3px solid #e0f2fe; border-top-color: var(--brand-1);
+    border-radius: 50%; animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================================
+     THE NURSE CARD
+     ============================================ */
+  .nurse-card {
+    width: 100%;
+    max-width: 900px;
+    background: var(--card);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line);
+    animation: cardIn .6s cubic-bezier(.2,.9,.3,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ---- Card Hero ---- */
+  .card-hero {
+    position: relative;
+    padding: 36px 40px 30px;
+    background: linear-gradient(135deg, var(--brand-3) 0%, var(--brand-1) 55%, var(--accent) 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+  .card-hero::before {
+    content: ""; position: absolute;
+    right: -80px; top: -80px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+  }
+  .card-hero::after {
+    content: ""; position: absolute;
+    right: 60px; bottom: -100px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: rgba(255,255,255,.06);
+  }
+
+  /* Logo inside the card */
+  .card-logo {
+    position: absolute; top: 22px; right: 26px; z-index: 3;
+    height: 34px; width: auto; object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: .95;
+  }
+  .card-logo-fallback {
+    position: absolute; top: 22px; right: 26px; z-index: 3;
+    width: 34px; height: 34px; border-radius: 9px;
+    background: rgba(255,255,255,.22);
+    display: grid; place-items: center;
+    border: 1px solid rgba(255,255,255,.35);
+  }
+  .card-logo-fallback svg { width: 18px; height: 18px; color: #fff; }
+
+  .hero-row {
+    display: flex; gap: 26px; align-items: center;
+    position: relative; z-index: 2;
+  }
+  .hero-avatar {
+    width: 140px; height: 140px; flex-shrink: 0;
+    border-radius: 24px;
+    padding: 4px;
+    background: rgba(255,255,255,.4);
+    box-shadow: 0 14px 40px rgba(0,0,0,.22);
+  }
+  .hero-avatar img {
+    width: 100%; height: 100%; border-radius: 20px;
+    object-fit: cover; background: #e2e8f0;
+    border: 3px solid rgba(255,255,255,.9);
+    display: block;
+  }
+
+  .hero-meta { min-width: 0; }
+  .hero-meta .role-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.35);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    backdrop-filter: blur(6px);
+  }
+  .hero-meta .role-badge svg { width: 13px; height: 13px; }
+  .hero-meta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3.5vw, 34px);
+    font-weight: 700; letter-spacing: -.01em;
+    line-height: 1.1; margin-top: 10px;
+  }
+  .hero-meta .emp-id {
+    display: inline-block; margin-top: 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: .12em;
+    padding: 5px 14px; border-radius: 999px;
+    background: rgba(255,255,255,.22);
+    border: 1px solid rgba(255,255,255,.35);
+    font-family: 'Inter', monospace;
+  }
+
+  /* ---- Stats strip ---- */
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #f8fafc, #fff);
+  }
+  .stat-cell {
+    padding: 20px 16px; text-align: center;
+    border-right: 1px solid var(--line);
+    transition: background .2s ease;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-cell:hover { background: #f0f9ff; }
+  .stat-cell .num {
+    font-size: 22px; font-weight: 800;
+    color: var(--brand-3); line-height: 1;
+    letter-spacing: -.02em;
+  }
+  .stat-cell .num.sm { font-size: 15px; }
+  .stat-cell .lbl {
+    margin-top: 6px; font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---- Body ---- */
+  .card-body {
+    padding: 30px 40px 34px;
+    display: grid; gap: 26px;
+  }
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--brand-3);
+    margin-bottom: 14px;
+  }
+  .section-title::before {
+    content: ""; width: 3px; height: 16px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--brand-1), var(--accent));
+  }
+
+  .kv-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+  }
+  .kv { padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .kv .k {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .kv .v {
+    font-size: 14.5px; color: var(--ink);
+    font-weight: 600; margin-top: 3px;
+    word-break: break-word;
+  }
+  .kv.full { grid-column: 1 / -1; }
+
+  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 12.5px; font-weight: 600;
+    padding: 7px 14px; border-radius: 999px;
+    background: linear-gradient(135deg, #ecfeff, #e0f2fe);
+    color: #075985;
+    border: 1px solid #bae6fd;
+  }
+
+  .resp-list { list-style: none; padding: 0; display: grid; gap: 10px; }
+  .resp-list li {
+    position: relative; padding-left: 26px;
+    font-size: 14px; line-height: 1.6; color: #334155;
+  }
+  .resp-list li::before {
+    content: ""; position: absolute;
+    left: 6px; top: 9px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-1), var(--accent));
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
+  }
+  .paragraph {
+    font-size: 14px; line-height: 1.7; color: #334155;
+    white-space: pre-wrap;
+  }
+
+  /* ---- Footer ---- */
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: #f8fafc;
+    border-top: 1px solid var(--line);
+    gap: 16px; flex-wrap: wrap;
+  }
+  .footer-note {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .footer-note svg { width: 14px; height: 14px; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px;
+    background: var(--ink); color: #fff;
+    border: none; cursor: pointer;
+    font: inherit; font-weight: 600; font-size: 13px;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .share-btn:hover { background: linear-gradient(135deg, var(--brand-2), var(--brand-3)); transform: translateY(-1px); }
+  .share-btn svg { width: 15px; height: 15px; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 720px) {
+    .topbar-inner { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
+    .topbar-search { width: 100%; margin-left: 0; order: 3; }
+    .logo img { height: 36px; }
+    .results { padding: 24px 16px 60px; }
+    .card-hero { padding: 28px 22px 24px; }
+    .hero-row { flex-direction: column; text-align: center; gap: 18px; }
+    .hero-avatar { width: 120px; height: 120px; }
+    .hero-meta .emp-id { margin-top: 8px; }
+    .card-logo, .card-logo-fallback { top: 14px; right: 16px; height: 26px; width: 26px; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat-cell:nth-child(2) { border-right: none; }
+    .stat-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .card-body { padding: 24px 22px 28px; gap: 22px; }
+    .kv-grid { grid-template-columns: 1fr; gap: 4px 0; }
+    .card-footer { padding: 16px 22px; justify-content: center; text-align: center; }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: #fff;
+    padding: 12px 22px; border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; pointer-events: none;
+    transition: all .35s cubic-bezier(.2,.9,.3,1);
+    z-index: 999;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast svg { width: 16px; height: 16px; color: var(--success); }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="#" onclick="resetView(event)">
+      <img src="./assets/logo.png" alt="Logo"
+        onerror="this.outerHTML='<div class=&quot;fallback-mark&quot;><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 2v20M2 12h20&quot;/></svg></div>'" />
+    </a>
+
+    <div class="topbar-search">
+      <div class="search-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="empInput" type="text" placeholder="Enter EMPID (e.g., ahc123)" autocomplete="off" />
+      </div>
+      <button id="searchBtn" onclick="search()">Search</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= RESULTS ================= -->
+<main class="results" id="results"></main>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText">Link copied!</span>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG
+   ========================================================= */
+// Paste your FULL published CSV URL here (File → Share → Publish to web → CSV):
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?gid=678095587&single=true&output=csv";
+
+const REFRESH_MS = 60000;
+const DEFAULT_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+     <rect width="200" height="200" fill="#e2e8f0"/>
+     <circle cx="100" cy="78" r="36" fill="#94a3b8"/>
+     <path d="M30 190c0-40 30-64 70-64s70 24 70 64z" fill="#94a3b8"/>
+   </svg>`
+);
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let ALL_NURSES = [];
+let LOADED = false;
+
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
+function parseCSV(text) {
+  const rows = [];
+  let cur = "", row = [], inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], n = text[i + 1];
+    if (inQuote) {
+      if (c === '"' && n === '"') { cur += '"'; i++; }
+      else if (c === '"') inQuote = false;
+      else cur += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ',') { row.push(cur); cur = ''; }
+      else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (c === '\r') { /* skip */ }
+      else cur += c;
+    }
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => h.trim());
+  const out = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r.length || !r.join('').trim()) continue;
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (r[idx] || '').trim(); });
+    out.push(obj);
+  }
+  return out;
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function pick(obj, ...keys) {
+  for (const k of keys) {
+    if (obj[k] !== undefined && obj[k] !== '') return obj[k];
+    const found = Object.keys(obj).find(kk => kk.toLowerCase().trim() === k.toLowerCase().trim());
+    if (found && obj[found] !== '') return obj[found];
+  }
+  return '';
+}
+
+function normalize(n) {
+  return {
+    empId:    pick(n, 'EMPID', 'EmpID', 'Emp Id', 'Empid'),
+    name:     pick(n, 'NAME', 'Name'),
+    dob:      pick(n, 'DOB'),
+    age:      pick(n, 'Age'),
+    gender:   pick(n, 'Gender'),
+    number:   pick(n, 'Number', 'Phone', 'Contact'),
+    address:  pick(n, 'Address'),
+    qual:     pick(n, 'Qualification'),
+    skills:   pick(n, 'Approved Final Skillset By NO (All Data)', 'SKILL SET', 'Skillset', 'Skills'),
+    language: pick(n, 'Language Known', 'Languages'),
+    exp:      pick(n, 'Total Experience', 'Experience'),
+    resp:     [pick(n,'Key Responsibilities'), pick(n,'Key Responsibilities '), pick(n,'Key Responsibilities  '), pick(n,'Responsibilities')]
+                .filter(Boolean).join('\n'),
+    soft:     pick(n, 'Soft Skills'),
+    picture:  pick(n, 'picture', 'Picture', 'Photo', 'Image'),
+    unit:     pick(n, 'Unit', 'Department')
+  };
+}
+
+/* =========================================================
+   FETCH
+   ========================================================= */
+async function fetchData() {
+  try {
+    const res = await fetch(CSV_URL + '&_=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    ALL_NURSES = parseCSV(text).map(normalize).filter(r => r.empId || r.name);
+    LOADED = true;
+  } catch (err) {
+    console.error('Sheet fetch failed:', err);
+  }
+}
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+async function search() {
+  const q = document.getElementById('empInput').value.trim();
+  if (!q) { showState('empty'); return; }
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  showState('loading');
+
+  if (!LOADED) await fetchData();
+
+  const nurse = ALL_NURSES.find(n =>
+    (n.empId || '').toLowerCase() === q.toLowerCase()
+  );
+
+  btn.disabled = false;
+
+  if (!nurse) { showState('notfound', q); return; }
+
+  renderCard(nurse);
+  history.replaceState(null, '', '#' + encodeURIComponent(n.empId || ''));
+}
+
+function resetView(e) {
+  if (e) e.preventDefault();
+  document.getElementById('empInput').value = '';
+  showState('initial');
+  history.replaceState(null, '', location.pathname);
+}
+
+/* =========================================================
+   STATES
+   ========================================================= */
+function showState(kind, extra) {
+  const r = document.getElementById('results');
+  if (kind === 'initial') {
+    r.innerHTML = `<div class="state">
+      <div class="state-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Find your nurse</h3>
+      <p>Enter the employee ID you were given to view a verified profile.</p>
+    </div>`;
+  } else if (kind === 'loading') {
+    r.innerHTML = `<div class="state"><div class="loader"></div><h3>Fetching profile…</h3><p>Just a moment.</p></div>`;
+  } else if (kind === 'empty') {
+    r.innerHTML = `<div class="state">
+      <div class="state-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+      <h3>Enter an EMPID</h3>
+      <p>Please type the employee ID in the search box above.</p>
+    </div>`;
+  } else if (kind === 'notfound') {
+    r.innerHTML = `<div class="state">
+      <div class="state-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+      </div>
+      <h3>No nurse found</h3>
+      <p>We couldn't find a nurse with EMPID <strong>"${escapeHtml(extra || '')}"</strong>. Please double-check and try again.</p>
+    </div>`;
+  }
+}
+
+/* =========================================================
+   RENDER CARD
+   ========================================================= */
+function renderCard(n) {
+  const r = document.getElementById('results');
+  const img = (n.picture && /^https?:\/\//.test(n.picture)) ? n.picture : DEFAULT_IMG;
+
+  const langChips = (n.language || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
+    .map(l => `<span class="chip">${escapeHtml(l)}</span>`).join('') || `<span class="chip">Not specified</span>`;
+
+  const skillChips = (n.skills || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
+    .map(s => `<span class="chip">${escapeHtml(s)}</span>`).join('') || `<span class="chip">Not specified</span>`;
+
+  const softChips = (n.soft || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
+    .map(s => `<span class="chip">${escapeHtml(s)}</span>`).join('') || `<span class="chip">—</span>`;
+
+  const respLines = (n.resp || '').split(/\n|;/).map(s => s.trim()).filter(Boolean);
+  const respHtml = respLines.length
+    ? `<ul class="resp-list">${respLines.map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`
+    : `<p class="paragraph">No responsibilities listed.</p>`;
+
+  r.innerHTML = `
+    <article class="nurse-card">
+      <!-- HERO -->
+      <div class="card-hero">
+        <!-- LOGO on card -->
+        <img class="card-logo" src="./assets/logo.png" alt="Logo"
+          onerror="this.outerHTML='<div class=&quot;card-logo-fallback&quot;><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 2v20M2 12h20&quot;/></svg></div>'" />
+
+        <div class="hero-row">
+          <div class="hero-avatar">
+            <img src="${escapeAttr(img)}" alt="${escapeAttr(n.name || 'Nurse')}"
+                 onerror="this.onerror=null; this.src='${DEFAULT_IMG.replace(/'/g,'&#39;')}'" />
+          </div>
+          <div class="hero-meta">
+            <span class="role-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Verified Nurse
+            </span>
+            <h2>${escapeHtml(n.name || 'Unnamed')}</h2>
+            <div class="emp-id">${escapeHtml(n.empId || '—')}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-strip">
+        <div class="stat-cell">
+          <div class="num">${escapeHtml(n.exp || '—')}</div>
+          <div class="lbl">Experience</div>
+        </div>
+        <div class="stat-cell">
+          <div class="num">${escapeHtml(n.age || '—')}</div>
+          <div class="lbl">Age</div>
+        </div>
+        <div class="stat-cell">
+          <div class="num">${escapeHtml(n.gender || '—')}</div>
+          <div class="lbl">Gender</div>
+        </div>
+        <div class="stat-cell">
+          <div class="num sm">${escapeHtml(n.qual || '—')}</div>
+          <div class="lbl">Qualification</div>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="card-body">
+        <div>
+          <div class="section-title">Personal Details</div>
+          <div class="kv-grid">
+            <div class="kv"><span class="k">Date of Birth</span><span class="v">${escapeHtml(n.dob || '—')}</span></div>
+            <div class="kv"><span class="k">Contact Number</span><span class="v">${escapeHtml(n.number || '—')}</span></div>
+            <div class="kv full"><span class="k">Address</span><span class="v">${escapeHtml(n.address || '—')}</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">Languages Known</div>
+          <div class="chip-list">${langChips}</div>
+        </div>
+
+        <div>
+          <div class="section-title">Clinical Skillset</div>
+          <div class="chip-list">${skillChips}</div>
+        </div>
+
+        <div>
+          <div class="section-title">Key Responsibilities</div>
+          ${respHtml}
+        </div>
+
+        <div>
+          <div class="section-title">Soft Skills</div>
+          <div class="chip-list">${softChips}</div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="card-footer">
+        <div class="footer-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Verified care professional
+        </div>
+        <button class="share-btn" onclick="shareProfile('${escapeAttr(n.empId || '')}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share Profile
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+/* =========================================================
+   SHARE
+   ========================================================= */
+function shareProfile(empId) {
+  const url = location.origin + location.pathname + '#' + encodeURIComponent(empId);
+  if (navigator.share) {
+    navigator.share({ title: 'Nurse Profile', url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard!'));
+  }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* =========================================================
+   UTIL
+   ========================================================= */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+(async function boot() {
+  showState('initial');
+  await fetchData();
+  if (REFRESH_MS > 0) setInterval(fetchData, REFRESH_MS);
+
+  const hash = decodeURIComponent(location.hash.replace('#', ''));
+  if (hash) {
+    document.getElementById('empInput').value = hash;
+    search();
+  }
+
+  document.getElementById('empInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') search();
+  });
+})();
+</script>
+</body>
+</html>
