@@ -3,384 +3,426 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0ea5e9" />
 <title>Nurse Profile</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --brand-1: #0ea5e9;
-    --brand-2: #0284c7;
-    --brand-3: #0369a1;
-    --accent: #06b6d4;
-    --bg: #f0f9ff;
-    --card: #ffffff;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --line: #e2e8f0;
-    --success: #10b981;
-    --shadow-md: 0 10px 30px rgba(2,132,199,.12);
-    --shadow-lg: 0 30px 80px rgba(2,132,199,.25);
-  }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { height: 100%; }
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    color: var(--ink);
+<!-- html-to-image (UMD, exposes window.htmlToImage) -->
+<script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js" defer></script>
+
+<style>
+  :root{
+    --brand-1:#0ea5e9; --brand-2:#0284c7; --brand-3:#0369a1; --accent:#06b6d4;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --success:#10b981;
+    --bg:#f0f9ff;
+    --shadow-md:0 10px 30px rgba(2,132,199,.12);
+    --shadow-lg:0 30px 80px rgba(2,132,199,.22);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
     background:
       radial-gradient(1200px 600px at 10% -10%, #cffafe 0%, transparent 60%),
       radial-gradient(900px 500px at 100% 0%, #dbeafe 0%, transparent 55%),
-      linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    display: flex; flex-direction: column;
+      linear-gradient(180deg,#f8fafc 0%, var(--bg) 100%);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column;
   }
 
-  /* ============ TOP BAR (logo left, search right) ============ */
-  .topbar {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(255,255,255,.82);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(226,232,240,.9);
+  /* ================= TOP BAR ================= */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(226,232,240,.9);
   }
-  .topbar-inner {
-    max-width: 1200px; margin: 0 auto;
-    padding: 14px 24px;
-    display: flex; align-items: center; gap: 18px;
+  .topbar-inner{
+    max-width:1200px; margin:0 auto;
+    padding:14px 24px;
+    display:flex; align-items:center; gap:18px;
   }
-  .logo {
-    display: flex; align-items: center; gap: 12px;
-    text-decoration: none; color: var(--ink); flex-shrink: 0;
+  .logo-wrap{
+    display:flex; align-items:center; gap:10px;
+    flex-shrink:0; text-decoration:none;
+    color:var(--brand-3); min-height:44px;
   }
-  .logo img {
-    height: 44px; width: auto; object-fit: contain;
-    display: block;
+  .logo-wrap img{
+    height:44px; width:auto; max-width:220px;
+    object-fit:contain; display:block;
   }
-  .logo .fallback-mark {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--brand-1), var(--brand-3));
-    display: grid; place-items: center;
-    box-shadow: 0 6px 18px rgba(14,165,233,.35);
+  .logo-cross{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:44px; height:44px; border-radius:12px;
+    background:linear-gradient(135deg,var(--brand-1),var(--brand-3));
+    color:#fff; box-shadow:0 6px 18px rgba(14,165,233,.35);
   }
-  .logo .fallback-mark svg { width: 22px; height: 22px; color: #fff; }
-  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
-  .logo-text strong { font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
-  .logo-text span { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+  .logo-cross svg{width:22px;height:22px;}
 
-  .topbar-search {
-    margin-left: auto;
-    display: flex; gap: 8px; align-items: center;
-    width: min(460px, 55vw);
+  .topbar-search{
+    margin-left:auto;
+    display:flex; gap:8px; align-items:center;
+    width:min(460px,55vw);
   }
-  .search-field {
-    position: relative; flex: 1;
+  .search-field{position:relative;flex:1;}
+  .search-field svg{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; color:var(--muted); pointer-events:none;
   }
-  .search-field svg {
-    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    width: 18px; height: 18px; color: var(--muted); pointer-events: none;
+  .search-field input{
+    width:100%;
+    padding:11px 16px 11px 42px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font:inherit; font-size:14px; color:var(--ink);
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+    box-shadow:0 1px 2px rgba(15,23,42,.06);
   }
-  .search-field input {
-    width: 100%;
-    padding: 11px 16px 11px 42px;
-    border-radius: 12px;
-    border: 1.5px solid var(--line);
-    background: #fff;
-    font: inherit; font-size: 14px; color: var(--ink);
-    outline: none;
-    transition: all .2s ease;
-    box-shadow: 0 1px 2px rgba(15,23,42,.06);
+  .search-field input:focus{
+    border-color:var(--brand-1);
+    box-shadow:0 0 0 4px rgba(14,165,233,.15);
   }
-  .search-field input:focus {
-    border-color: var(--brand-1);
-    box-shadow: 0 0 0 4px rgba(14,165,233,.15);
+  .topbar-search button{
+    padding:11px 20px; border-radius:12px; border:none; cursor:pointer;
+    background:linear-gradient(135deg,var(--brand-2),var(--brand-3));
+    color:#fff; font:inherit; font-weight:600; font-size:14px;
+    box-shadow:0 6px 16px rgba(2,132,199,.3);
+    transition:transform .2s, box-shadow .2s;
+    white-space:nowrap;
   }
-  .topbar-search button {
-    padding: 11px 20px;
-    border-radius: 12px;
-    border: none; cursor: pointer;
-    background: linear-gradient(135deg, var(--brand-2), var(--brand-3));
-    color: #fff; font: inherit; font-weight: 600; font-size: 14px;
-    box-shadow: 0 6px 16px rgba(2,132,199,.3);
-    transition: transform .2s ease, box-shadow .2s ease;
-    white-space: nowrap;
-  }
-  .topbar-search button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(2,132,199,.4); }
-  .topbar-search button:disabled { opacity: .6; cursor: wait; }
+  .topbar-search button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(2,132,199,.4);}
+  .topbar-search button:disabled{opacity:.6;cursor:wait;transform:none;}
 
-  /* ============ RESULTS AREA ============ */
-  .results {
-    flex: 1;
-    max-width: 1200px; width: 100%; margin: 0 auto;
-    padding: 48px 24px 80px;
-    display: flex; justify-content: center;
-    align-items: flex-start;
+  /* ================= RESULTS ================= */
+  .results{
+    flex:1;
+    max-width:1200px; width:100%; margin:0 auto;
+    padding:44px 24px 80px;
+    display:flex; justify-content:center; align-items:flex-start;
   }
 
-  /* ---- States ---- */
-  .state {
-    text-align: center; padding: 60px 20px; color: var(--muted);
-    max-width: 440px; margin: 40px auto 0;
+  /* ---- State panels ---- */
+  .state{
+    text-align:center; padding:56px 20px; color:var(--muted);
+    max-width:440px; margin:32px auto 0;
   }
-  .state .state-icon {
-    width: 76px; height: 76px; border-radius: 22px;
-    margin: 0 auto 22px;
-    background: linear-gradient(135deg, #e0f2fe, #cffafe);
-    display: grid; place-items: center;
-    color: var(--brand-2);
-    box-shadow: var(--shadow-md);
+  .state .state-icon{
+    width:76px; height:76px; border-radius:22px;
+    margin:0 auto 22px;
+    background:linear-gradient(135deg,#e0f2fe,#cffafe);
+    display:grid; place-items:center; color:var(--brand-2);
+    box-shadow:var(--shadow-md);
   }
-  .state .state-icon svg { width: 34px; height: 34px; }
-  .state h3 { color: var(--ink); font-size: 22px; margin-bottom: 10px; font-weight: 700; letter-spacing: -.01em; }
-  .state p { font-size: 15px; line-height: 1.6; }
-  .loader {
-    display: inline-block; width: 44px; height: 44px;
-    border: 3px solid #e0f2fe; border-top-color: var(--brand-1);
-    border-radius: 50%; animation: spin 1s linear infinite;
-    margin-bottom: 16px;
+  .state .state-icon svg{width:34px;height:34px;}
+  .state h3{color:var(--ink);font-size:22px;margin-bottom:10px;font-weight:700;letter-spacing:-.01em;}
+  .state p{font-size:15px;line-height:1.6;}
+  .loader{
+    display:inline-block;width:44px;height:44px;
+    border:3px solid #e0f2fe;border-top-color:var(--brand-1);
+    border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-  /* ============================================
-     THE NURSE CARD
-     ============================================ */
-  .nurse-card {
-    width: 100%;
-    max-width: 900px;
-    background: var(--card);
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--line);
-    animation: cardIn .6s cubic-bezier(.2,.9,.3,1) both;
+  /* =====================================================
+     NURSE CARD
+     ===================================================== */
+  .nurse-card{
+    width:100%; max-width:900px;
+    border-radius:24px; overflow:hidden;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-lg);
+    animation:cardIn .6s cubic-bezier(.2,.9,.3,1) both;
+    background:#fff;
   }
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(20px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+  @keyframes cardIn{
+    from{opacity:0;transform:translateY(20px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
   }
+  .nurse-card.capturing{animation:none !important;transform:none !important;}
+  .nurse-card.capturing .footer-actions{visibility:hidden;}
 
-  /* ---- Card Hero ---- */
-  .card-hero {
-    position: relative;
-    padding: 36px 40px 30px;
-    background: linear-gradient(135deg, var(--brand-3) 0%, var(--brand-1) 55%, var(--accent) 100%);
-    color: #fff;
-    overflow: hidden;
+  /* ---------- GENDER THEMES ---------- */
+  /* Male → soft clean blue */
+  .nurse-card.theme-male{
+    background:linear-gradient(180deg,#f4fbff 0%,#ffffff 42%);
+    border-color:#bae6fd;
+    box-shadow:0 30px 80px rgba(2,132,199,.22);
   }
-  .card-hero::before {
-    content: ""; position: absolute;
-    right: -80px; top: -80px;
-    width: 300px; height: 300px; border-radius: 50%;
-    background: rgba(255,255,255,.08);
+  .nurse-card.theme-male .card-hero{
+    background:linear-gradient(135deg,#dbeafe 0%,#bae6fd 50%,#7dd3fc 100%);
+    color:#0c4a6e;
   }
-  .card-hero::after {
-    content: ""; position: absolute;
-    right: 60px; bottom: -100px;
-    width: 220px; height: 220px; border-radius: 50%;
-    background: rgba(255,255,255,.06);
-  }
+  .nurse-card.theme-male .hero-avatar{background:rgba(255,255,255,.75);box-shadow:0 14px 40px rgba(2,132,199,.25);}
+  .nurse-card.theme-male .role-badge{background:rgba(255,255,255,.7);color:#0c4a6e;border-color:rgba(255,255,255,.95);}
+  .nurse-card.theme-male .emp-id{background:rgba(255,255,255,.66);color:#0c4a6e;border-color:rgba(255,255,255,.95);}
+  .nurse-card.theme-male .stats-strip{background:linear-gradient(180deg,#f0f9ff,#fff);}
+  .nurse-card.theme-male .stat-cell:hover{background:#eaf6ff;}
+  .nurse-card.theme-male .stat-cell .num{color:#0369a1;}
+  .nurse-card.theme-male .section-title{color:#0369a1;}
+  .nurse-card.theme-male .section-title::before{background:linear-gradient(180deg,#0ea5e9,#06b6d4);}
+  .nurse-card.theme-male .chip{background:#e0f2fe;color:#075985;border-color:#bae6fd;}
+  .nurse-card.theme-male .resp-list li::before{background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 0 0 3px rgba(14,165,233,.15);}
+  .nurse-card.theme-male .card-footer{background:#f0f9ff;border-top-color:#e0f2fe;}
 
-  /* Logo inside the card */
-  .card-logo {
-    position: absolute; top: 22px; right: 26px; z-index: 3;
-    height: 34px; width: auto; object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: .95;
+  /* Female → soft clean pink */
+  .nurse-card.theme-female{
+    background:linear-gradient(180deg,#fff5fa 0%,#ffffff 42%);
+    border-color:#fbcfe8;
+    box-shadow:0 30px 80px rgba(219,39,119,.18);
   }
-  .card-logo-fallback {
-    position: absolute; top: 22px; right: 26px; z-index: 3;
-    width: 34px; height: 34px; border-radius: 9px;
-    background: rgba(255,255,255,.22);
-    display: grid; place-items: center;
-    border: 1px solid rgba(255,255,255,.35);
+  .nurse-card.theme-female .card-hero{
+    background:linear-gradient(135deg,#fce7f3 0%,#fbcfe8 50%,#f9a8d4 100%);
+    color:#831843;
   }
-  .card-logo-fallback svg { width: 18px; height: 18px; color: #fff; }
+  .nurse-card.theme-female .hero-avatar{background:rgba(255,255,255,.78);box-shadow:0 14px 40px rgba(219,39,119,.22);}
+  .nurse-card.theme-female .role-badge{background:rgba(255,255,255,.72);color:#831843;border-color:rgba(255,255,255,.95);}
+  .nurse-card.theme-female .emp-id{background:rgba(255,255,255,.68);color:#831843;border-color:rgba(255,255,255,.95);}
+  .nurse-card.theme-female .stats-strip{background:linear-gradient(180deg,#fff1f7,#fff);}
+  .nurse-card.theme-female .stat-cell:hover{background:#fdeef5;}
+  .nurse-card.theme-female .stat-cell .num{color:#9d174d;}
+  .nurse-card.theme-female .section-title{color:#9d174d;}
+  .nurse-card.theme-female .section-title::before{background:linear-gradient(180deg,#ec4899,#f472b6);}
+  .nurse-card.theme-female .chip{background:#fce7f3;color:#9d174d;border-color:#fbcfe8;}
+  .nurse-card.theme-female .resp-list li::before{background:linear-gradient(135deg,#ec4899,#f472b6);box-shadow:0 0 0 3px rgba(236,72,153,.15);}
+  .nurse-card.theme-female .card-footer{background:#fff1f7;border-top-color:#fce7f3;}
 
-  .hero-row {
-    display: flex; gap: 26px; align-items: center;
-    position: relative; z-index: 2;
+  /* Neutral fallback */
+  .nurse-card.theme-neutral{
+    background:linear-gradient(180deg,#f8fafc 0%,#ffffff 42%);
+    border-color:#e2e8f0;
   }
-  .hero-avatar {
-    width: 140px; height: 140px; flex-shrink: 0;
-    border-radius: 24px;
-    padding: 4px;
-    background: rgba(255,255,255,.4);
-    box-shadow: 0 14px 40px rgba(0,0,0,.22);
+  .nurse-card.theme-neutral .card-hero{
+    background:linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 55%,#94a3b8 100%);
+    color:#1e293b;
   }
-  .hero-avatar img {
-    width: 100%; height: 100%; border-radius: 20px;
-    object-fit: cover; background: #e2e8f0;
-    border: 3px solid rgba(255,255,255,.9);
-    display: block;
-  }
+  .nurse-card.theme-neutral .hero-avatar{background:rgba(255,255,255,.7);box-shadow:0 14px 40px rgba(15,23,42,.18);}
+  .nurse-card.theme-neutral .role-badge{background:rgba(255,255,255,.68);color:#1e293b;border-color:rgba(255,255,255,.9);}
+  .nurse-card.theme-neutral .emp-id{background:rgba(255,255,255,.62);color:#1e293b;border-color:rgba(255,255,255,.9);}
+  .nurse-card.theme-neutral .stats-strip{background:linear-gradient(180deg,#f8fafc,#fff);}
+  .nurse-card.theme-neutral .stat-cell:hover{background:#f1f5f9;}
+  .nurse-card.theme-neutral .stat-cell .num{color:#334155;}
+  .nurse-card.theme-neutral .section-title{color:#334155;}
+  .nurse-card.theme-neutral .section-title::before{background:linear-gradient(180deg,#64748b,#94a3b8);}
+  .nurse-card.theme-neutral .chip{background:#f1f5f9;color:#334155;border-color:#e2e8f0;}
+  .nurse-card.theme-neutral .resp-list li::before{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 0 0 3px rgba(100,116,139,.15);}
+  .nurse-card.theme-neutral .card-footer{background:#f8fafc;border-top-color:#e2e8f0;}
 
-  .hero-meta { min-width: 0; }
-  .hero-meta .role-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px; border-radius: 999px;
-    background: rgba(255,255,255,.2);
-    border: 1px solid rgba(255,255,255,.35);
-    font-size: 11px; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    backdrop-filter: blur(6px);
+  /* ---------- CARD HERO ---------- */
+  .card-hero{
+    position:relative;
+    padding:34px 40px 30px;
+    overflow:hidden;
   }
-  .hero-meta .role-badge svg { width: 13px; height: 13px; }
-  .hero-meta h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(26px, 3.5vw, 34px);
-    font-weight: 700; letter-spacing: -.01em;
-    line-height: 1.1; margin-top: 10px;
+  .card-hero::before{
+    content:""; position:absolute; right:-80px; top:-80px;
+    width:300px; height:300px; border-radius:50%;
+    background:rgba(255,255,255,.35);
   }
-  .hero-meta .emp-id {
-    display: inline-block; margin-top: 10px;
-    font-size: 12px; font-weight: 700; letter-spacing: .12em;
-    padding: 5px 14px; border-radius: 999px;
-    background: rgba(255,255,255,.22);
-    border: 1px solid rgba(255,255,255,.35);
-    font-family: 'Inter', monospace;
+  .card-hero::after{
+    content:""; position:absolute; right:60px; bottom:-110px;
+    width:220px; height:220px; border-radius:50%;
+    background:rgba(255,255,255,.22);
   }
+  /* Brand logo on the card */
+  .card-brand{
+    position:absolute; top:18px; right:20px; z-index:4;
+    display:flex; align-items:center; justify-content:center;
+    padding:7px 12px; border-radius:12px;
+    background:rgba(255,255,255,.92);
+    box-shadow:0 6px 18px rgba(15,23,42,.10);
+    min-width:56px; min-height:36px;
+  }
+  .card-brand img{
+    height:22px; width:auto; max-width:120px;
+    object-fit:contain; display:block;
+  }
+  .card-brand .logo-cross{
+    width:24px; height:24px; border-radius:6px;
+    background:transparent; box-shadow:none; color:#0f172a;
+  }
+  .card-brand .logo-cross svg{width:20px;height:20px;}
 
-  /* ---- Stats strip ---- */
-  .stats-strip {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #f8fafc, #fff);
+  .hero-row{
+    display:flex; gap:26px; align-items:center;
+    position:relative; z-index:2; padding-right:120px;
   }
-  .stat-cell {
-    padding: 20px 16px; text-align: center;
-    border-right: 1px solid var(--line);
-    transition: background .2s ease;
+  .hero-avatar{
+    width:138px; height:138px; flex-shrink:0;
+    border-radius:24px; padding:4px;
+    box-shadow:0 14px 40px rgba(0,0,0,.2);
   }
-  .stat-cell:last-child { border-right: none; }
-  .stat-cell:hover { background: #f0f9ff; }
-  .stat-cell .num {
-    font-size: 22px; font-weight: 800;
-    color: var(--brand-3); line-height: 1;
-    letter-spacing: -.02em;
+  .hero-avatar img{
+    width:100%; height:100%; border-radius:20px;
+    object-fit:cover; background:#e2e8f0;
+    border:3px solid rgba(255,255,255,.95);
+    display:block;
   }
-  .stat-cell .num.sm { font-size: 15px; }
-  .stat-cell .lbl {
-    margin-top: 6px; font-size: 10px; font-weight: 700;
-    letter-spacing: .12em; text-transform: uppercase;
-    color: var(--muted);
+  .hero-meta{min-width:0;}
+  .role-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 12px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.9);
+    font-size:11px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase;
+    backdrop-filter:blur(6px);
   }
-
-  /* ---- Body ---- */
-  .card-body {
-    padding: 30px 40px 34px;
-    display: grid; gap: 26px;
+  .role-badge svg{width:13px;height:13px;}
+  .hero-meta h2{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(25px,3.4vw,34px);
+    font-weight:700; letter-spacing:-.01em;
+    line-height:1.12; margin-top:10px;
+    color:inherit; word-break:break-word;
   }
-  .section-title {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px; font-weight: 700; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--brand-3);
-    margin-bottom: 14px;
-  }
-  .section-title::before {
-    content: ""; width: 3px; height: 16px; border-radius: 2px;
-    background: linear-gradient(180deg, var(--brand-1), var(--accent));
-  }
-
-  .kv-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 12px 24px;
-  }
-  .kv { padding: 10px 0; border-bottom: 1px dashed var(--line); }
-  .kv .k {
-    font-size: 11px; color: var(--muted); font-weight: 600;
-    letter-spacing: .06em; text-transform: uppercase;
-  }
-  .kv .v {
-    font-size: 14.5px; color: var(--ink);
-    font-weight: 600; margin-top: 3px;
-    word-break: break-word;
-  }
-  .kv.full { grid-column: 1 / -1; }
-
-  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    font-size: 12.5px; font-weight: 600;
-    padding: 7px 14px; border-radius: 999px;
-    background: linear-gradient(135deg, #ecfeff, #e0f2fe);
-    color: #075985;
-    border: 1px solid #bae6fd;
+  .emp-id{
+    display:inline-block; margin-top:10px;
+    font-size:12px; font-weight:700; letter-spacing:.12em;
+    padding:5px 14px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.9);
+    font-family:'Inter',monospace;
   }
 
-  .resp-list { list-style: none; padding: 0; display: grid; gap: 10px; }
-  .resp-list li {
-    position: relative; padding-left: 26px;
-    font-size: 14px; line-height: 1.6; color: #334155;
+  /* ---------- STATS STRIP ---------- */
+  .stats-strip{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-bottom:1px solid var(--line);
   }
-  .resp-list li::before {
-    content: ""; position: absolute;
-    left: 6px; top: 9px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--brand-1), var(--accent));
-    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
+  .stat-cell{
+    padding:20px 14px; text-align:center;
+    border-right:1px solid var(--line);
+    transition:background .2s ease;
   }
-  .paragraph {
-    font-size: 14px; line-height: 1.7; color: #334155;
-    white-space: pre-wrap;
+  .stat-cell:last-child{border-right:none;}
+  .stat-cell .num{
+    font-size:22px; font-weight:800; line-height:1;
+    letter-spacing:-.02em; word-break:break-word;
   }
-
-  /* ---- Footer ---- */
-  .card-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 40px;
-    background: #f8fafc;
-    border-top: 1px solid var(--line);
-    gap: 16px; flex-wrap: wrap;
-  }
-  .footer-note {
-    font-size: 12px; color: var(--muted);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .footer-note svg { width: 14px; height: 14px; }
-  .share-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 18px; border-radius: 10px;
-    background: var(--ink); color: #fff;
-    border: none; cursor: pointer;
-    font: inherit; font-weight: 600; font-size: 13px;
-    transition: background .2s ease, transform .2s ease;
-  }
-  .share-btn:hover { background: linear-gradient(135deg, var(--brand-2), var(--brand-3)); transform: translateY(-1px); }
-  .share-btn svg { width: 15px; height: 15px; }
-
-  /* ---- Responsive ---- */
-  @media (max-width: 720px) {
-    .topbar-inner { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
-    .topbar-search { width: 100%; margin-left: 0; order: 3; }
-    .logo img { height: 36px; }
-    .results { padding: 24px 16px 60px; }
-    .card-hero { padding: 28px 22px 24px; }
-    .hero-row { flex-direction: column; text-align: center; gap: 18px; }
-    .hero-avatar { width: 120px; height: 120px; }
-    .hero-meta .emp-id { margin-top: 8px; }
-    .card-logo, .card-logo-fallback { top: 14px; right: 16px; height: 26px; width: 26px; }
-    .stats-strip { grid-template-columns: repeat(2, 1fr); }
-    .stat-cell:nth-child(2) { border-right: none; }
-    .stat-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-    .card-body { padding: 24px 22px 28px; gap: 22px; }
-    .kv-grid { grid-template-columns: 1fr; gap: 4px 0; }
-    .card-footer { padding: 16px 22px; justify-content: center; text-align: center; }
+  .stat-cell .num.sm{font-size:15px;}
+  .stat-cell .lbl{
+    margin-top:6px; font-size:10px; font-weight:700;
+    letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted);
   }
 
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 28px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--ink); color: #fff;
-    padding: 12px 22px; border-radius: 12px;
-    font-size: 14px; font-weight: 600;
-    box-shadow: var(--shadow-lg);
-    opacity: 0; pointer-events: none;
-    transition: all .35s cubic-bezier(.2,.9,.3,1);
-    z-index: 999;
-    display: flex; align-items: center; gap: 8px;
+  /* ---------- BODY ---------- */
+  .card-body{
+    padding:30px 40px 34px;
+    display:grid; gap:26px;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast svg { width: 16px; height: 16px; color: var(--success); }
+  .section-title{
+    display:flex; align-items:center; gap:10px;
+    font-size:12px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; margin-bottom:14px;
+  }
+  .section-title::before{
+    content:""; width:3px; height:16px; border-radius:2px;
+  }
+
+  .kv-grid{
+    display:grid; grid-template-columns:repeat(2,1fr);
+    gap:12px 24px;
+  }
+  .kv{padding:10px 0; border-bottom:1px dashed var(--line);}
+  .kv .k{
+    font-size:11px; color:var(--muted); font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase;
+  }
+  .kv .v{
+    font-size:14.5px; color:var(--ink);
+    font-weight:600; margin-top:3px; word-break:break-word;
+  }
+  .kv.full{grid-column:1/-1;}
+
+  .chip-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-size:12.5px; font-weight:600;
+    padding:7px 14px; border-radius:999px;
+    border:1px solid transparent;
+  }
+
+  .resp-list{list-style:none;padding:0;display:grid;gap:10px;}
+  .resp-list li{
+    position:relative; padding-left:26px;
+    font-size:14px; line-height:1.6; color:#334155;
+  }
+  .resp-list li::before{
+    content:""; position:absolute; left:6px; top:9px;
+    width:8px; height:8px; border-radius:50%;
+  }
+  .paragraph{font-size:14px;line-height:1.7;color:#334155;white-space:pre-wrap;}
+
+  /* ---------- FOOTER ---------- */
+  .card-footer{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    border-top:1px solid var(--line);
+    gap:16px; flex-wrap:wrap;
+  }
+  .footer-note{
+    font-size:12px; color:var(--muted);
+    display:flex; align-items:center; gap:8px;
+  }
+  .footer-note svg{width:14px;height:14px;}
+  .footer-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px; border-radius:10px;
+    border:1px solid transparent; cursor:pointer;
+    font:inherit; font-weight:600; font-size:13px;
+    transition:transform .2s, background .2s, box-shadow .2s, opacity .2s;
+    white-space:nowrap;
+  }
+  .btn svg{width:15px;height:15px;}
+  .btn.primary{background:var(--ink);color:#fff;}
+  .btn.primary:hover{background:linear-gradient(135deg,var(--brand-2),var(--brand-3));transform:translateY(-1px);}
+  .btn.ghost{background:#fff;color:var(--ink);border-color:var(--line);}
+  .btn.ghost:hover{border-color:#cbd5e1;transform:translateY(-1px);}
+  .btn:disabled{opacity:.6;cursor:wait;transform:none !important;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:720px){
+    .topbar-inner{padding:12px 16px;flex-wrap:wrap;gap:12px;}
+    .topbar-search{width:100%;margin-left:0;order:3;}
+    .logo-wrap img{height:38px;max-width:170px;}
+    .results{padding:24px 16px 60px;}
+    .card-hero{padding:26px 22px 24px;}
+    .hero-row{flex-direction:column;text-align:center;gap:18px;padding-right:0;padding-top:34px;}
+    .hero-avatar{width:118px;height:118px;}
+    .card-brand{top:12px;right:14px;padding:5px 9px;min-height:30px;}
+    .card-brand img{height:18px;}
+    .stats-strip{grid-template-columns:repeat(2,1fr);}
+    .stat-cell:nth-child(2){border-right:none;}
+    .stat-cell:nth-child(-n+2){border-bottom:1px solid var(--line);}
+    .card-body{padding:24px 22px 28px;gap:22px;}
+    .kv-grid{grid-template-columns:1fr;gap:4px 0;}
+    .card-footer{padding:16px 22px;justify-content:center;text-align:center;}
+    .footer-actions{width:100%;justify-content:center;}
+    .btn{flex:1;justify-content:center;}
+  }
+
+  /* ---------- TOAST ---------- */
+  .toast{
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(90px);
+    background:var(--ink); color:#fff;
+    padding:12px 22px; border-radius:12px;
+    font-size:14px; font-weight:600;
+    box-shadow:var(--shadow-lg);
+    opacity:0; pointer-events:none;
+    transition:all .35s cubic-bezier(.2,.9,.3,1);
+    z-index:999;
+    display:flex; align-items:center; gap:8px;
+    max-width:90vw;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast svg{width:16px;height:16px;color:var(--success);flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -388,9 +430,8 @@
 <!-- ================= TOP BAR ================= -->
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="logo" href="#" onclick="resetView(event)">
-      <img src="./assets/logo.png" alt="Logo"
-        onerror="this.outerHTML='<div class=&quot;fallback-mark&quot;><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 2v20M2 12h20&quot;/></svg></div>'" />
+    <a class="logo-wrap" href="#" onclick="resetView(event)" aria-label="Home">
+      <img src="./logo.png" alt="Brand Logo" onerror="logoErr(this)" />
     </a>
 
     <div class="topbar-search">
@@ -409,34 +450,49 @@
 <!-- Toast -->
 <div class="toast" id="toast">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  <span id="toastText">Link copied!</span>
+  <span id="toastText">Copied!</span>
 </div>
 
 <script>
-/* =========================================================
+/* =========================================================================
    CONFIG
-   ========================================================= */
-// Paste your FULL published CSV URL here (File → Share → Publish to web → CSV):
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?gid=678095587&single=true&output=csv";
+   ========================================================================= */
+// Paste your published Google Sheet CSV URL (File → Share → Publish to web → CSV)
+const CSV_URL = "YOUR_PUBLISHED_CSV_URL_HERE";
 
 const REFRESH_MS = 60000;
-const DEFAULT_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-     <rect width="200" height="200" fill="#e2e8f0"/>
-     <circle cx="100" cy="78" r="36" fill="#94a3b8"/>
-     <path d="M30 190c0-40 30-64 70-64s70 24 70 64z" fill="#94a3b8"/>
-   </svg>`
-);
 
-/* =========================================================
+/* =========================================================================
    STATE
-   ========================================================= */
+   ========================================================================= */
 let ALL_NURSES = [];
+let COLS = null;
 let LOADED = false;
+let CURRENT_ID = "";
 
-/* =========================================================
-   CSV PARSER
-   ========================================================= */
+/* =========================================================================
+   LOGO FALLBACK CHAIN  (./logo.png → ./assets/logo.png → inline cross)
+   ========================================================================= */
+window.logoErr = function (img) {
+  if (!img.dataset.step) {
+    img.dataset.step = "1";
+    img.src = "./assets/logo.png";
+    return;
+  }
+  const wrap = img.parentElement;
+  if (img.parentNode) img.parentNode.removeChild(img);
+  if (wrap && !wrap.querySelector(".logo-cross")) {
+    const s = document.createElement("span");
+    s.className = "logo-cross";
+    s.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>';
+    wrap.appendChild(s);
+  }
+};
+
+/* =========================================================================
+   CSV PARSER  (quote-aware; keeps full row arrays so duplicate headers work)
+   ========================================================================= */
 function parseCSV(text) {
   const rows = [];
   let cur = "", row = [], inQuote = false;
@@ -448,181 +504,291 @@ function parseCSV(text) {
       else cur += c;
     } else {
       if (c === '"') inQuote = true;
-      else if (c === ',') { row.push(cur); cur = ''; }
-      else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (c === ',') { row.push(cur); cur = ""; }
+      else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ""; }
       else if (c === '\r') { /* skip */ }
       else cur += c;
     }
   }
-  if (cur || row.length) { row.push(cur); rows.push(row); }
-  if (!rows.length) return [];
-  const headers = rows[0].map(h => h.trim());
-  const out = [];
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r.length || !r.join('').trim()) continue;
-    const obj = {};
-    headers.forEach((h, idx) => { obj[h] = (r[idx] || '').trim(); });
-    out.push(obj);
-  }
-  return out;
+  if (cur.length || row.length) { row.push(cur); rows.push(row); }
+  return rows;
 }
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
-function pick(obj, ...keys) {
-  for (const k of keys) {
-    if (obj[k] !== undefined && obj[k] !== '') return obj[k];
-    const found = Object.keys(obj).find(kk => kk.toLowerCase().trim() === k.toLowerCase().trim());
-    if (found && obj[found] !== '') return obj[found];
-  }
-  return '';
-}
+/* =========================================================================
+   COLUMN RESOLUTION  (headers first, positional fallback)
+   ========================================================================= */
+function resolveColumns(headers) {
+  const H = headers.map(h => (h || "").trim());
+  const first = (re, fallback) => {
+    const i = H.findIndex(h => re.test(h));
+    return i >= 0 ? i : fallback;
+  };
 
-function normalize(n) {
+  // Collect ALL "Key Responsibilities" columns, in order
+  const respIdxs = H
+    .map((h, i) => ({ h, i }))
+    .filter(x => /key\s*responsibilit/i.test(x.h))
+    .map(x => x.i);
+
+  const picIdx = first(/^(picture|photo|image|profile\s*(pic|image|photo)?)$/i, 18); // Column S fallback
+
   return {
-    empId:    pick(n, 'EMPID', 'EmpID', 'Emp Id', 'Empid'),
-    name:     pick(n, 'NAME', 'Name'),
-    dob:      pick(n, 'DOB'),
-    age:      pick(n, 'Age'),
-    gender:   pick(n, 'Gender'),
-    number:   pick(n, 'Number', 'Phone', 'Contact'),
-    address:  pick(n, 'Address'),
-    qual:     pick(n, 'Qualification'),
-    skills:   pick(n, 'Approved Final Skillset By NO (All Data)', 'SKILL SET', 'Skillset', 'Skills'),
-    language: pick(n, 'Language Known', 'Languages'),
-    exp:      pick(n, 'Total Experience', 'Experience'),
-    resp:     [pick(n,'Key Responsibilities'), pick(n,'Key Responsibilities '), pick(n,'Key Responsibilities  '), pick(n,'Responsibilities')]
-                .filter(Boolean).join('\n'),
-    soft:     pick(n, 'Soft Skills'),
-    picture:  pick(n, 'picture', 'Picture', 'Photo', 'Image'),
-    unit:     pick(n, 'Unit', 'Department')
+    unit:   first(/^unit$|department/i, 1),
+    empId:  first(/^emp\s*id$/i, 2),
+    name:   first(/^name$/i, 3),
+    dob:    first(/^(dob|date\s*of\s*birth)$/i, 4),
+    age:    first(/^age$/i, 5),
+    gender: first(/^gender$/i, 6),
+    number: first(/^(number|phone|contact|mobile|tel)/i, 7),
+    address:first(/^address$/i, 8),
+    qual:   first(/^qualification/i, 9),
+    skills: first(/skill/i, 10),          // first "skill*" match = skillset column
+    language:first(/language/i, 11),
+    exp:    first(/experience/i, 12),
+    resp:   respIdxs.length ? respIdxs : [13, 14, 15],
+    soft:   first(/soft\s*skill/i, 16),
+    picture: picIdx
   };
 }
 
-/* =========================================================
-   FETCH
-   ========================================================= */
-async function fetchData() {
-  try {
-    const res = await fetch(CSV_URL + '&_=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    ALL_NURSES = parseCSV(text).map(normalize).filter(r => r.empId || r.name);
-    LOADED = true;
-  } catch (err) {
-    console.error('Sheet fetch failed:', err);
+/* =========================================================================
+   IMAGE URL NORMALISATION  (Google Drive → direct render URL)
+   ========================================================================= */
+function normalizeImageUrl(raw) {
+  if (!raw) return "";
+  let url = String(raw).trim();
+
+  // Bare filename → relative path
+  if (!/^https?:\/\//i.test(url) && /\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(url)) {
+    return "./" + url.replace(/^\.?\//, "");
   }
+
+  // Google Drive share/view/open/uc links → lh3 direct image
+  const drive =
+    url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]{10,})/) ||
+    url.match(/drive\.google\.com\/(?:open|uc)\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
+    url.match(/docs\.google\.com\/uc\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
+    url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]{10,})/);
+
+  if (drive) return `https://lh3.googleusercontent.com/d/${drive[1]}=w1200`;
+
+  return url;
 }
 
-/* =========================================================
+/* =========================================================================
+   ROW NORMALISATION
+   ========================================================================= */
+function normalizeRow(row, cols) {
+  const at = i => (i >= 0 && row[i] != null ? String(row[i]).trim() : "");
+
+  // Picture: resolved column → else first URL anywhere in the row
+  let pic = at(cols.picture);
+  if (!pic || !/^https?:\/\//i.test(pic)) {
+    if (!pic) {
+      const anyUrl = row.map(v => String(v || "").trim()).find(v => /^https?:\/\//i.test(v));
+      if (anyUrl) pic = anyUrl;
+    }
+  }
+
+  // Responsibilities: up to 3, empties removed
+  const resp = cols.resp
+    .map(i => at(i))
+    .filter(v => v && v.length > 0)
+    .slice(0, 3);
+
+  return {
+    empId: at(cols.empId),
+    name: at(cols.name),
+    dob: at(cols.dob),
+    age: at(cols.age),
+    gender: at(cols.gender),
+    number: at(cols.number),
+    address: at(cols.address),
+    qual: at(cols.qual),
+    skills: at(cols.skills),
+    language: at(cols.language),
+    exp: at(cols.exp),
+    resp: resp,
+    soft: at(cols.soft),
+    picture: normalizeImageUrl(pic),
+    unit: at(cols.unit)
+  };
+}
+
+/* =========================================================================
+   FETCH
+   ========================================================================= */
+async function fetchData() {
+  const sep = CSV_URL.includes("?") ? "&" : "?";
+  const res = await fetch(CSV_URL + sep + "_=" + Date.now(), { cache: "no-store" });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+
+  const text = await res.text();
+  const rows = parseCSV(text);
+  if (!rows.length) throw new Error("Empty sheet");
+
+  const headers = rows[0].map(h => (h || "").trim());
+  COLS = resolveColumns(headers);
+
+  ALL_NURSES = rows
+    .slice(1)
+    .filter(r => r.join("").trim().length > 0)
+    .map(r => normalizeRow(r, COLS))
+    .filter(n => n.empId || n.name);
+
+  LOADED = true;
+}
+
+/* =========================================================================
+   THEME
+   ========================================================================= */
+function genderTheme(g) {
+  const s = String(g || "").toLowerCase().trim();
+  if (/^(f|female|woman|girl)/.test(s)) return "female";  // checked first
+  if (/^(m|male|man|boy)/.test(s)) return "male";
+  return "neutral";
+}
+
+function initialsAvatar(name) {
+  const initials = String(name || "?")
+    .trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?";
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">` +
+    `<rect width="200" height="200" fill="#e2e8f0"/>` +
+    `<text x="100" y="122" font-family="Inter,Arial,sans-serif" font-size="76" ` +
+    `font-weight="700" fill="#64748b" text-anchor="middle">${initials}</text></svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
+/* =========================================================================
    SEARCH
-   ========================================================= */
+   ========================================================================= */
 async function search() {
-  const q = document.getElementById('empInput').value.trim();
-  if (!q) { showState('empty'); return; }
+  const q = document.getElementById("empInput").value.trim();
+  if (!q) { showState("empty"); return; }
 
-  const btn = document.getElementById('searchBtn');
+  const btn = document.getElementById("searchBtn");
   btn.disabled = true;
-  showState('loading');
+  showState("loading");
 
-  if (!LOADED) await fetchData();
+  if (!LOADED) {
+    try { await fetchData(); }
+    catch (err) { btn.disabled = false; showState("error"); return; }
+  }
 
-  const nurse = ALL_NURSES.find(n =>
-    (n.empId || '').toLowerCase() === q.toLowerCase()
+  const nurse = ALL_NURSES.find(
+    n => (n.empId || "").toLowerCase() === q.toLowerCase()
   );
 
   btn.disabled = false;
 
-  if (!nurse) { showState('notfound', q); return; }
+  if (!nurse) { showState("notfound", q); return; }
 
+  CURRENT_ID = nurse.empId || "";
   renderCard(nurse);
-  history.replaceState(null, '', '#' + encodeURIComponent(n.empId || ''));
+  history.replaceState(null, "", "#" + encodeURIComponent(CURRENT_ID));
 }
 
 function resetView(e) {
   if (e) e.preventDefault();
-  document.getElementById('empInput').value = '';
-  showState('initial');
-  history.replaceState(null, '', location.pathname);
+  document.getElementById("empInput").value = "";
+  CURRENT_ID = "";
+  showState("initial");
+  history.replaceState(null, "", location.pathname);
 }
 
-/* =========================================================
+/* =========================================================================
    STATES
-   ========================================================= */
+   ========================================================================= */
 function showState(kind, extra) {
-  const r = document.getElementById('results');
-  if (kind === 'initial') {
-    r.innerHTML = `<div class="state">
-      <div class="state-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <h3>Find your nurse</h3>
-      <p>Enter the employee ID you were given to view a verified profile.</p>
-    </div>`;
-  } else if (kind === 'loading') {
-    r.innerHTML = `<div class="state"><div class="loader"></div><h3>Fetching profile…</h3><p>Just a moment.</p></div>`;
-  } else if (kind === 'empty') {
-    r.innerHTML = `<div class="state">
-      <div class="state-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/></svg>
-      </div>
-      <h3>Enter an EMPID</h3>
-      <p>Please type the employee ID in the search box above.</p>
-    </div>`;
-  } else if (kind === 'notfound') {
-    r.innerHTML = `<div class="state">
-      <div class="state-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
-      </div>
-      <h3>No nurse found</h3>
-      <p>We couldn't find a nurse with EMPID <strong>"${escapeHtml(extra || '')}"</strong>. Please double-check and try again.</p>
-    </div>`;
+  const r = document.getElementById("results");
+  const icons = {
+    initial: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    empty:   '<path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/>',
+    notfound:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>',
+    error:   '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'
+  };
+
+  if (kind === "loading") {
+    r.innerHTML = `<div class="state"><div class="loader"></div>
+      <h3>Fetching profile…</h3><p>Just a moment.</p></div>`;
+    return;
   }
+
+  const titles = {
+    initial: "Find your nurse",
+    empty: "Enter an EMPID",
+    notfound: "No nurse found",
+    error: "Couldn't load data"
+  };
+  const descs = {
+    initial: "Enter the employee ID you were given to view a verified profile.",
+    empty: "Please type the employee ID in the search box above.",
+    notfound: `We couldn't find a nurse with EMPID <strong>"${escapeHtml(extra || "")}"</strong>. Please double-check and try again.`,
+    error: "The nurse directory is temporarily unavailable. Please try again shortly."
+  };
+
+  r.innerHTML = `<div class="state">
+    <div class="state-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[kind]}</svg>
+    </div>
+    <h3>${titles[kind]}</h3>
+    <p>${descs[kind]}</p>
+  </div>`;
 }
 
-/* =========================================================
+/* =========================================================================
    RENDER CARD
-   ========================================================= */
+   ========================================================================= */
 function renderCard(n) {
-  const r = document.getElementById('results');
-  const img = (n.picture && /^https?:\/\//.test(n.picture)) ? n.picture : DEFAULT_IMG;
+  const r = document.getElementById("results");
+  const theme = genderTheme(n.gender);
 
-  const langChips = (n.language || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
-    .map(l => `<span class="chip">${escapeHtml(l)}</span>`).join('') || `<span class="chip">Not specified</span>`;
+  const fallback = initialsAvatar(n.name);
+  const picSrc = n.picture && /^https?:\/\//i.test(n.picture) ? n.picture : fallback;
 
-  const skillChips = (n.skills || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
-    .map(s => `<span class="chip">${escapeHtml(s)}</span>`).join('') || `<span class="chip">Not specified</span>`;
+  const splitChips = (val) =>
+    String(val || "").split(/[,/&|]/).map(s => s.trim()).filter(Boolean);
 
-  const softChips = (n.soft || '').split(/[,/&]/).map(s => s.trim()).filter(Boolean)
-    .map(s => `<span class="chip">${escapeHtml(s)}</span>`).join('') || `<span class="chip">—</span>`;
+  const langChips  = splitChips(n.language).map(l => `<span class="chip">${escapeHtml(l)}</span>`).join("")
+                     || `<span class="chip">Not specified</span>`;
+  const skillChips = splitChips(n.skills).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("")
+                     || `<span class="chip">Not specified</span>`;
+  const softChips  = splitChips(n.soft).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("")
+                     || `<span class="chip">—</span>`;
 
-  const respLines = (n.resp || '').split(/\n|;/).map(s => s.trim()).filter(Boolean);
-  const respHtml = respLines.length
-    ? `<ul class="resp-list">${respLines.map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`
-    : `<p class="paragraph">No responsibilities listed.</p>`;
+  // Responsibilities: only non-empty items render; whole block hidden if none
+  const respBlock = n.resp.length
+    ? `<div>
+         <div class="section-title">Key Responsibilities</div>
+         <ul class="resp-list">
+           ${n.resp.map(line => `<li>${escapeHtml(line)}</li>`).join("")}
+         </ul>
+       </div>`
+    : "";
 
   r.innerHTML = `
-    <article class="nurse-card">
+    <article class="nurse-card theme-${theme}" id="nurseCard">
       <!-- HERO -->
       <div class="card-hero">
-        <!-- LOGO on card -->
-        <img class="card-logo" src="./assets/logo.png" alt="Logo"
-          onerror="this.outerHTML='<div class=&quot;card-logo-fallback&quot;><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 2v20M2 12h20&quot;/></svg></div>'" />
+        <div class="card-brand">
+          <img src="./logo.png" alt="Logo" onerror="logoErr(this)" />
+        </div>
 
         <div class="hero-row">
           <div class="hero-avatar">
-            <img src="${escapeAttr(img)}" alt="${escapeAttr(n.name || 'Nurse')}"
-                 onerror="this.onerror=null; this.src='${DEFAULT_IMG.replace(/'/g,'&#39;')}'" />
+            <img id="nursePhoto"
+                 src="${escapeAttr(picSrc)}"
+                 alt="${escapeAttr(n.name || "Nurse")}"
+                 onerror="this.onerror=null;this.src='${escapeAttr(fallback)}';" />
           </div>
           <div class="hero-meta">
             <span class="role-badge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Verified Nurse
             </span>
-            <h2>${escapeHtml(n.name || 'Unnamed')}</h2>
-            <div class="emp-id">${escapeHtml(n.empId || '—')}</div>
+            <h2>${escapeHtml(n.name || "Unnamed")}</h2>
+            <div class="emp-id">${escapeHtml(n.empId || "—")}</div>
           </div>
         </div>
       </div>
@@ -630,19 +796,19 @@ function renderCard(n) {
       <!-- STATS -->
       <div class="stats-strip">
         <div class="stat-cell">
-          <div class="num">${escapeHtml(n.exp || '—')}</div>
+          <div class="num">${escapeHtml(n.exp || "—")}</div>
           <div class="lbl">Experience</div>
         </div>
         <div class="stat-cell">
-          <div class="num">${escapeHtml(n.age || '—')}</div>
+          <div class="num">${escapeHtml(n.age || "—")}</div>
           <div class="lbl">Age</div>
         </div>
         <div class="stat-cell">
-          <div class="num">${escapeHtml(n.gender || '—')}</div>
+          <div class="num">${escapeHtml(n.gender || "—")}</div>
           <div class="lbl">Gender</div>
         </div>
         <div class="stat-cell">
-          <div class="num sm">${escapeHtml(n.qual || '—')}</div>
+          <div class="num sm">${escapeHtml(n.qual || "—")}</div>
           <div class="lbl">Qualification</div>
         </div>
       </div>
@@ -652,9 +818,9 @@ function renderCard(n) {
         <div>
           <div class="section-title">Personal Details</div>
           <div class="kv-grid">
-            <div class="kv"><span class="k">Date of Birth</span><span class="v">${escapeHtml(n.dob || '—')}</span></div>
-            <div class="kv"><span class="k">Contact Number</span><span class="v">${escapeHtml(n.number || '—')}</span></div>
-            <div class="kv full"><span class="k">Address</span><span class="v">${escapeHtml(n.address || '—')}</span></div>
+            <div class="kv"><span class="k">Date of Birth</span><span class="v">${escapeHtml(n.dob || "—")}</span></div>
+            <div class="kv"><span class="k">Contact Number</span><span class="v">${escapeHtml(n.number || "—")}</span></div>
+            <div class="kv full"><span class="k">Address</span><span class="v">${escapeHtml(n.address || "—")}</span></div>
           </div>
         </div>
 
@@ -668,10 +834,7 @@ function renderCard(n) {
           <div class="chip-list">${skillChips}</div>
         </div>
 
-        <div>
-          <div class="section-title">Key Responsibilities</div>
-          ${respHtml}
-        </div>
+        ${respBlock}
 
         <div>
           <div class="section-title">Soft Skills</div>
@@ -685,58 +848,191 @@ function renderCard(n) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Verified care professional
         </div>
-        <button class="share-btn" onclick="shareProfile('${escapeAttr(n.empId || '')}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          Share Profile
-        </button>
+        <div class="footer-actions">
+          <button class="btn ghost" onclick="shareProfile('${escapeAttr(n.empId || "")}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share Link
+          </button>
+          <button class="btn primary" id="copyImgBtn" onclick="copyCardAsImage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+            Copy as Image
+          </button>
+        </div>
       </div>
     </article>
   `;
 }
 
-/* =========================================================
-   SHARE
-   ========================================================= */
+/* =========================================================================
+   SHARE LINK
+   ========================================================================= */
 function shareProfile(empId) {
-  const url = location.origin + location.pathname + '#' + encodeURIComponent(empId);
+  const url = location.origin + location.pathname + "#" + encodeURIComponent(empId);
   if (navigator.share) {
-    navigator.share({ title: 'Nurse Profile', url }).catch(()=>{});
+    navigator.share({ title: "Nurse Profile", url }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast("Link copied to clipboard!"));
   } else {
-    navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard!'));
+    showToast(url);
   }
 }
+
+/* =========================================================================
+   COPY CARD AS IMAGE
+   ========================================================================= */
+function ensureHtmlToImage() {
+  return new Promise((resolve, reject) => {
+    if (window.htmlToImage) return resolve(window.htmlToImage);
+    const s = document.createElement("script");
+    s.src = "https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js";
+    s.onload = () => resolve(window.htmlToImage);
+    s.onerror = () => reject(new Error("Failed to load html-to-image"));
+    document.head.appendChild(s);
+  });
+}
+
+function toDataURL(url) {
+  return new Promise((resolve, reject) => {
+    if (!url) return reject(new Error("no url"));
+    if (url.startsWith("data:")) return resolve(url);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const c = document.createElement("canvas");
+        c.width = img.naturalWidth || 1;
+        c.height = img.naturalHeight || 1;
+        c.getContext("2d").drawImage(img, 0, 0);
+        resolve(c.toDataURL("image/png"));
+      } catch (e) { reject(e); } // tainted canvas (CORS)
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+async function copyCardAsImage() {
+  const card = document.getElementById("nurseCard");
+  const btn = document.getElementById("copyImgBtn");
+  if (!card || !btn) return;
+
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = "Preparing…";
+
+  card.classList.add("capturing");
+
+  // Pre-inline every <img> so capture is CORS-safe
+  const imgs = Array.from(card.querySelectorAll("img"));
+  const savedSrc = imgs.map(i => i.getAttribute("src") || "");
+  await Promise.all(imgs.map(async (img) => {
+    try {
+      img.src = await toDataURL(img.getAttribute("src") || "");
+    } catch {
+      // Fallback: initials avatar / inline logo cross remains as-is
+      if (img.id === "nursePhoto") {
+        const name = card.querySelector(".hero-meta h2");
+        img.src = initialsAvatar(name ? name.textContent : "?");
+      }
+    }
+  }));
+
+  let htmlToImage;
+  try { htmlToImage = await ensureHtmlToImage(); }
+  catch {
+    card.classList.remove("capturing");
+    imgs.forEach((img, i) => (img.src = savedSrc[i]));
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    showToast("Image library failed to load — try again");
+    return;
+  }
+
+  const opts = { cacheBust: true, pixelRatio: 2, skipAutoScale: false };
+
+  try {
+    const blob = await htmlToImage.toBlob(card, opts);
+    if (!blob) throw new Error("no blob");
+
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      showToast("Nurse card copied to clipboard!");
+    } else {
+      throw new Error("clipboard unavailable");
+    }
+  } catch (err) {
+    // Graceful fallback → download the PNG
+    try {
+      const dataUrl = await htmlToImage.toPng(card, opts);
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `nurse-${CURRENT_ID || "profile"}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("Clipboard blocked — image downloaded instead");
+    } catch (e2) {
+      console.error("Image generation failed:", e2);
+      showToast("Could not generate image. Please try again.");
+    }
+  } finally {
+    card.classList.remove("capturing");
+    imgs.forEach((img, i) => { if (img && savedSrc[i] != null) img.src = savedSrc[i]; });
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  }
+}
+
+/* =========================================================================
+   TOAST
+   ========================================================================= */
+let toastTimer = null;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastText').textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 2400);
+  const t = document.getElementById("toast");
+  document.getElementById("toastText").textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-/* =========================================================
+/* =========================================================================
    UTIL
-   ========================================================= */
+   ========================================================================= */
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
 }
-function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+function escapeAttr(s) { return escapeHtml(s); }
 
-/* =========================================================
+/* =========================================================================
    BOOT
-   ========================================================= */
+   ========================================================================= */
 (async function boot() {
-  showState('initial');
-  await fetchData();
-  if (REFRESH_MS > 0) setInterval(fetchData, REFRESH_MS);
+  showState("initial");
 
-  const hash = decodeURIComponent(location.hash.replace('#', ''));
+  try {
+    await fetchData();
+  } catch (err) {
+    console.error("Initial fetch failed:", err);
+    showState("error");
+  }
+
+  if (REFRESH_MS > 0) {
+    setInterval(async () => {
+      try { await fetchData(); } catch { /* silent */ }
+    }, REFRESH_MS);
+  }
+
+  // Deep-link support: yoursite.com/#ahc123
+  const hash = decodeURIComponent(location.hash.replace("#", "")).trim();
   if (hash) {
-    document.getElementById('empInput').value = hash;
+    document.getElementById("empInput").value = hash;
     search();
   }
 
-  document.getElementById('empInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') search();
+  document.getElementById("empInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); search(); }
   });
 })();
 </script>
