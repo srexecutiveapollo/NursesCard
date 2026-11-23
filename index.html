@@ -1,611 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Apollo Nurse Directory</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js" defer></script>
-
-<style>
-  :root {
-    --apollo-teal: #007C9E; --apollo-teal-dark: #005f7a; --apollo-gold: #F5A623;
-    --bg: #f4f7f9; --ink: #1e293b; --muted: #64748b; --line: #e2e8f0;
-    --white: #ffffff; --shadow-lg: 0 20px 40px rgba(0,124,158,.15);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
-  .hidden { display: none !important; }
-  .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font: inherit; font-weight: 600; font-size: 14px; transition: all 0.2s; }
-  .btn-primary { background: var(--apollo-teal); color: white; }
-  .btn-primary:hover { background: var(--apollo-teal-dark); }
-  .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); }
-  .btn-outline:hover { border-color: var(--apollo-teal); color: var(--apollo-teal); }
-  
-  #login-view { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #e0f2fe 0%, #f4f7f9 100%); }
-  .login-card { background: var(--white); width: 100%; max-width: 400px; padding: 40px 32px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
-  .login-card img { height: 50px; margin-bottom: 24px; }
-  .login-card h2 { font-size: 24px; margin-bottom: 8px; color: var(--apollo-teal-dark); }
-  .login-card p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
-  .form-group { margin-bottom: 16px; text-align: left; }
-  .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-  .form-group input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; outline: none; transition: 0.2s; }
-  .form-group input:focus { border-color: var(--apollo-teal); box-shadow: 0 0 0 3px rgba(0,124,158,0.1); }
-  .login-card .btn { width: 100%; padding: 14px; font-size: 15px; margin-top: 8px; }
-  .error-msg { color: #dc2626; font-size: 13px; margin-top: 12px; min-height: 20px; font-weight: 600; }
-  
-  header { background: var(--white); border-bottom: 1px solid var(--line); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .header-brand img { height: 40px; }
-  .header-user { display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: 500; }
-  .header-user span { color: var(--apollo-teal); font-weight: 700; }
-  
-  .controls-container { max-width: 1000px; margin: 24px auto; width: 100%; padding: 0 20px; }
-  .search-bar { display: flex; gap: 12px; margin-bottom: 20px; background: var(--white); padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-  .search-bar select, .search-bar input { padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; font: inherit; outline: none; }
-  .search-bar input { flex: 1; }
-  .search-bar select:focus, .search-bar input:focus { border-color: var(--apollo-teal); }
-  
-  .toggles-container { background: var(--white); padding: 16px 20px; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 24px; }
-  .toggles-container h4 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; width: 100%; margin-bottom: -4px; }
-  .toggle-switch { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 500; user-select: none; }
-  .toggle-switch input { display: none; }
-  .slider { width: 36px; height: 20px; background: #cbd5e1; border-radius: 20px; position: relative; transition: 0.3s; flex-shrink: 0; }
-  .slider::before { content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: white; top: 2px; left: 2px; transition: 0.3s; }
-  .toggle-switch input:checked + .slider { background: var(--apollo-teal); }
-  .toggle-switch input:checked + .slider::before { transform: translateX(16px); }
-  
-  .results-container { max-width: 1000px; margin: 0 auto 60px; padding: 0 20px; display: flex; justify-content: center; }
-  .nurse-card { width: 100%; max-width: 800px; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); position: relative; animation: fadeIn 0.5s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-  
-  .card-top { padding: 40px 40px 30px; position: relative; }
-  .card-title { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--apollo-teal); margin-bottom: 24px; font-weight: 600; letter-spacing: -0.5px; }
-  .card-logo { position: absolute; top: 30px; right: 40px; height: 45px; object-fit: contain; }
-  .profile-section { display: flex; gap: 30px; align-items: flex-start; }
-  .profile-photo { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--apollo-teal); padding: 4px; flex-shrink: 0; background: var(--white); box-shadow: 0 8px 20px rgba(0,124,158,0.2); }
-  .profile-photo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  
-  .profile-details { flex: 1; }
-  .name-row { margin-bottom: 16px; }
-  .nurse-name { font-size: 26px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-  .nurse-empid { display: inline-block; background: #e0f2fe; color: var(--apollo-teal-dark); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
-  .unit-badge { display: inline-block; background: var(--apollo-teal); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; }
-  
-  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .detail-item { font-size: 15px; color: var(--ink); display: flex; align-items: baseline; gap: 6px; }
-  .detail-label { font-weight: 600; color: var(--muted); font-size: 13px; }
-  .detail-value { font-weight: 600; }
-  
-  .known-for { background: #fffbeb; border-left: 4px solid var(--apollo-gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
-  .known-for .detail-label { color: #b45309; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
-  .known-for p { font-size: 15px; color: #92400e; font-weight: 500; line-height: 1.5; }
-  
-  .card-bottom { background: var(--apollo-teal); padding: 40px 40px 30px; color: white; position: relative; margin-top: 20px; }
-  .card-bottom::before { content: ''; position: absolute; top: -25px; left: 0; width: 100%; height: 50px; background: var(--white); border-radius: 0 0 50% 50% / 0 0 100% 100%; }
-  .card-bottom::after { content: ''; position: absolute; top: -24px; left: 0; width: 100%; height: 50px; background: var(--apollo-gold); border-radius: 0 0 50% 50% / 0 0 100% 100%; z-index: -1; }
-  
-  .testimonial-block { text-align: center; margin-bottom: 30px; position: relative; z-index: 1; }
-  .testimonial-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .testimonial-title::before, .testimonial-title::after { content: ''; height: 1px; background: rgba(255,255,255,0.3); width: 40px; }
-  .testimonial-text { font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; line-height: 1.6; margin-bottom: 16px; color: #e0f2fe; position: relative; }
-  .testimonial-text::before { content: '“'; font-size: 50px; color: var(--apollo-gold); position: absolute; left: -20px; top: -20px; opacity: 0.8; }
-  .testimonial-author { font-size: 14px; font-weight: 600; letter-spacing: 1px; color: var(--apollo-gold); text-transform: uppercase; }
-  
-  .card-footer-info { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
-  .card-footer-info p { font-size: 15px; font-weight: 500; }
-  .card-footer-info strong { font-weight: 700; font-size: 16px; }
-  
-  .action-bar { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 40px; background: #f8fafc; border-top: 1px solid var(--line); border-radius: 0 0 20px 20px; }
-  .nurse-card.capturing .action-bar { visibility: hidden; }
-  
-  .hide-age .field-age, .hide-gender .field-gender, .hide-qualification .field-qualification, .hide-designation .field-designation, .hide-languages .field-languages, .hide-reg .field-reg { display: none !important; }
-  
-  @media (max-width: 650px) {
-    .profile-section { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
-    .card-title { font-size: 24px; margin-bottom: 20px; }
-    .card-logo { position: relative; top: 0; right: 0; margin-bottom: 16px; display: block; margin: 0 auto 20px; }
-    .details-grid { grid-template-columns: 1fr; }
-    .name-row { justify-content: center; display: flex; flex-direction: column; align-items: center; }
-    .card-top, .card-bottom { padding: 24px 20px; }
-    .card-bottom::before, .card-bottom::after { border-radius: 0 0 40% 40% / 0 0 100% 100%; }
-    .action-bar { padding: 16px 20px; justify-content: center; flex-direction: column; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Card Lookup</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input, select, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
+        .error { color: red; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-<div id="login-view">
-  <div class="login-card">
-    <img src="./logo.png" alt="Apollo Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'" />
-    <h2>Nurse Portal</h2>
-    <p>Sign in to access the directory</p>
-    <form id="login-form">
-      <div class="form-group">
-        <label>User ID</label>
-        <input type="text" id="login-id" placeholder="Enter your ID (e.g., corp)" required />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter your password" required />
-      </div>
-      <button type="submit" class="btn btn-primary" id="login-btn">Secure Login</button>
-      <div class="error-msg" id="login-error"></div>
-    </form>
-  </div>
-</div>
+    <h2>Nurse Card Lookup</h2>
 
-<div id="app-view" class="hidden">
-  <header>
-    <div class="header-brand">
-      <img src="./logo.png" alt="Apollo Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'" />
-    </div>
-    <div class="header-user">
-      Logged in as: <span id="display-user">--</span>
-      <button class="btn btn-outline" onclick="logout()">Logout</button>
-    </div>
-  </header>
+    <label for="unitSelect">Select Unit:</label>
+    <select id="unitSelect">
+        <option value="">-- Select Unit --</option>
+    </select>
 
-  <div class="controls-container">
-    <div class="search-bar">
-      <select id="unit-selector" class="hidden">
-        <option value="All Units">All Units</option>
-        <option value="Bangalore">Bangalore</option>
-        <option value="Chennai">Chennai</option>
-        <option value="Delhi">Delhi</option>
-        <option value="Guwahati">Guwahati</option>
-        <option value="Hyderabad">Hyderabad</option>
-        <option value="INDORE">INDORE</option>
-        <option value="Kolkata">Kolkata</option>
-        <option value="Madurai">Madurai</option>
-        <option value="Mumbai">Mumbai</option>
-        <option value="Mysore">Mysore</option>
-      </select>
-      <input type="text" id="emp-search" placeholder="Enter EmpID (e.g., ahc123)" autocomplete="off" />
-      <button class="btn btn-primary" onclick="searchNurse()">Search</button>
-    </div>
+    <label for="empIdInput">Enter EmpID:</label>
+    <input type="text" id="empIdInput" placeholder="e.g., 101">
 
-    <div class="toggles-container">
-      <h4>Card Display Settings</h4>
-      <label class="toggle-switch"><input type="checkbox" id="tog-age" checked onchange="updateCardClasses()"> <span class="slider"></span> Age</label>
-      <label class="toggle-switch"><input type="checkbox" id="tog-gender" checked onchange="updateCardClasses()"> <span class="slider"></span> Gender</label>
-      <label class="toggle-switch"><input type="checkbox" id="tog-qualification" checked onchange="updateCardClasses()"> <span class="slider"></span> Qualification</label>
-      <label class="toggle-switch"><input type="checkbox" id="tog-designation" checked onchange="updateCardClasses()"> <span class="slider"></span> Designation</label>
-      <label class="toggle-switch"><input type="checkbox" id="tog-languages" checked onchange="updateCardClasses()"> <span class="slider"></span> Languages</label>
-      <label class="toggle-switch"><input type="checkbox" id="tog-reg" checked onchange="updateCardClasses()"> <span class="slider"></span> REG No</label>
-    </div>
-  </div>
+    <button onclick="lookupNurse()">Search</button>
 
-  <div class="results-container" id="results">
-    <div style="text-align: center; color: var(--muted); margin-top: 40px;">
-      <h3>Ready to search</h3>
-      <p>Enter an EmpID above to view the profile card.</p>
-    </div>
-  </div>
-</div>
+    <div id="result" class="result hidden"></div>
 
-<script>
-/* =========================================================================
-   CONFIG & STATE
-   ========================================================================= */
-const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?output=csv";
-const UNITS = ["Bangalore", "Chennai", "Delhi", "Guwahati", "Hyderabad", "INDORE", "Kolkata", "Madurai", "Mumbai", "Mysore"];
-const DEFAULT_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-     <rect width="200" height="200" fill="#e2e8f0"/>
-     <circle cx="100" cy="78" r="36" fill="#94a3b8"/>
-     <path d="M30 190c0-40 30-64 70-64s70 24 70 64z" fill="#94a3b8"/>
-   </svg>`
-);
+    <script>
+        // --- CONFIGURATION ---
+        // 1. Replace with your actual Google Spreadsheet ID
+        //    (the long string between /d/ and /edit in the sheet URL)
+        const SPREADSHEET_ID = '1kMbQg3Pz1Hwd1D4BQ9hp0c6SxvUKA4X02iH37a7VHJc';
 
-let userProfiles = [];
-let currentSession = JSON.parse(sessionStorage.getItem("apolloSession")) || null;
-let currentNurseData = null;
+        // 2. Exact sheet names as they appear in your Google Spreadsheet
+        const UNIT_SHEETS = [
+            'Bangalore',
+            'Chennai',
+            'Delhi',
+            'Guwahati',
+            'Hyderabad',
+            'INDORE',
+            'Kolkata',
+            'Madurai',
+            'Mumbai',
+            'Mysore'
+        ];
 
-/* =========================================================================
-   CSV PARSER & FETCH
-   ========================================================================= */
-function parseCSV(text) {
-  const rows = [];
-  let cur = "", row = [], inQuote = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i], n = text[i + 1];
-    if (inQuote) {
-      if (c === '"' && n === '"') { cur += '"'; i++; }
-      else if (c === '"') inQuote = false;
-      else cur += c;
-    } else {
-      if (c === '"') inQuote = true;
-      else if (c === ',') { row.push(cur); cur = ""; }
-      else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ""; }
-      else if (c === '\r') { /* skip */ }
-      else cur += c;
-    }
-  }
-  if (cur.length || row.length) { row.push(cur); rows.push(row); }
-  return rows;
-}
+        // --- Populate dropdown with unit names ---
+        const unitSelect = document.getElementById('unitSelect');
+        UNIT_SHEETS.forEach(unit => {
+            const option = document.createElement('option');
+            option.value = unit;
+            option.textContent = unit;
+            unitSelect.appendChild(option);
+        });
 
-async function fetchSheet(sheetName) {
-  const url = `${BASE_CSV_URL}&sheet=${encodeURIComponent(sheetName)}&_=${Date.now()}`;
-  const res = await fetch(url, { cache: "no-store" });
-  
-  if (!res.ok) {
-    if (res.status === 404) throw new Error(`Tab "${sheetName}" not found. Check spelling.`);
-    if (res.status === 403) throw new Error(`Access denied. Make sure Google Sheet sharing is set to "Anyone with the link".`);
-    throw new Error(`HTTP Error ${res.status} while fetching "${sheetName}".`);
-  }
-  
-  const text = await res.text();
-  if (text.includes("<!DOCTYPE html>") || text.includes("google-signin")) {
-    throw new Error(`Permission denied for "${sheetName}". Set sharing to "Anyone with the link".`);
-  }
-  return parseCSV(text);
-}
+        // --- Main Lookup Function ---
+        async function lookupNurse() {
+            const unit = unitSelect.value;
+            const empId = document.getElementById('empIdInput').value.trim();
+            const resultDiv = document.getElementById('result');
 
-function normalizeImageUrl(raw) {
-  if (!raw) return "";
-  let url = String(raw).trim();
-  if (!/^https?:\/\//i.test(url) && /\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(url)) {
-    return "./" + url.replace(/^\.?\//, "");
-  }
-  const drive = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]{10,})/) ||
-                url.match(/drive\.google\.com\/(?:open|uc)\?(?:[^#]*&)?id=([a-zA-Z0-9_-]{10,})/) ||
-                url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]{10,})/);
-  if (drive) return `https://lh3.googleusercontent.com/d/${drive[1]}=w1200`;
-  return url;
-}
+            if (!unit) { alert('Please select a Unit.'); return; }
+            if (!empId) { alert('Please enter an EmpID.'); return; }
 
-/* =========================================================================
-   AUTHENTICATION
-   ========================================================================= */
-async function initAuth() {
-  try {
-    const data = await fetchSheet("user profiles");
-    if (data.length > 1) {
-      userProfiles = data.slice(1).filter(r => r[2] && r[3]).map(r => ({
-        unit: (r[1] || "").trim(),
-        id: (r[2] || "").trim(),
-        pass: (r[3] || "").trim()
-      }));
-    }
-  } catch (e) {
-    console.error("Auth fetch error:", e.message);
-  }
-}
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = 'Searching...';
 
-document.getElementById("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const id = document.getElementById("login-id").value.trim();
-  const pass = document.getElementById("login-pass").value.trim();
-  const errEl = document.getElementById("login-error");
-  const btn = document.getElementById("login-btn");
-  
-  errEl.textContent = "";
-  btn.textContent = "Authenticating...";
-  btn.disabled = true;
+            try {
+                // Fetch data from the SPECIFIC sheet matching the selected unit
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(unit)}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-  if (userProfiles.length === 0) {
-    await initAuth();
-  }
+                const text = await response.text();
 
-  if (id === "corp" && pass === "corp123") {
-    setSession({ id: "corp", role: "corp", unit: "All Units" });
-  } else {
-    const user = userProfiles.find(u => u.id === id && u.pass === pass);
-    if (user) {
-      setSession({ id: user.id, role: "manager", unit: user.unit });
-    } else {
-      errEl.textContent = "Invalid ID or Password. Or sheet sharing is restricted.";
-      btn.textContent = "Secure Login";
-      btn.disabled = false;
-    }
-  }
-});
+                // Strip the JSONP wrapper: google.visualization.Query.setResponse({...});
+                const jsonString = text
+                    .replace(/^google\.visualization\.Query\.setResponse\(/, '')
+                    .replace(/\);?\s*$/, '');
+                const data = JSON.parse(jsonString);
 
-function setSession(session) {
-  currentSession = session;
-  sessionStorage.setItem("apolloSession", JSON.stringify(session));
-  showApp();
-  document.getElementById("login-btn").textContent = "Secure Login";
-  document.getElementById("login-btn").disabled = false;
-}
+                if (!data.table || !data.table.rows || data.table.rows.length === 0) {
+                    resultDiv.innerHTML = '<p class="error">No data found in this sheet.</p>';
+                    return;
+                }
 
-function logout() {
-  currentSession = null;
-  sessionStorage.removeItem("apolloSession");
-  document.getElementById("login-view").classList.remove("hidden");
-  document.getElementById("app-view").classList.add("hidden");
-  document.getElementById("login-form").reset();
-  document.getElementById("results").innerHTML = `
-    <div style="text-align: center; color: var(--muted); margin-top: 40px;">
-      <h3>Ready to search</h3><p>Enter an EmpID above to view the profile card.</p>
-    </div>`;
-}
+                // Map headers (lowercased) -> column index
+                const headers = data.table.cols.map(c =>
+                    c.label ? c.label.toLowerCase().trim() : ''
+                );
 
-function showApp() {
-  document.getElementById("login-view").classList.add("hidden");
-  document.getElementById("app-view").classList.remove("hidden");
-  document.getElementById("display-user").textContent = currentSession.role === "corp" ? "Corporate" : currentSession.id;
-  
-  const unitSelector = document.getElementById("unit-selector");
-  if (currentSession.role === "corp") {
-    unitSelector.classList.remove("hidden");
-  } else {
-    unitSelector.classList.add("hidden");
-  }
-}
+                // Find "EmpID" column. Add more aliases here if your header differs.
+                const empIdIndex = headers.findIndex(h =>
+                    h === 'empid' || h === 'emp id' || h === 'employee id' || h === 'employeeid'
+                );
 
-/* =========================================================================
-   SEARCH & RENDER
-   ========================================================================= */
-async function searchNurse() {
-  const empIdQuery = document.getElementById("emp-search").value.trim().toLowerCase();
-  if (!empIdQuery) return alert("Please enter an EmpID");
+                if (empIdIndex === -1) {
+                    resultDiv.innerHTML = '<p class="error">No "EmpID" column found in this sheet.</p>';
+                    return;
+                }
 
-  const resultsEl = document.getElementById("results");
-  resultsEl.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--apollo-teal);"><strong>Searching...</strong></div>`;
+                // Search for the matching row
+                let foundNurse = null;
+                for (const row of data.table.rows) {
+                    const rowEmpId = row.c[empIdIndex] && row.c[empIdIndex].v != null
+                        ? String(row.c[empIdIndex].v).trim()
+                        : '';
+                    if (rowEmpId === empId) {
+                        foundNurse = {};
+                        data.table.cols.forEach((col, i) => {
+                            const header = col.label || `Column ${i + 1}`;
+                            const val = row.c[i] && row.c[i].v != null ? row.c[i].v : '';
+                            foundNurse[header] = val;
+                        });
+                        break;
+                    }
+                }
 
-  let unitsToFetch = [];
-  if (currentSession.role === "corp") {
-    const selected = document.getElementById("unit-selector").value;
-    unitsToFetch = selected === "All Units" ? UNITS : [selected];
-  } else {
-    unitsToFetch = [currentSession.unit];
-  }
-
-  try {
-    let foundNurse = null;
-
-    for (const unit of unitsToFetch) {
-      const rows = await fetchSheet(unit);
-      console.log(`--- Data for unit: ${unit} ---`, rows.slice(0, 3)); // DEBUG LOG
-      
-      for (let i = 1; i < rows.length; i++) {
-        const r = rows[i];
-        if (r.length < 5) continue;
-        
-        // FIXED MAPPING: 
-        // Col 1 (0) = S-no, Col 2 (1) = Unit, Col 3 (2) = EmpID, Col 4 (3) = Name
-        const empId = (r[2] || "").trim(); 
-        
-        if (empId.toLowerCase() === empIdQuery) {
-          foundNurse = {
-            sno: r[0], 
-            unit: r[1], 
-            empId: empId, 
-            name: r[3],
-            ltc: r[4],       // Shifted based on actual sheet
-            staffType: r[5], 
-            age: r[6], 
-            gender: r[7], 
-            qualification: r[8],
-            designation: r[9], 
-            languages: r[10], 
-            regNo: r[11],
-            knownFor: r[12], 
-            patientSays: r[13], 
-            patientName: r[14],
-            picture: normalizeImageUrl(r[17]), 
-            supportNo: r[19], 
-            email: r[20]
-          };
-          break;
+                // Display
+                if (foundNurse) {
+                    let html = `<h3>Nurse Found in ${unit}:</h3><ul>`;
+                    for (const [key, value] of Object.entries(foundNurse)) {
+                        html += `<li><strong>${key}:</strong> ${value}</li>`;
+                    }
+                    html += '</ul>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = '<p class="error">Nurse not found. Please check the EmpID and Unit.</p>';
+                }
+            } catch (err) {
+                console.error(err);
+                resultDiv.innerHTML = `<p class="error">Error: ${err.message}. Check that the sheet is public and the tab name is exactly "${unit}".</p>`;
+            }
         }
-      }
-      if (foundNurse) break;
-    }
-
-    if (foundNurse) {
-      currentNurseData = foundNurse;
-      renderCard(foundNurse);
-      updateCardClasses();
-    } else {
-      resultsEl.innerHTML = `<div style="text-align: center; color: #dc2626; padding: 40px;"><strong>Nurse not found.</strong><br>Please check the EmpID and Unit.<br><br><small style="color:#64748b">Tip: Open your browser console (F12) to verify column data.</small></div>`;
-    }
-  } catch (error) {
-    console.error(error);
-    resultsEl.innerHTML = `
-      <div style="text-align: center; color: #dc2626; padding: 40px; background: #fef2f2; border-radius: 12px; border: 1px solid #f87171; max-width: 600px; margin: 0 auto;">
-        <h3 style="margin-bottom: 8px;">Error Loading Data</h3>
-        <p style="font-size: 15px;">${error.message}</p>
-        <p style="font-size: 13px; margin-top: 12px; color: #991b1b;">Check that your Google Sheet is shared as "Anyone with the link can view".</p>
-      </div>`;
-  }
-}
-
-function renderCard(data) {
-  const imgUrl = data.picture && data.picture.startsWith("http") ? data.picture : DEFAULT_IMG;
-  
-  const ageHtml = data.age ? `<div class="detail-item field-age"><span class="detail-label">Age:</span> <span class="detail-value">${escapeHtml(data.age)}</span></div>` : '';
-  const genderHtml = data.gender ? `<div class="detail-item field-gender"><span class="detail-label">Gender:</span> <span class="detail-value">${escapeHtml(data.gender)}</span></div>` : '';
-  const qualHtml = data.qualification ? `<div class="detail-item field-qualification"><span class="detail-label">Education:</span> <span class="detail-value">${escapeHtml(data.qualification)}</span></div>` : '';
-  const desigHtml = data.designation ? `<div class="detail-item field-designation"><span class="detail-label">Designation:</span> <span class="detail-value">${escapeHtml(data.designation)}</span></div>` : '';
-  const langHtml = data.languages ? `<div class="detail-item field-languages"><span class="detail-label">Languages:</span> <span class="detail-value">${escapeHtml(data.languages)}</span></div>` : '';
-  const regHtml = data.regNo ? `<div class="detail-item field-reg"><span class="detail-label">Reg. No:</span> <span class="detail-value">${escapeHtml(data.regNo)}</span></div>` : '';
-
-  const knownForHtml = data.knownFor ? `
-    <div class="known-for">
-      <span class="detail-label">Known For</span>
-      <p>${escapeHtml(data.knownFor)}</p>
-    </div>` : '';
-
-  const testimonialHtml = data.patientSays ? `
-    <div class="testimonial-block">
-      <div class="testimonial-title">What Patient Says</div>
-      <div class="testimonial-text">${escapeHtml(data.patientSays)}</div>
-      ${data.patientName ? `<div class="testimonial-author">- ${escapeHtml(data.patientName)}</div>` : ''}
-    </div>` : '';
-
-  const footerHtml = (data.supportNo || data.email) ? `
-    <div class="card-footer-info">
-      ${data.supportNo ? `<p><strong>CALL:</strong> ${escapeHtml(data.supportNo)}</p>` : ''}
-      ${data.email ? `<p><strong>EMAIL:</strong> ${escapeHtml(data.email)}</p>` : ''}
-    </div>` : '';
-
-  document.getElementById("results").innerHTML = `
-    <article class="nurse-card" id="nurse-card">
-      <div class="card-top">
-        <img class="card-logo" src="./logo.png" alt="Apollo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Apollo_Hospitals_Logo.svg/512px-Apollo_Hospitals_Logo.svg.png'">
-        
-        <h1 class="card-title">Know Your Nurse</h1>
-        
-        <div class="profile-section">
-          <div class="profile-photo">
-            <img src="${imgUrl}" alt="${escapeHtml(data.name)}" onerror="this.onerror=null; this.src='${DEFAULT_IMG}'" />
-          </div>
-          
-          <div class="profile-details">
-            <div class="name-row">
-              <div class="nurse-name">${escapeHtml(data.name || 'N/A')}</div>
-              <span class="nurse-empid">${escapeHtml(data.empId || '')}</span>
-              <span class="unit-badge">${escapeHtml(data.unit || '')}</span>
-            </div>
-            
-            <div class="details-grid">
-              ${qualHtml}
-              ${desigHtml}
-              ${ageHtml}
-              ${genderHtml}
-              ${regHtml}
-              ${langHtml}
-            </div>
-
-            ${knownForHtml}
-          </div>
-        </div>
-      </div>
-
-      <div class="card-bottom">
-        ${testimonialHtml}
-        ${footerHtml}
-      </div>
-
-      <div class="action-bar">
-        <button class="btn btn-outline" onclick="copyCardAsImage()" id="copy-btn">📸 Copy as Image</button>
-      </div>
-    </article>
-  `;
-}
-
-/* =========================================================================
-   TOGGLES & INTERACTIONS
-   ========================================================================= */
-function updateCardClasses() {
-  const card = document.getElementById("nurse-card");
-  if (!card) return;
-
-  const toggles = {
-    "tog-age": "hide-age",
-    "tog-gender": "hide-gender",
-    "tog-qualification": "hide-qualification",
-    "tog-designation": "hide-designation",
-    "tog-languages": "hide-languages",
-    "tog-reg": "hide-reg"
-  };
-
-  for (const [id, className] of Object.entries(toggles)) {
-    if (document.getElementById(id).checked) {
-      card.classList.remove(className);
-    } else {
-      card.classList.add(className);
-    }
-  }
-}
-
-function escapeHtml(s) {
-  return String(s || "").replace(/[&<>"']/g, c => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
-}
-
-/* =========================================================================
-   COPY AS IMAGE
-   ========================================================================= */
-function toDataURL(url) {
-  return new Promise((resolve, reject) => {
-    if (!url) return reject(new Error("no url"));
-    if (url.startsWith("data:")) return resolve(url);
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const c = document.createElement("canvas");
-        c.width = img.naturalWidth || 1;
-        c.height = img.naturalHeight || 1;
-        c.getContext("2d").drawImage(img, 0, 0);
-        resolve(c.toDataURL("image/png"));
-      } catch (e) { reject(e); }
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-async function copyCardAsImage() {
-  const card = document.getElementById("nurse-card");
-  const btn = document.getElementById("copy-btn");
-  if (!card || !btn) return;
-
-  const originalText = btn.innerHTML;
-  btn.innerHTML = "Capturing...";
-  btn.disabled = true;
-  
-  card.classList.add("capturing");
-
-  const imgs = Array.from(card.querySelectorAll("img"));
-  const savedSrc = imgs.map(i => i.getAttribute("src"));
-  
-  await Promise.all(imgs.map(async (img) => {
-    try {
-      img.src = await toDataURL(img.getAttribute("src"));
-    } catch {
-      img.src = DEFAULT_IMG; 
-    }
-  }));
-
-  try {
-    const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#ffffff" };
-    const blob = await htmlToImage.toBlob(card, opts);
-    
-    if (navigator.clipboard && window.ClipboardItem) {
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      alert("✅ Nurse card copied to clipboard!");
-    } else {
-      throw new Error("Clipboard API unavailable");
-    }
-  } catch (err) {
-    try {
-      const dataUrl = await htmlToImage.toPng(card, { cacheBust: true, pixelRatio: 2 });
-      const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = `nurse-${currentNurseData.empId}.png`;
-      a.click();
-      alert("Clipboard blocked. Image downloaded instead.");
-    } catch (e2) {
-      console.error(e2);
-      alert("Failed to generate image.");
-    }
-  } finally {
-    card.classList.remove("capturing");
-    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-/* =========================================================================
-   INIT
-   ========================================================================= */
-(async function init() {
-  await initAuth();
-  if (currentSession) showApp();
-  
-  document.getElementById("emp-search").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") searchNurse();
-  });
-})();
-</script>
+    </script>
 </body>
 </html>
