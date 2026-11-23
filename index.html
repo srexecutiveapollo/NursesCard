@@ -370,21 +370,25 @@
 <script>
     (function() {
         // ---------- CONFIG ----------
-        // REPLACE THESE WITH YOUR PUBLISHED CSV URLS (File -> Share -> Publish to web -> CSV)
-        // User Profiles sheet (S-no, location, ID, Password)
-        const USER_PROFILES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs/pub?output=csv';
-        // Location sheets – one per city. Use exact names as in column B of User Profiles.
+        // Published spreadsheet ID (taken from your /pubhtml link)
+        const SHEET_ID = '2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs';
+        const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
+
+        // User Profiles worksheet
+        const USER_PROFILES_CSV = BASE + encodeURIComponent('User Profiles');
+
+        // Location worksheets — names must match your tab names exactly
         const LOCATION_CSV_MAP = {
-            'Bangalore': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=BANGALORE_GID&single=true&output=csv',
-            'Chennai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=CHENNAI_GID&single=true&output=csv',
-            'Delhi': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=DELHI_GID&single=true&output=csv',
-            'Guwahati': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=GUWAHATI_GID&single=true&output=csv',
-            'Hyderabad': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=HYDERABAD_GID&single=true&output=csv',
-            'INDORE': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=INDORE_GID&single=true&output=csv',
-            'Kolkata': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=KOLKATA_GID&single=true&output=csv',
-            'Madurai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MADURAI_GID&single=true&output=csv',
-            'Mumbai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MUMBAI_GID&single=true&output=csv',
-            'Mysore': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MYSORE_GID&single=true&output=csv'
+            'Bangalore': BASE + encodeURIComponent('Bangalore'),
+            'Chennai':   BASE + encodeURIComponent('Chennai'),
+            'Delhi':     BASE + encodeURIComponent('Delhi'),
+            'Guwahati':  BASE + encodeURIComponent('Guwahati'),
+            'Hyderabad': BASE + encodeURIComponent('Hyderabad'),
+            'INDORE':    BASE + encodeURIComponent('INDORE'),
+            'Kolkata':   BASE + encodeURIComponent('Kolkata'),
+            'Madurai':   BASE + encodeURIComponent('Madurai'),
+            'Mumbai':    BASE + encodeURIComponent('Mumbai'),
+            'Mysore':    BASE + encodeURIComponent('Mysore')
         };
 
         // Corp credentials
@@ -415,7 +419,6 @@
 
         // ---------- UTILS ----------
         function parseCSV(csvText) {
-            // simple CSV parser (handles quoted fields)
             const rows = [];
             let currentRow = [];
             let currentField = '';
@@ -452,7 +455,6 @@
                     }
                 }
             }
-            // last field / row
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
                 rows.push([...currentRow]);
@@ -461,9 +463,12 @@
         }
 
         async function fetchCSV(url) {
+            console.log('FETCH:', url);
             const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`Failed to load ${url}`);
+            console.log('STATUS:', resp.status, resp.statusText);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${url}`);
             const text = await resp.text();
+            console.log('PREVIEW:', text.slice(0, 200));
             return parseCSV(text);
         }
 
@@ -471,9 +476,7 @@
         async function loadUserProfiles() {
             try {
                 const rows = await fetchCSV(USER_PROFILES_CSV);
-                // expected: S-no, location, ID, Password  (cols 1,2,3,4 -> indices 0,1,2,3)
                 if (rows.length < 2) throw new Error('No user profiles found');
-                // skip header row
                 userProfiles = rows.slice(1).map(row => ({
                     location: (row[1] || '').trim(),
                     id: (row[2] || '').trim(),
@@ -482,7 +485,7 @@
                 console.log('User profiles loaded:', userProfiles.length);
             } catch (err) {
                 console.error('Error loading profiles:', err);
-                loginError.textContent = 'Could not load user profiles. Check CSV URL.';
+                loginError.textContent = 'Could not load user profiles. Check CSV URL / console.';
             }
         }
 
@@ -492,33 +495,31 @@
             if (!url) throw new Error(`No CSV configured for ${location}`);
             const rows = await fetchCSV(url);
             if (rows.length < 2) return [];
-            // Expected columns (1-based as per prompt):
+            // Columns (1-based from prompt):
             // 1 S-no, 2 Unit, 3 LTC/TC, 4 Name, 5 EmpID, 6 Staff Type, 7 Age, 8 Gender,
-            // 9 Qualification, 10 Desigination, 11 Languages Known, 12 Nurse REG No,
-            // 13 Known For, 14 What Patient Says, 15 Patient Name, 16 Picture (index 15)
-            // Note: we ignore S-no (col 1).
-            const dataRows = rows.slice(1); // skip header
-            return dataRows.map((row, idx) => {
-                // fill missing with empty string
+            // 9 Qualification, 10 Designation, 11 Languages Known, 12 Nurse REG No,
+            // 13 Known For, 14 What Patient Says, 15 Patient Name, 16 Picture
+            const dataRows = rows.slice(1);
+            return dataRows.map((row) => {
                 const get = (i) => (row[i] || '').trim();
                 return {
-                    unit: get(1),           // col2
-                    ltctc: get(2),          // col3
-                    name: get(3),           // col4
-                    empId: get(4),          // col5
-                    staffType: get(5),      // col6
-                    age: get(6),            // col7
-                    gender: get(7),         // col8
-                    qualification: get(8),  // col9
-                    designation: get(9),    // col10
-                    languages: get(10),     // col11
-                    regNo: get(11),         // col12
-                    knownFor: get(12),      // col13
-                    patientSays: get(13),   // col14
-                    patientName: get(14),   // col15
-                    pictureUrl: get(15)     // col16 (index 15) -> actually col16 is index 15
+                    unit: get(1),
+                    ltctc: get(2),
+                    name: get(3),
+                    empId: get(4),
+                    staffType: get(5),
+                    age: get(6),
+                    gender: get(7),
+                    qualification: get(8),
+                    designation: get(9),
+                    languages: get(10),
+                    regNo: get(11),
+                    knownFor: get(12),
+                    patientSays: get(13),
+                    patientName: get(14),
+                    pictureUrl: get(15)
                 };
-            }).filter(n => n.name || n.empId); // skip empty rows
+            }).filter(n => n.name || n.empId);
         }
 
         // ---------- RENDERING ----------
@@ -531,7 +532,6 @@
             }
             messageArea.style.display = 'none';
             cardsContainer.innerHTML = nurses.map(nurse => {
-                // build picture
                 let avatarHtml = '';
                 if (nurse.pictureUrl && nurse.pictureUrl.startsWith('http')) {
                     avatarHtml = `<img src="${nurse.pictureUrl}" alt="${nurse.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-user-nurse\\'></i>';">`;
@@ -539,7 +539,7 @@
                     avatarHtml = `<i class="fas fa-user-nurse"></i>`;
                 }
 
-                const patientQuote = nurse.patientSays ? 
+                const patientQuote = nurse.patientSays ?
                     `<div class="quote-section"><i class="fas fa-quote-left"></i> ${nurse.patientSays} ${nurse.patientName ? `<div class="patient-name">— ${nurse.patientName}</div>` : ''}</div>` : '';
 
                 return `
@@ -589,11 +589,11 @@
             try {
                 allNursesForLocation = await loadNursesForLocation(location);
                 filteredNurses = [...allNursesForLocation];
-                searchInput.value = ''; // reset search
+                searchInput.value = '';
                 renderNurseCards(filteredNurses);
             } catch (err) {
                 console.error(err);
-                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading data for ${location}. Check CSV URL.</div>`;
+                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading data for ${location}. Check console / CSV URL.</div>`;
                 cardsContainer.innerHTML = '';
             }
         }
@@ -608,7 +608,6 @@
                 return;
             }
 
-            // ensure profiles loaded
             if (userProfiles.length === 0) {
                 await loadUserProfiles();
                 if (userProfiles.length === 0) {
@@ -617,22 +616,18 @@
                 }
             }
 
-            // Check corp
             if (user === CORP_USER && pass === CORP_PASS) {
-                // corp login
                 currentUser = { isCorp: true, location: null, id: user };
                 showMainPanel(true);
                 return;
             }
 
-            // Check regular user
             const matched = userProfiles.find(u => u.id === user && u.password === pass);
             if (!matched) {
                 loginError.textContent = 'Invalid credentials.';
                 return;
             }
 
-            // Check if location sheet exists
             if (!LOCATION_CSV_MAP[matched.location]) {
                 loginError.textContent = `No data sheet configured for ${matched.location}.`;
                 return;
@@ -646,7 +641,6 @@
             loginSection.style.display = 'none';
             mainPanel.style.display = 'block';
 
-            // populate location dropdown
             locationSelect.innerHTML = '<option value="">-- Select location --</option>';
             const locations = Object.keys(LOCATION_CSV_MAP);
             locations.forEach(loc => {
@@ -661,13 +655,11 @@
                 locationSelect.disabled = false;
                 searchInput.disabled = false;
                 searchBtn.disabled = false;
-                // auto-select first location
                 if (locations.length > 0) {
                     locationSelect.value = locations[0];
                     loadLocationData(locations[0]);
                 }
             } else {
-                // regular user — only their location
                 const loc = currentUser.location;
                 welcomeMsg.innerHTML = `<i class="fas fa-user-nurse"></i> ${loc} · ${currentUser.id}`;
                 locationSelect.innerHTML = `<option value="${loc}" selected>${loc}</option>`;
@@ -726,9 +718,6 @@
         (async function init() {
             await loadUserProfiles();
         })();
-
-        // Expose a sample fallback if CSV fails (optional). You can remove if not needed.
-        // But keep it clean: if profiles fail, user cannot login. We'll just log.
     })();
 </script>
 </body>
