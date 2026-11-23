@@ -8,213 +8,105 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
-    body { background:#f4f7fc; display:flex; justify-content:center; padding:1.5rem; min-height:100vh; }
-    .app-container { max-width:1400px; width:100%; }
+    body { background:#f4f7fc; padding:1.5rem; }
+    .container { max-width:1400px; margin:0 auto; }
 
-    /* ---------- Login ---------- */
-    .login-card { max-width:420px; margin:2rem auto; background:#fff; border-radius:2rem;
-      box-shadow:0 20px 35px rgba(0,20,30,0.12); padding:2rem 2rem 2.5rem; }
-    .login-card h1 { font-size:1.8rem; font-weight:600; color:#0b3b4f; text-align:center; margin-bottom:0.5rem; }
-    .login-card p { text-align:center; color:#5b7a8a; font-size:0.9rem; margin-bottom:2rem; }
-    .input-group { margin-bottom:1.3rem; position:relative; }
-    .input-group i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#7f9fad; }
-    .input-group input { width:100%; padding:0.9rem 1rem 0.9rem 2.8rem; border:1.5px solid #d9e6ed;
-      border-radius:1.5rem; font-size:0.95rem; outline:none; background:#f9fcfd; transition:0.2s; }
-    .input-group input:focus { border-color:#1d7a9c; background:#fff; box-shadow:0 0 0 4px rgba(29,122,156,0.08); }
-    .login-btn { width:100%; padding:0.9rem; background:#1d7a9c; border:none; border-radius:2rem;
-      color:#fff; font-weight:600; font-size:1rem; cursor:pointer; transition:0.2s; }
-    .login-btn:hover { background:#0e5f7c; }
-    .login-hint { margin-top:1.3rem; font-size:0.8rem; text-align:center; color:#6b8b9b;
-      background:#f0f6fa; padding:0.7rem; border-radius:2rem; }
-    .error-msg { color:#c73e3e; font-size:0.85rem; text-align:center; margin-top:1rem; font-weight:500; }
-
-    /* ---------- Main ---------- */
-    .main-panel { background:#fff; border-radius:2rem; box-shadow:0 20px 35px rgba(0,20,30,0.08);
-      padding:2rem 2rem 2.5rem; display:none; }
-    .top-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
-      margin-bottom:2rem; gap:1rem; }
-    .welcome { font-size:1.1rem; font-weight:500; color:#1b4f64; }
-    .welcome i { margin-right:0.4rem; color:#1d7a9c; }
-    .controls { display:flex; flex-wrap:wrap; gap:0.8rem; align-items:center; }
-    .controls select, .controls input { padding:0.7rem 1.2rem; border-radius:2rem;
+    .header { background:#fff; border-radius:1.5rem; box-shadow:0 10px 25px rgba(0,20,30,0.08);
+      padding:1.2rem 1.5rem; display:flex; flex-wrap:wrap; gap:1rem; align-items:center;
+      justify-content:space-between; margin-bottom:1.5rem; }
+    .header h1 { font-size:1.3rem; color:#0b3b4f; display:flex; align-items:center; gap:0.5rem; }
+    .header h1 i { color:#1d7a9c; }
+    .controls { display:flex; flex-wrap:wrap; gap:0.7rem; align-items:center; }
+    .controls select, .controls input { padding:0.6rem 1rem; border-radius:2rem;
       border:1.5px solid #d9e6ed; background:#f9fcfd; font-size:0.9rem; outline:none; transition:0.2s; }
     .controls select:focus, .controls input:focus { border-color:#1d7a9c; background:#fff; }
-    .controls button { padding:0.7rem 1.5rem; border-radius:2rem; border:none; background:#1d7a9c;
+    .controls button { padding:0.6rem 1.3rem; border-radius:2rem; border:none; background:#1d7a9c;
       color:#fff; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.4rem; transition:0.2s; }
     .controls button:hover { background:#0e5f7c; }
-    .logout-btn { background:#eef3f7; color:#1d4d62; }
-    .logout-btn:hover { background:#d9e4ec; }
 
-    /* ---------- Cards ---------- */
-    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-      gap:1.5rem; margin-top:0.5rem; }
-    .nurse-card { background:#fff; border-radius:1.8rem; box-shadow:0 8px 24px rgba(0,40,60,0.08);
-      padding:1.5rem 1.2rem; border:1px solid #e3eef4; transition:0.25s; display:flex; flex-direction:column; }
-    .nurse-card:hover { transform:translateY(-4px); box-shadow:0 16px 30px rgba(0,70,100,0.12); border-color:#b9d7e6; }
-    .card-header { display:flex; align-items:center; gap:1rem; margin-bottom:1rem;
-      border-bottom:1px dashed #cde0ea; padding-bottom:1rem; }
-    .avatar { width:60px; height:60px; border-radius:50%; background:#d4e8f2;
-      display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#1d5f7a;
-      flex-shrink:0; overflow:hidden; border:2px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.3rem; }
+    .nurse-card { background:#fff; border-radius:1.5rem; box-shadow:0 6px 20px rgba(0,40,60,0.07);
+      padding:1.3rem 1.1rem; border:1px solid #e3eef4; display:flex; flex-direction:column; transition:0.2s; }
+    .nurse-card:hover { transform:translateY(-3px); box-shadow:0 12px 26px rgba(0,70,100,0.1); }
+
+    .card-header { display:flex; align-items:center; gap:0.9rem; margin-bottom:0.9rem;
+      border-bottom:1px dashed #cde0ea; padding-bottom:0.9rem; }
+    .avatar { width:55px; height:55px; border-radius:50%; background:#d4e8f2; color:#1d5f7a;
+      display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;
+      overflow:hidden; border:2px solid #fff; }
     .avatar img { width:100%; height:100%; object-fit:cover; }
-    .name-title h3 { font-size:1.2rem; font-weight:600; color:#0b3b4f; line-height:1.3; }
-    .name-title .empid { font-size:0.8rem; color:#6f8e9e; font-weight:500; background:#eef5fa;
-      padding:0.15rem 0.6rem; border-radius:2rem; display:inline-block; margin-top:0.2rem; }
-    .details-grid { display:flex; flex-direction:column; gap:0.45rem; font-size:0.88rem; flex:1; }
-    .detail-row { display:flex; align-items:baseline; gap:0.5rem; color:#1a3f50; }
-    .detail-row i { width:18px; color:#1d7a9c; font-size:0.8rem; text-align:center; }
-    .detail-label { font-weight:600; color:#2b5c71; min-width:90px; font-size:0.82rem;
+    .name-title h3 { font-size:1.1rem; font-weight:600; color:#0b3b4f; line-height:1.3; }
+    .name-title .empid { font-size:0.75rem; color:#6f8e9e; background:#eef5fa;
+      padding:0.1rem 0.55rem; border-radius:2rem; display:inline-block; margin-top:0.15rem; }
+
+    .details-grid { display:flex; flex-direction:column; gap:0.4rem; font-size:0.85rem; }
+    .detail-row { display:flex; align-items:baseline; gap:0.45rem; color:#1a3f50; }
+    .detail-row i { width:16px; color:#1d7a9c; font-size:0.75rem; text-align:center; }
+    .detail-label { font-weight:600; color:#2b5c71; min-width:85px; font-size:0.78rem;
       text-transform:uppercase; letter-spacing:0.2px; }
     .detail-value { color:#1f4b5e; font-weight:500; }
-    .quote-section { margin-top:1rem; background:#f5fafd; border-radius:1.2rem; padding:0.9rem 1rem;
-      font-size:0.85rem; color:#235e78; border-left:5px solid #1d7a9c; }
-    .quote-section i { margin-right:0.3rem; color:#1d7a9c; }
-    .quote-section .patient-name { font-weight:600; margin-top:0.3rem; font-size:0.8rem; color:#427a94; }
 
-    /* ---------- Status ---------- */
-    .loading, .no-data { text-align:center; padding:3rem 1rem; color:#617e8e; font-size:1rem; }
-    .no-data i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.6; display:block; }
+    .quote-section { margin-top:0.8rem; background:#f5fafd; border-radius:1rem;
+      padding:0.7rem 0.9rem; font-size:0.82rem; color:#235e78; border-left:4px solid #1d7a9c; }
+    .quote-section .patient-name { font-weight:600; margin-top:0.25rem; font-size:0.75rem; color:#427a94; }
+
+    .status { text-align:center; padding:3rem 1rem; color:#617e8e; }
+    .status i { font-size:2.5rem; margin-bottom:0.7rem; opacity:0.6; display:block; }
 
     @media (max-width:600px) {
       body { padding:0.8rem; }
-      .login-card { padding:1.8rem 1.5rem; }
-      .main-panel { padding:1.5rem 1rem; }
-      .top-bar { flex-direction:column; align-items:stretch; }
-      .controls { justify-content:stretch; flex-wrap:wrap; }
+      .header { padding:1rem; }
       .controls select, .controls input, .controls button { flex:1 0 auto; }
     }
   </style>
 </head>
 <body>
-<div class="app-container">
+<div class="container">
 
-  <!-- LOGIN -->
-  <div id="loginSection" class="login-card">
-    <h1><i class="fas fa-user-nurse" style="color:#1d7a9c; margin-right:8px;"></i>Nurses Card</h1>
-    <p>Sign in with your unit credentials</p>
-    <div class="input-group">
-      <i class="fas fa-user"></i>
-      <input type="text" id="usernameInput" placeholder="Unit ID (e.g. blrsd)" autocomplete="off">
-    </div>
-    <div class="input-group">
-      <i class="fas fa-lock"></i>
-      <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
-    </div>
-    <button class="login-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
-    <div id="loginError" class="error-msg"></div>
-    <div class="login-hint">
-      Corp: <strong>corp / corp123</strong><br>
-      Unit: <strong>blrsd / blrsd123</strong>, <strong>chnsd / chnsd123</strong>, etc.
+  <div class="header">
+    <h1><i class="fas fa-user-nurse"></i> Nurse Cards</h1>
+    <div class="controls">
+      <select id="locationSelect">
+        <option value="">-- Select location --</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search by EmpID or name">
+      <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
     </div>
   </div>
 
-  <!-- MAIN -->
-  <div id="mainPanel" class="main-panel">
-    <div class="top-bar">
-      <div class="welcome" id="welcomeMsg"></div>
-      <div class="controls">
-        <select id="locationSelect" disabled><option value="">-- Select location --</option></select>
-        <input type="text" id="searchInput" placeholder="Search by EmpID" disabled>
-        <button id="searchBtn" disabled><i class="fas fa-search"></i> Search</button>
-        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-      </div>
-    </div>
-    <div id="cardsContainer" class="cards-grid"></div>
-    <div id="messageArea" class="loading">Select a location</div>
-  </div>
+  <div id="cardsContainer" class="cards-grid"></div>
+  <div id="messageArea" class="status">Select a location to load cards.</div>
 
 </div>
 
 <script>
-  // ---------- Hardcoded credentials ----------
-  var UNIT_CREDENTIALS = {
-    'blrsd': { password: 'blrsd123', location: 'Bangalore' },
-    'chnsd': { password: 'chnsd123', location: 'Chennai' },
-    'dlhsd': { password: 'dlhsd123', location: 'Delhi' },
-    'guwsd': { password: 'guwsd123', location: 'Guwahati' },
-    'hydsd': { password: 'hydsd123', location: 'Hyderabad' },
-    'indsd': { password: 'indsd123', location: 'INDORE' },
-    'kolsd': { password: 'kolsd123', location: 'Kolkata' },
-    'madsd': { password: 'madsd123', location: 'Madurai' },
-    'mumsd': { password: 'mumsd123', location: 'Mumbai' },
-    'myssd': { password: 'myssd123', location: 'Mysore' }
-  };
-  var CORP_USER = 'corp';
-  var CORP_PASS = 'corp123';
-
-  var LOCATIONS = ['Bangalore','Chennai','Delhi','Guwahati','Hyderabad','INDORE','Kolkata','Madurai','Mumbai','Mysore'];
-
-  var currentUser = null;
-  var currentLocation = '';
-  var allNurses = [];
-  var filteredNurses = [];
-
-  var loginSection = document.getElementById('loginSection');
-  var mainPanel = document.getElementById('mainPanel');
-  var usernameInput = document.getElementById('usernameInput');
-  var passwordInput = document.getElementById('passwordInput');
-  var loginBtn = document.getElementById('loginBtn');
-  var loginError = document.getElementById('loginError');
-  var welcomeMsg = document.getElementById('welcomeMsg');
   var locationSelect = document.getElementById('locationSelect');
   var searchInput = document.getElementById('searchInput');
   var searchBtn = document.getElementById('searchBtn');
-  var logoutBtn = document.getElementById('logoutBtn');
   var cardsContainer = document.getElementById('cardsContainer');
   var messageArea = document.getElementById('messageArea');
 
-  // ---------- LOGIN ----------
-  function attemptLogin() {
-    loginError.textContent = '';
-    var user = usernameInput.value.trim();
-    var pass = passwordInput.value.trim();
-    if (!user || !pass) { loginError.textContent = 'Enter unit ID and password.'; return; }
+  var allNurses = [];
+  var filteredNurses = [];
+  var currentLocation = '';
 
-    if (user === CORP_USER && pass === CORP_PASS) {
-      currentUser = { isCorp: true, id: user, location: null };
-      showMainPanel();
-      return;
-    }
-
-    var entry = UNIT_CREDENTIALS[user];
-    if (!entry || entry.password !== pass) {
-      loginError.textContent = 'Invalid unit ID or password.';
-      return;
-    }
-    currentUser = { isCorp: false, id: user, location: entry.location };
-    showMainPanel();
+  // Populate dropdown from backend
+  function loadLocations() {
+    google.script.run
+      .withSuccessHandler(function(locs) {
+        (locs || []).forEach(function(loc) {
+          var opt = document.createElement('option');
+          opt.value = loc;
+          opt.textContent = loc;
+          locationSelect.appendChild(opt);
+        });
+      })
+      .withFailureHandler(function(err) {
+        messageArea.innerHTML = 'Could not load locations: ' + (err && err.message ? err.message : err);
+      })
+      .getLocations();
   }
 
-  function showMainPanel() {
-    loginSection.style.display = 'none';
-    mainPanel.style.display = 'block';
-
-    locationSelect.innerHTML = '<option value="">-- Select location --</option>';
-    LOCATIONS.forEach(function(loc) {
-      var opt = document.createElement('option');
-      opt.value = loc;
-      opt.textContent = loc;
-      locationSelect.appendChild(opt);
-    });
-
-    if (currentUser.isCorp) {
-      welcomeMsg.innerHTML = '<i class="fas fa-user-shield"></i> Corporate · All locations';
-      locationSelect.disabled = false;
-      searchInput.disabled = false;
-      searchBtn.disabled = false;
-      locationSelect.value = 'Bangalore';
-      loadLocation('Bangalore');
-    } else {
-      welcomeMsg.innerHTML = '<i class="fas fa-user-nurse"></i> ' + currentUser.location + ' · ' + currentUser.id;
-      locationSelect.innerHTML = '<option value="' + currentUser.location + '" selected>' + currentUser.location + '</option>';
-      locationSelect.disabled = true;
-      searchInput.disabled = false;
-      searchBtn.disabled = false;
-      loadLocation(currentUser.location);
-    }
-  }
-
-  // ---------- DATA LOAD ----------
   function loadLocation(location) {
     currentLocation = location;
     allNurses = [];
@@ -225,45 +117,38 @@
 
     google.script.run
       .withSuccessHandler(function(res) {
-        console.log('getNurses response:', res);
-        if (!res) {
-          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>No response from server.</div>';
-          return;
-        }
-        if (!res.ok) {
-          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>' + res.error + '</div>';
+        if (!res || !res.ok) {
+          messageArea.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (res && res.error ? res.error : 'Unknown error');
           return;
         }
         allNurses = res.nurses || [];
         filteredNurses = allNurses.slice();
         searchInput.value = '';
         if (allNurses.length === 0) {
-          cardsContainer.innerHTML = '';
-          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-user-slash"></i>Sheet "' + location + '" has no data rows.</div>';
+          messageArea.innerHTML = '<i class="fas fa-user-slash"></i> No nurses in "' + location + '".';
           return;
         }
         renderCards();
       })
       .withFailureHandler(function(err) {
-        console.error('getNurses failed:', err);
-        messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>Error: ' + (err && err.message ? err.message : err) + '</div>';
+        messageArea.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error: ' + (err && err.message ? err.message : err);
       })
       .getNurses(location);
   }
 
-  // ---------- RENDER ----------
   function renderCards() {
-    if (!filteredNurses || filteredNurses.length === 0) {
+    if (!filteredNurses.length) {
       cardsContainer.innerHTML = '';
-      messageArea.innerHTML = '<div class="no-data"><i class="fas fa-user-slash"></i>No nurses found.</div>';
       messageArea.style.display = 'block';
+      messageArea.innerHTML = '<i class="fas fa-user-slash"></i> No nurses found.';
       return;
     }
     messageArea.style.display = 'none';
     cardsContainer.innerHTML = filteredNurses.map(function(n) {
       var avatar;
       if (n.pictureUrl && n.pictureUrl.indexOf('http') === 0) {
-        avatar = '<img src="' + n.pictureUrl + '" alt="' + n.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=&quot;fas fa-user-nurse&quot;></i>\';">';
+        avatar = '<img src="' + n.pictureUrl + '" alt="' + n.name +
+          '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=&quot;fas fa-user-nurse&quot;></i>\';">';
       } else {
         avatar = '<i class="fas fa-user-nurse"></i>';
       }
@@ -296,7 +181,6 @@
       '<span class="detail-value">' + (value || '—') + '</span></div>';
   }
 
-  // ---------- SEARCH ----------
   function doSearch() {
     var term = searchInput.value.trim().toLowerCase();
     if (!term) {
@@ -310,29 +194,19 @@
     renderCards();
   }
 
-  // ---------- EVENTS ----------
-  loginBtn.addEventListener('click', attemptLogin);
-  passwordInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
-  usernameInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
-
-  logoutBtn.addEventListener('click', function() {
-    currentUser = null;
-    loginSection.style.display = 'block';
-    mainPanel.style.display = 'none';
-    usernameInput.value = '';
-    passwordInput.value = '';
-    loginError.textContent = '';
-    cardsContainer.innerHTML = '';
-    messageArea.innerHTML = 'Select a location';
-    messageArea.style.display = 'block';
-  });
-
   locationSelect.addEventListener('change', function(e) {
     if (e.target.value) loadLocation(e.target.value);
+    else {
+      cardsContainer.innerHTML = '';
+      messageArea.style.display = 'block';
+      messageArea.innerHTML = 'Select a location.';
+    }
   });
 
   searchBtn.addEventListener('click', doSearch);
   searchInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') doSearch(); });
+
+  loadLocations();
 </script>
 </body>
 </html>
