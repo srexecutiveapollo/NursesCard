@@ -1,8 +1,206 @@
-const NURSE_DATA = {
-  "Bangalore": [
-    { unit:"Bangalore", ltctc:"LTC", name:"Sunil -N", empId:"AHC7613", ... },
-    { unit:"Bangalore", ltctc:"LTC", name:"ARCHANA -N", empId:"AHC5155", ... }
-  ],
-  "Chennai": [ /* more nurses */ ],
-  ...
-};
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nurses Cards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
+    body { background:#f4f7fc; padding:1.5rem; display:flex; justify-content:center; }
+    .app { max-width:1400px; width:100%; }
+
+    .toolbar {
+      background:#fff; border-radius:2rem; padding:1.2rem 1.8rem; margin-bottom:1.5rem;
+      box-shadow:0 8px 24px rgba(0,40,60,0.08); display:flex; flex-wrap:wrap;
+      gap:1rem; align-items:center; justify-content:space-between;
+    }
+    .toolbar h1 { font-size:1.4rem; color:#0b3b4f; display:flex; align-items:center; gap:0.5rem; }
+    .toolbar h1 i { color:#1d7a9c; }
+    .toolbar select, .toolbar input {
+      padding:0.7rem 1.2rem; border-radius:2rem; border:1.5px solid #d9e6ed;
+      background:#f9fcfd; font-size:0.95rem; outline:none;
+    }
+    .toolbar select:focus, .toolbar input:focus { border-color:#1d7a9c; background:#fff; }
+
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+
+    .nurse-card {
+      background:#fff; border-radius:1.8rem; box-shadow:0 8px 24px rgba(0,40,60,0.08);
+      padding:1.5rem 1.2rem; border:1px solid #e3eef4; display:flex; flex-direction:column; transition:0.25s;
+    }
+    .nurse-card:hover { transform:translateY(-4px); box-shadow:0 16px 30px rgba(0,70,100,0.12); border-color:#b9d7e6; }
+
+    .card-header {
+      display:flex; align-items:center; gap:1rem; margin-bottom:1rem;
+      border-bottom:1px dashed #cde0ea; padding-bottom:1rem;
+    }
+    .avatar {
+      width:60px; height:60px; border-radius:50%; background:#d4e8f2;
+      display:flex; align-items:center; justify-content:center; font-size:1.8rem;
+      color:#1d5f7a; flex-shrink:0; overflow:hidden; border:2px solid #fff;
+    }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+    .name-title h3 { font-size:1.2rem; font-weight:600; color:#0b3b4f; line-height:1.3; }
+    .name-title .empid {
+      font-size:0.8rem; color:#6f8e9e; background:#eef5fa;
+      padding:0.15rem 0.6rem; border-radius:2rem; display:inline-block; margin-top:0.2rem;
+    }
+
+    .details-grid { display:flex; flex-direction:column; gap:0.45rem; font-size:0.88rem; flex:1; }
+    .detail-row { display:flex; align-items:baseline; gap:0.5rem; color:#1a3f50; }
+    .detail-row i { width:18px; color:#1d7a9c; font-size:0.8rem; text-align:center; }
+    .detail-label { font-weight:600; color:#2b5c71; min-width:90px; font-size:0.82rem; text-transform:uppercase; }
+    .detail-value { color:#1f4b5e; font-weight:500; }
+
+    .quote-section {
+      margin-top:1rem; background:#f5fafd; border-radius:1.2rem; padding:0.9rem 1rem;
+      font-size:0.85rem; color:#235e78; border-left:5px solid #1d7a9c;
+    }
+    .quote-section .patient-name { font-weight:600; margin-top:0.3rem; font-size:0.8rem; color:#427a94; }
+
+    .status { text-align:center; padding:3rem 1rem; color:#617e8e; }
+    .status i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.6; display:block; }
+
+    @media (max-width:600px) {
+      body { padding:0.8rem; }
+      .toolbar { padding:1rem; }
+      .toolbar h1 { font-size:1.2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="toolbar">
+    <h1><i class="fas fa-user-nurse"></i> Nurses Cards</h1>
+    <select id="locationSelect"></select>
+    <input type="text" id="searchInput" placeholder="Search by EmpID">
+  </div>
+
+  <div id="cardsContainer" class="cards-grid"></div>
+  <div id="statusArea" class="status" style="display:none;"></div>
+
+</div>
+
+<script>
+  var LOCATIONS = [
+    'Bangalore','Chennai','Delhi','Guwahati','Hyderabad',
+    'INDORE','Kolkata','Madurai','Mumbai','Mysore'
+  ];
+
+  var currentLocation = '';
+  var allNurses = [];
+  var filteredNurses = [];
+
+  var locationSelect = document.getElementById('locationSelect');
+  var searchInput = document.getElementById('searchInput');
+  var cardsContainer = document.getElementById('cardsContainer');
+  var statusArea = document.getElementById('statusArea');
+
+  LOCATIONS.forEach(function(loc) {
+    var opt = document.createElement('option');
+    opt.value = loc;
+    opt.textContent = loc;
+    locationSelect.appendChild(opt);
+  });
+
+  function setStatus(html) {
+    statusArea.style.display = 'block';
+    statusArea.innerHTML = html;
+  }
+  function clearStatus() {
+    statusArea.style.display = 'none';
+    statusArea.innerHTML = '';
+  }
+
+  function loadLocation(loc) {
+    currentLocation = loc;
+    allNurses = [];
+    filteredNurses = [];
+    cardsContainer.innerHTML = '';
+    searchInput.value = '';
+    setStatus('<i class="fas fa-spinner fa-pulse"></i> Loading ' + loc + '...');
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (!res || !res.ok) {
+          setStatus('<i class="fas fa-exclamation-triangle"></i>' + (res && res.error ? res.error : 'Failed to load.'));
+          return;
+        }
+        allNurses = res.nurses || [];
+        filteredNurses = allNurses.slice();
+        render();
+      })
+      .withFailureHandler(function(err) {
+        setStatus('<i class="fas fa-exclamation-triangle"></i>' + (err && err.message ? err.message : err));
+      })
+      .getNurses(loc);
+  }
+
+  function render() {
+    if (!filteredNurses.length) {
+      cardsContainer.innerHTML = '';
+      setStatus('<i class="fas fa-user-slash"></i>No nurses found in ' + currentLocation + '.');
+      return;
+    }
+    clearStatus();
+    cardsContainer.innerHTML = filteredNurses.map(function(n) {
+      var avatar;
+      if (n.pictureUrl && n.pictureUrl.indexOf('http') === 0) {
+        avatar = '<img src="' + n.pictureUrl + '" alt="' + n.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=&quot;fas fa-user-nurse&quot;></i>\';">';
+      } else {
+        avatar = '<i class="fas fa-user-nurse"></i>';
+      }
+      var quote = n.patientSays
+        ? '<div class="quote-section"><i class="fas fa-quote-left"></i> ' + n.patientSays +
+          (n.patientName ? '<div class="patient-name">— ' + n.patientName + '</div>' : '') + '</div>'
+        : '';
+
+      return '<div class="nurse-card">' +
+        '<div class="card-header"><div class="avatar">' + avatar + '</div>' +
+          '<div class="name-title"><h3>' + (n.name || '—') + '</h3>' +
+          '<span class="empid"><i class="fas fa-id-badge"></i> ' + (n.empId || '—') + '</span></div></div>' +
+        '<div class="details-grid">' +
+          row('fa-building','Unit', n.unit) +
+          row('fa-clock','LTC/TC', n.ltctc) +
+          row('fa-user-tie','Staff Type', n.staffType) +
+          row('fa-venus-mars','Age / Gender', (n.age || '—') + ' / ' + (n.gender || '—')) +
+          row('fa-graduation-cap','Qualification', n.qualification) +
+          row('fa-briefcase','Designation', n.designation) +
+          row('fa-language','Languages', n.languages) +
+          row('fa-id-card','Nurse Reg No', n.regNo) +
+          row('fa-star','Known For', n.knownFor) +
+        '</div>' + quote + '</div>';
+    }).join('');
+  }
+
+  function row(icon, label, value) {
+    return '<div class="detail-row"><i class="fas ' + icon + '"></i>' +
+      '<span class="detail-label">' + label + '</span>' +
+      '<span class="detail-value">' + (value || '—') + '</span></div>';
+  }
+
+  function doSearch() {
+    var term = searchInput.value.trim().toLowerCase();
+    if (!term) {
+      filteredNurses = allNurses.slice();
+    } else {
+      filteredNurses = allNurses.filter(function(n) {
+        return (n.empId || '').toLowerCase().indexOf(term) !== -1;
+      });
+    }
+    render();
+  }
+
+  locationSelect.addEventListener('change', function(e) {
+    if (e.target.value) loadLocation(e.target.value);
+  });
+  searchInput.addEventListener('input', doSearch);
+
+  locationSelect.value = LOCATIONS[0];
+  loadLocation(LOCATIONS[0]);
+</script>
+</body>
+</html>
