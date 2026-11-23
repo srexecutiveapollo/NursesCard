@@ -4,315 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nurses Cards · Location Wise</title>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
-        body {
-            background: #f4f7fc;
-            display: flex;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-        .app-container {
-            max-width: 1400px;
-            width: 100%;
-        }
-        /* ----- login card ----- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: #f4f7fc; display: flex; justify-content: center; padding: 1.5rem; }
+        .app-container { max-width: 1400px; width: 100%; }
+
         .login-card {
-            max-width: 420px;
-            margin: 2rem auto;
-            background: white;
-            border-radius: 2rem;
-            box-shadow: 0 20px 35px rgba(0, 20, 30, 0.12);
-            padding: 2rem 2rem 2.5rem;
-            transition: 0.25s;
+            max-width: 420px; margin: 2rem auto; background: white; border-radius: 2rem;
+            box-shadow: 0 20px 35px rgba(0,20,30,0.12); padding: 2rem 2rem 2.5rem;
         }
-        .login-card h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #0b3b4f;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        .login-card p {
-            text-align: center;
-            color: #5b7a8a;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-        .input-group {
-            margin-bottom: 1.3rem;
-            position: relative;
-        }
-        .input-group i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #7f9fad;
-            font-size: 1rem;
-        }
+        .login-card h1 { font-size: 1.8rem; font-weight: 600; color: #0b3b4f; text-align: center; margin-bottom: 0.5rem; }
+        .login-card p { text-align: center; color: #5b7a8a; font-size: 0.9rem; margin-bottom: 2rem; }
+        .input-group { margin-bottom: 1.3rem; position: relative; }
+        .input-group i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #7f9fad; }
         .input-group input {
-            width: 100%;
-            padding: 0.9rem 1rem 0.9rem 2.8rem;
-            border: 1.5px solid #d9e6ed;
-            border-radius: 1.5rem;
-            font-size: 0.95rem;
-            outline: none;
-            transition: 0.2s;
-            background: #f9fcfd;
+            width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #d9e6ed;
+            border-radius: 1.5rem; font-size: 0.95rem; outline: none; background: #f9fcfd; transition: 0.2s;
         }
-        .input-group input:focus {
-            border-color: #1d7a9c;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(29, 122, 156, 0.08);
-        }
+        .input-group input:focus { border-color: #1d7a9c; background: white; box-shadow: 0 0 0 4px rgba(29,122,156,0.08); }
         .login-btn {
-            width: 100%;
-            padding: 0.9rem;
-            background: #1d7a9c;
-            border: none;
-            border-radius: 2rem;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            width: 100%; padding: 0.9rem; background: #1d7a9c; border: none; border-radius: 2rem;
+            color: white; font-weight: 600; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s;
         }
-        .login-btn:hover {
-            background: #0e5f7c;
-            transform: scale(1.01);
-        }
+        .login-btn:hover { background: #0e5f7c; }
         .login-hint {
-            margin-top: 1.3rem;
-            font-size: 0.8rem;
-            text-align: center;
-            color: #6b8b9b;
-            background: #f0f6fa;
-            padding: 0.7rem;
-            border-radius: 2rem;
+            margin-top: 1.3rem; font-size: 0.8rem; text-align: center; color: #6b8b9b;
+            background: #f0f6fa; padding: 0.7rem; border-radius: 2rem;
         }
-        .error-msg {
-            color: #c73e3e;
-            font-size: 0.85rem;
-            text-align: center;
-            margin-top: 1rem;
-            font-weight: 500;
-        }
-        /* ----- main app (after login) ----- */
+        .error-msg { color: #c73e3e; font-size: 0.85rem; text-align: center; margin-top: 1rem; font-weight: 500; }
+
         .main-panel {
-            background: white;
-            border-radius: 2rem;
-            box-shadow: 0 20px 35px rgba(0, 20, 30, 0.08);
-            padding: 2rem 2rem 2.5rem;
-            display: none;
+            background: white; border-radius: 2rem; box-shadow: 0 20px 35px rgba(0,20,30,0.08);
+            padding: 2rem 2rem 2.5rem; display: none;
         }
-        .top-bar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 1rem;
-        }
-        .welcome {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #1b4f64;
-        }
-        .welcome i {
-            margin-right: 0.4rem;
-            color: #1d7a9c;
-        }
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            align-items: center;
-        }
+        .top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; }
+        .welcome { font-size: 1.1rem; font-weight: 500; color: #1b4f64; }
+        .welcome i { margin-right: 0.4rem; color: #1d7a9c; }
+        .controls { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; }
         .controls select, .controls input {
-            padding: 0.7rem 1.2rem;
-            border-radius: 2rem;
-            border: 1.5px solid #d9e6ed;
-            background: #f9fcfd;
-            font-size: 0.9rem;
-            outline: none;
-            transition: 0.2s;
+            padding: 0.7rem 1.2rem; border-radius: 2rem; border: 1.5px solid #d9e6ed;
+            background: #f9fcfd; font-size: 0.9rem; outline: none;
         }
-        .controls select:focus, .controls input:focus {
-            border-color: #1d7a9c;
-            background: white;
-        }
+        .controls select:focus, .controls input:focus { border-color: #1d7a9c; background: white; }
         .controls button {
-            padding: 0.7rem 1.5rem;
-            border-radius: 2rem;
-            border: none;
-            background: #1d7a9c;
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            padding: 0.7rem 1.5rem; border-radius: 2rem; border: none; background: #1d7a9c;
+            color: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: 0.2s;
         }
-        .controls button:hover {
-            background: #0e5f7c;
-        }
-        .logout-btn {
-            background: #eef3f7;
-            color: #1d4d62;
-        }
-        .logout-btn:hover {
-            background: #d9e4ec;
-        }
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 0.5rem;
-        }
+        .controls button:hover { background: #0e5f7c; }
+        .logout-btn { background: #eef3f7; color: #1d4d62; }
+        .logout-btn:hover { background: #d9e4ec; }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 0.5rem; }
         .nurse-card {
-            background: #ffffff;
-            border-radius: 1.8rem;
-            box-shadow: 0 8px 24px rgba(0, 40, 60, 0.08);
-            padding: 1.5rem 1.2rem 1.5rem 1.2rem;
-            border: 1px solid #e3eef4;
-            transition: 0.25s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            background: #fff; border-radius: 1.8rem; box-shadow: 0 8px 24px rgba(0,40,60,0.08);
+            padding: 1.5rem 1.2rem; border: 1px solid #e3eef4; transition: 0.25s; display: flex; flex-direction: column;
         }
-        .nurse-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 30px rgba(0, 70, 100, 0.12);
-            border-color: #b9d7e6;
-        }
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px dashed #cde0ea;
-            padding-bottom: 1rem;
-        }
+        .nurse-card:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(0,70,100,0.12); border-color: #b9d7e6; }
+        .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px dashed #cde0ea; padding-bottom: 1rem; }
         .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #d4e8f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: #1d5f7a;
-            flex-shrink: 0;
-            overflow: hidden;
-            border: 2px solid white;
+            width: 60px; height: 60px; border-radius: 50%; background: #d4e8f2;
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            color: #1d5f7a; flex-shrink: 0; overflow: hidden; border: 2px solid white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .name-title h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #0b3b4f;
-            line-height: 1.3;
-        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .name-title h3 { font-size: 1.2rem; font-weight: 600; color: #0b3b4f; line-height: 1.3; }
         .name-title .empid {
-            font-size: 0.8rem;
-            color: #6f8e9e;
-            font-weight: 500;
-            background: #eef5fa;
-            padding: 0.15rem 0.6rem;
-            border-radius: 2rem;
-            display: inline-block;
-            margin-top: 0.2rem;
+            font-size: 0.8rem; color: #6f8e9e; font-weight: 500; background: #eef5fa;
+            padding: 0.15rem 0.6rem; border-radius: 2rem; display: inline-block; margin-top: 0.2rem;
         }
-        .details-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            font-size: 0.88rem;
-            margin-top: 0.2rem;
-            flex: 1;
-        }
-        .detail-row {
-            display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
-            color: #1a3f50;
-        }
-        .detail-row i {
-            width: 18px;
-            color: #1d7a9c;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-        .detail-label {
-            font-weight: 600;
-            color: #2b5c71;
-            min-width: 90px;
-            font-size: 0.82rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2px;
-        }
-        .detail-value {
-            color: #1f4b5e;
-            font-weight: 500;
-        }
+        .details-grid { display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.88rem; margin-top: 0.2rem; flex: 1; }
+        .detail-row { display: flex; align-items: baseline; gap: 0.5rem; color: #1a3f50; }
+        .detail-row i { width: 18px; color: #1d7a9c; font-size: 0.8rem; text-align: center; }
+        .detail-label { font-weight: 600; color: #2b5c71; min-width: 90px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.2px; }
+        .detail-value { color: #1f4b5e; font-weight: 500; }
         .quote-section {
-            margin-top: 1rem;
-            background: #f5fafd;
-            border-radius: 1.2rem;
-            padding: 0.9rem 1rem;
-            font-size: 0.85rem;
-            color: #235e78;
-            border-left: 5px solid #1d7a9c;
+            margin-top: 1rem; background: #f5fafd; border-radius: 1.2rem; padding: 0.9rem 1rem;
+            font-size: 0.85rem; color: #235e78; border-left: 5px solid #1d7a9c;
         }
-        .quote-section i {
-            margin-right: 0.3rem;
-            color: #1d7a9c;
-        }
-        .quote-section .patient-name {
-            font-weight: 600;
-            margin-top: 0.3rem;
-            font-size: 0.8rem;
-            color: #427a94;
-        }
-        .badge {
-            background: #e4f0f7;
-            padding: 0.25rem 0.8rem;
-            border-radius: 2rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #1d5f7a;
-            display: inline-block;
-        }
-        .loading, .no-data {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #617e8e;
-            font-size: 1rem;
-        }
-        .no-data i {
-            font-size: 2.5rem;
-            margin-bottom: 0.8rem;
-            opacity: 0.6;
-        }
+        .quote-section i { margin-right: 0.3rem; color: #1d7a9c; }
+        .quote-section .patient-name { font-weight: 600; margin-top: 0.3rem; font-size: 0.8rem; color: #427a94; }
+        .loading, .no-data { text-align: center; padding: 3rem 1rem; color: #617e8e; font-size: 1rem; }
+        .no-data i { font-size: 2.5rem; margin-bottom: 0.8rem; opacity: 0.6; }
+
         @media (max-width: 600px) {
             body { padding: 0.8rem; }
             .login-card { padding: 1.8rem 1.5rem; }
@@ -326,13 +102,12 @@
 <body>
 <div class="app-container">
 
-    <!-- LOGIN SECTION -->
     <div id="loginSection" class="login-card">
         <h1><i class="fas fa-user-nurse" style="color: #1d7a9c; margin-right: 8px;"></i>Nurses Card</h1>
-        <p>Sign in with your location credentials</p>
+        <p>Sign in with your unit credentials</p>
         <div class="input-group">
             <i class="fas fa-user"></i>
-            <input type="text" id="usernameInput" placeholder="Username (e.g. blrsd)" autocomplete="off">
+            <input type="text" id="usernameInput" placeholder="Unit ID (e.g. blrsd)" autocomplete="off">
         </div>
         <div class="input-group">
             <i class="fas fa-lock"></i>
@@ -342,11 +117,10 @@
         <div id="loginError" class="error-msg"></div>
         <div class="login-hint">
             <i class="fas fa-info-circle"></i> Corp login: <strong>corp / corp123</strong> (all locations)<br>
-            Location sample: blrsd / blrsd123
+            Unit login: <strong>blrsd / blrsd123</strong>, <strong>chnsd / chnsd123</strong>, etc.
         </div>
     </div>
 
-    <!-- MAIN PANEL (after login) -->
     <div id="mainPanel" class="main-panel">
         <div class="top-bar">
             <div class="welcome" id="welcomeMsg"><i class="fas fa-user-circle"></i> Welcome</div>
@@ -359,9 +133,7 @@
                 <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
-        <div id="cardsContainer" class="cards-grid">
-            <!-- cards injected here -->
-        </div>
+        <div id="cardsContainer" class="cards-grid"></div>
         <div id="messageArea" class="loading">Enter search or select location</div>
     </div>
 
@@ -369,35 +141,49 @@
 
 <script>
     (function() {
-     // ---------- CONFIG ----------
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwEeOytctcUEQ0-kjsTr-uND-OWpq15I-va6s387bIjPnQ84aPOlhk_jF-lpxAVUrYYHg/exec';
+        // ---------- CONFIG ----------
+        // Apps Script Web App URL (your working deployment)
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwEeOytctcUEQ0-kjsTr-uND-OWpq15I-va6s387bIjPnQ84aPOlhk_jF-lpxAVUrYYHg/exec';
 
-const USER_PROFILES_CSV = WEB_APP_URL + '?gid=542840793';
+        // Unit credentials — edit here anytime
+        const UNIT_CREDENTIALS = {
+            'blrsd': { password: 'blrsd123', location: 'Bangalore' },
+            'chnsd': { password: 'chnsd123', location: 'Chennai' },
+            'dlhsd': { password: 'dlhsd123', location: 'Delhi' },
+            'guwsd': { password: 'guwsd123', location: 'Guwahati' },
+            'hydsd': { password: 'hydsd123', location: 'Hyderabad' },
+            'indsd': { password: 'indsd123', location: 'INDORE' },
+            'kolsd': { password: 'kolsd123', location: 'Kolkata' },
+            'madsd': { password: 'madsd123', location: 'Madurai' },
+            'mumsd': { password: 'mumsd123', location: 'Mumbai' },
+            'myssd': { password: 'myssd123', location: 'Mysore' }
+        };
 
-const LOCATION_CSV_MAP = {
-    'Bangalore': WEB_APP_URL + '?gid=0',
-    'Chennai':   WEB_APP_URL + '?gid=168671702',
-    'Delhi':     WEB_APP_URL + '?gid=1866927428',
-    'Guwahati':  WEB_APP_URL + '?gid=1092640825',
-    'Hyderabad': WEB_APP_URL + '?gid=1480613194',
-    'INDORE':    WEB_APP_URL + '?gid=1352130848',
-    'Kolkata':   WEB_APP_URL + '?gid=771895746',
-    'Madurai':   WEB_APP_URL + '?gid=352785735',
-    'Mumbai':    WEB_APP_URL + '?gid=396810410',
-    'Mysore':    WEB_APP_URL + '?gid=1830509418'
-};
+        // Corp account (sees all locations)
+        const CORP_USER = 'corp';
+        const CORP_PASS = 'corp123';
 
-const CORP_USER = 'corp';
-const CORP_PASS = 'corp123';
+        // gid for each location (from your sheet's edit URLs)
+        const LOCATION_GIDS = {
+            'Bangalore': '0',
+            'Chennai':   '168671702',
+            'Delhi':     '1866927428',
+            'Guwahati':  '1092640825',
+            'Hyderabad': '1480613194',
+            'INDORE':    '1352130848',
+            'Kolkata':   '771895746',
+            'Madurai':   '352785735',
+            'Mumbai':    '396810410',
+            'Mysore':    '1830509418'
+        };
 
         // ---------- STATE ----------
-        let currentUser = null;          // { location, isCorp, id }
-        let userProfiles = [];           // array of { location, id, password }
+        let currentUser = null;
         let currentLocation = '';
-        let allNursesForLocation = [];   // raw data for current location
+        let allNursesForLocation = [];
         let filteredNurses = [];
 
-        // DOM elements
+        // DOM
         const loginSection = document.getElementById('loginSection');
         const mainPanel = document.getElementById('mainPanel');
         const usernameInput = document.getElementById('usernameInput');
@@ -412,42 +198,29 @@ const CORP_PASS = 'corp123';
         const cardsContainer = document.getElementById('cardsContainer');
         const messageArea = document.getElementById('messageArea');
 
-        // ---------- UTILS ----------
+        // ---------- CSV PARSER ----------
         function parseCSV(csvText) {
             const rows = [];
             let currentRow = [];
             let currentField = '';
             let inQuotes = false;
-
             for (let i = 0; i < csvText.length; i++) {
-                const ch = csvText[i];
-                const next = csvText[i + 1];
+                const ch = csvText[i], next = csvText[i + 1];
                 if (inQuotes) {
-                    if (ch === '"' && next === '"') {
-                        currentField += '"';
-                        i++;
-                    } else if (ch === '"') {
-                        inQuotes = false;
-                    } else {
-                        currentField += ch;
-                    }
+                    if (ch === '"' && next === '"') { currentField += '"'; i++; }
+                    else if (ch === '"') { inQuotes = false; }
+                    else { currentField += ch; }
                 } else {
-                    if (ch === '"') {
-                        inQuotes = true;
-                    } else if (ch === ',') {
-                        currentRow.push(currentField.trim());
-                        currentField = '';
-                    } else if (ch === '\n' || ch === '\r') {
+                    if (ch === '"') { inQuotes = true; }
+                    else if (ch === ',') { currentRow.push(currentField.trim()); currentField = ''; }
+                    else if (ch === '\n' || ch === '\r') {
                         if (currentField !== '' || currentRow.length > 0) {
                             currentRow.push(currentField.trim());
                             rows.push([...currentRow]);
-                            currentRow = [];
-                            currentField = '';
+                            currentRow = []; currentField = '';
                         }
                         if (ch === '\r' && next === '\n') i++;
-                    } else {
-                        currentField += ch;
-                    }
+                    } else { currentField += ch; }
                 }
             }
             if (currentField !== '' || currentRow.length > 0) {
@@ -458,44 +231,21 @@ const CORP_PASS = 'corp123';
         }
 
         async function fetchCSV(url) {
-            console.log('FETCH:', url);
             const resp = await fetch(url);
-            console.log('STATUS:', resp.status, resp.statusText);
-            if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${url}`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const text = await resp.text();
-            console.log('PREVIEW:', text.slice(0, 200));
+            if (text.trim().startsWith('<')) throw new Error('Got HTML instead of CSV');
             return parseCSV(text);
         }
 
-        // Load user profiles on startup
-        async function loadUserProfiles() {
-            try {
-                const rows = await fetchCSV(USER_PROFILES_CSV);
-                if (rows.length < 2) throw new Error('No user profiles found');
-                userProfiles = rows.slice(1).map(row => ({
-                    location: (row[1] || '').trim(),
-                    id: (row[2] || '').trim(),
-                    password: (row[3] || '').trim()
-                })).filter(u => u.location && u.id && u.password);
-                console.log('User profiles loaded:', userProfiles.length);
-            } catch (err) {
-                console.error('Error loading profiles:', err);
-                loginError.textContent = 'Could not load user profiles. Check CSV URL / console.';
-            }
-        }
-
-        // Load nurses for a location
+        // ---------- LOAD NURSES ----------
         async function loadNursesForLocation(location) {
-            const url = LOCATION_CSV_MAP[location];
-            if (!url) throw new Error(`No CSV configured for ${location}`);
+            const gid = LOCATION_GIDS[location];
+            if (!gid) throw new Error(`No gid for ${location}`);
+            const url = WEB_APP_URL + '?gid=' + gid;
             const rows = await fetchCSV(url);
             if (rows.length < 2) return [];
-            // Columns (1-based from prompt):
-            // 1 S-no, 2 Unit, 3 LTC/TC, 4 Name, 5 EmpID, 6 Staff Type, 7 Age, 8 Gender,
-            // 9 Qualification, 10 Designation, 11 Languages Known, 12 Nurse REG No,
-            // 13 Known For, 14 What Patient Says, 15 Patient Name, 16 Picture
-            const dataRows = rows.slice(1);
-            return dataRows.map((row) => {
+            return rows.slice(1).map(row => {
                 const get = (i) => (row[i] || '').trim();
                 return {
                     unit: get(1),
@@ -517,11 +267,11 @@ const CORP_PASS = 'corp123';
             }).filter(n => n.name || n.empId);
         }
 
-        // ---------- RENDERING ----------
+        // ---------- RENDER ----------
         function renderNurseCards(nurses) {
             if (!nurses || nurses.length === 0) {
                 cardsContainer.innerHTML = '';
-                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-user-slash"></i><br>No nurses found for this search / location.</div>`;
+                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-user-slash"></i><br>No nurses found.</div>`;
                 messageArea.style.display = 'block';
                 return;
             }
@@ -533,9 +283,8 @@ const CORP_PASS = 'corp123';
                 } else {
                     avatarHtml = `<i class="fas fa-user-nurse"></i>`;
                 }
-
-                const patientQuote = nurse.patientSays ?
-                    `<div class="quote-section"><i class="fas fa-quote-left"></i> ${nurse.patientSays} ${nurse.patientName ? `<div class="patient-name">— ${nurse.patientName}</div>` : ''}</div>` : '';
+                const quote = nurse.patientSays ?
+                    `<div class="quote-section"><i class="fas fa-quote-left"></i> ${nurse.patientSays}${nurse.patientName ? `<div class="patient-name">— ${nurse.patientName}</div>` : ''}</div>` : '';
 
                 return `
                     <div class="nurse-card">
@@ -557,13 +306,12 @@ const CORP_PASS = 'corp123';
                             <div class="detail-row"><i class="fas fa-id-card"></i><span class="detail-label">Nurse Reg No</span><span class="detail-value">${nurse.regNo || '—'}</span></div>
                             <div class="detail-row"><i class="fas fa-star"></i><span class="detail-label">Known For</span><span class="detail-value">${nurse.knownFor || '—'}</span></div>
                         </div>
-                        ${patientQuote}
+                        ${quote}
                     </div>
                 `;
             }).join('');
         }
 
-        // Filter by empId
         function filterByEmpId(empId) {
             if (!empId.trim()) {
                 filteredNurses = [...allNursesForLocation];
@@ -574,7 +322,6 @@ const CORP_PASS = 'corp123';
             renderNurseCards(filteredNurses);
         }
 
-        // Load location data and populate
         async function loadLocationData(location) {
             if (!location) return;
             currentLocation = location;
@@ -588,47 +335,40 @@ const CORP_PASS = 'corp123';
                 renderNurseCards(filteredNurses);
             } catch (err) {
                 console.error(err);
-                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading data for ${location}. Check console / CSV URL.</div>`;
+                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading ${location}: ${err.message}</div>`;
                 cardsContainer.innerHTML = '';
             }
         }
 
-        // ---------- LOGIN FLOW ----------
-        async function attemptLogin() {
+        // ---------- LOGIN (no fetch — checks the hardcoded table) ----------
+        function attemptLogin() {
             loginError.textContent = '';
             const user = usernameInput.value.trim();
             const pass = passwordInput.value.trim();
             if (!user || !pass) {
-                loginError.textContent = 'Please enter both username and password.';
+                loginError.textContent = 'Please enter both unit ID and password.';
                 return;
             }
 
-            if (userProfiles.length === 0) {
-                await loadUserProfiles();
-                if (userProfiles.length === 0) {
-                    loginError.textContent = 'User profiles not available. Try again later.';
-                    return;
-                }
-            }
-
+            // Corp
             if (user === CORP_USER && pass === CORP_PASS) {
                 currentUser = { isCorp: true, location: null, id: user };
                 showMainPanel(true);
                 return;
             }
 
-            const matched = userProfiles.find(u => u.id === user && u.password === pass);
-            if (!matched) {
-                loginError.textContent = 'Invalid credentials.';
+            // Unit
+            const entry = UNIT_CREDENTIALS[user];
+            if (!entry || entry.password !== pass) {
+                loginError.textContent = 'Invalid unit ID or password.';
+                return;
+            }
+            if (!LOCATION_GIDS[entry.location]) {
+                loginError.textContent = `No data configured for "${entry.location}".`;
                 return;
             }
 
-            if (!LOCATION_CSV_MAP[matched.location]) {
-                loginError.textContent = `No data sheet configured for ${matched.location}.`;
-                return;
-            }
-
-            currentUser = { isCorp: false, location: matched.location, id: user };
+            currentUser = { isCorp: false, location: entry.location, id: user };
             showMainPanel(false);
         }
 
@@ -637,11 +377,10 @@ const CORP_PASS = 'corp123';
             mainPanel.style.display = 'block';
 
             locationSelect.innerHTML = '<option value="">-- Select location --</option>';
-            const locations = Object.keys(LOCATION_CSV_MAP);
+            const locations = Object.keys(LOCATION_GIDS);
             locations.forEach(loc => {
                 const opt = document.createElement('option');
-                opt.value = loc;
-                opt.textContent = loc;
+                opt.value = loc; opt.textContent = loc;
                 locationSelect.appendChild(opt);
             });
 
@@ -665,28 +404,26 @@ const CORP_PASS = 'corp123';
             }
         }
 
-        // ---------- EVENT LISTENERS ----------
+        // ---------- EVENTS ----------
         loginBtn.addEventListener('click', attemptLogin);
-        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
-        usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+        passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') attemptLogin(); });
+        usernameInput.addEventListener('keypress', e => { if (e.key === 'Enter') attemptLogin(); });
 
         logoutBtn.addEventListener('click', () => {
             currentUser = null;
             loginSection.style.display = 'block';
             mainPanel.style.display = 'none';
-            usernameInput.value = '';
-            passwordInput.value = '';
+            usernameInput.value = ''; passwordInput.value = '';
             loginError.textContent = '';
             cardsContainer.innerHTML = '';
             messageArea.innerHTML = 'Enter search or select location';
             messageArea.style.display = 'block';
         });
 
-        locationSelect.addEventListener('change', (e) => {
+        locationSelect.addEventListener('change', e => {
             const loc = e.target.value;
-            if (loc) {
-                loadLocationData(loc);
-            } else {
+            if (loc) loadLocationData(loc);
+            else {
                 cardsContainer.innerHTML = '';
                 messageArea.innerHTML = 'Select a location';
                 messageArea.style.display = 'block';
@@ -695,24 +432,10 @@ const CORP_PASS = 'corp123';
 
         searchBtn.addEventListener('click', () => {
             if (!currentUser) return;
-            const empId = searchInput.value.trim();
-            if (!currentLocation) {
-                messageArea.innerHTML = 'Select a location first.';
-                return;
-            }
-            filterByEmpId(empId);
+            if (!currentLocation) { messageArea.innerHTML = 'Select a location first.'; return; }
+            filterByEmpId(searchInput.value);
         });
-
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchBtn.click();
-            }
-        });
-
-        // ---------- INIT ----------
-        (async function init() {
-            await loadUserProfiles();
-        })();
+        searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
     })();
 </script>
 </body>
