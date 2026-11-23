@@ -369,31 +369,30 @@
 
 <script>
     (function() {
-        // ---------- CONFIG ----------
-        // Published spreadsheet ID (taken from your /pubhtml link)
-        const SHEET_ID = '2PACX-1vSnVE2E4OavqYEtGimmfBFDiwvdkOi31NPqghJB1q-v0yVF4z_Yyyo-fogvi9NeGGA6d2Y9DGmHU-Zs';
-        const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
+     // ---------- CONFIG ----------
+const SHEET_ID = '1kMbQg3Pz1Hwd1D4BQ9hp0c6SxvUKA4X02iH37a7VHJc';
+const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=';
 
-        // User Profiles worksheet
-        const USER_PROFILES_CSV = BASE + encodeURIComponent('User Profiles');
+// User Profiles worksheet
+const USER_PROFILES_CSV = BASE + '542840793';
 
-        // Location worksheets — names must match your tab names exactly
-        const LOCATION_CSV_MAP = {
-            'Bangalore': BASE + encodeURIComponent('Bangalore'),
-            'Chennai':   BASE + encodeURIComponent('Chennai'),
-            'Delhi':     BASE + encodeURIComponent('Delhi'),
-            'Guwahati':  BASE + encodeURIComponent('Guwahati'),
-            'Hyderabad': BASE + encodeURIComponent('Hyderabad'),
-            'INDORE':    BASE + encodeURIComponent('INDORE'),
-            'Kolkata':   BASE + encodeURIComponent('Kolkata'),
-            'Madurai':   BASE + encodeURIComponent('Madurai'),
-            'Mumbai':    BASE + encodeURIComponent('Mumbai'),
-            'Mysore':    BASE + encodeURIComponent('Mysore')
-        };
+// Location worksheets (gid values from your links)
+const LOCATION_CSV_MAP = {
+    'Bangalore': BASE + '0',
+    'Chennai':   BASE + '168671702',
+    'Delhi':     BASE + '1866927428',
+    'Guwahati':  BASE + '1092640825',
+    'Hyderabad': BASE + '1480613194',
+    'INDORE':    BASE + '1352130848',
+    'Kolkata':   BASE + '771895746',
+    'Madurai':   BASE + '352785735',
+    'Mumbai':    BASE + '396810410',
+    'Mysore':    BASE + '1830509418'
+};
 
-        // Corp credentials
-        const CORP_USER = 'corp';
-        const CORP_PASS = 'corp123';
+// Corp credentials
+const CORP_USER = 'corp';
+const CORP_PASS = 'corp123';
 
         // ---------- STATE ----------
         let currentUser = null;          // { location, isCorp, id }
