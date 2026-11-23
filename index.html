@@ -1,449 +1,296 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurses Cards · Location Wise</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
-        body { background: #f4f7fc; display: flex; justify-content: center; padding: 1.5rem; }
-        .app-container { max-width: 1400px; width: 100%; }
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nurses Cards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
+    body { background:#f4f7fc; display:flex; justify-content:center; padding:1.5rem; }
+    .app-container { max-width:1400px; width:100%; }
 
-        .login-card {
-            max-width: 420px; margin: 2rem auto; background: white; border-radius: 2rem;
-            box-shadow: 0 20px 35px rgba(0,20,30,0.12); padding: 2rem 2rem 2.5rem;
-        }
-        .login-card h1 { font-size: 1.8rem; font-weight: 600; color: #0b3b4f; text-align: center; margin-bottom: 0.5rem; }
-        .login-card p { text-align: center; color: #5b7a8a; font-size: 0.9rem; margin-bottom: 2rem; }
-        .input-group { margin-bottom: 1.3rem; position: relative; }
-        .input-group i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #7f9fad; }
-        .input-group input {
-            width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #d9e6ed;
-            border-radius: 1.5rem; font-size: 0.95rem; outline: none; background: #f9fcfd; transition: 0.2s;
-        }
-        .input-group input:focus { border-color: #1d7a9c; background: white; box-shadow: 0 0 0 4px rgba(29,122,156,0.08); }
-        .login-btn {
-            width: 100%; padding: 0.9rem; background: #1d7a9c; border: none; border-radius: 2rem;
-            color: white; font-weight: 600; font-size: 1rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s;
-        }
-        .login-btn:hover { background: #0e5f7c; }
-        .login-hint {
-            margin-top: 1.3rem; font-size: 0.8rem; text-align: center; color: #6b8b9b;
-            background: #f0f6fa; padding: 0.7rem; border-radius: 2rem;
-        }
-        .error-msg { color: #c73e3e; font-size: 0.85rem; text-align: center; margin-top: 1rem; font-weight: 500; }
+    .login-card { max-width:420px; margin:2rem auto; background:#fff; border-radius:2rem;
+      box-shadow:0 20px 35px rgba(0,20,30,0.12); padding:2rem 2rem 2.5rem; }
+    .login-card h1 { font-size:1.8rem; font-weight:600; color:#0b3b4f; text-align:center; margin-bottom:0.5rem; }
+    .login-card p { text-align:center; color:#5b7a8a; font-size:0.9rem; margin-bottom:2rem; }
+    .input-group { margin-bottom:1.3rem; position:relative; }
+    .input-group i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#7f9fad; }
+    .input-group input { width:100%; padding:0.9rem 1rem 0.9rem 2.8rem; border:1.5px solid #d9e6ed;
+      border-radius:1.5rem; font-size:0.95rem; outline:none; background:#f9fcfd; }
+    .input-group input:focus { border-color:#1d7a9c; background:#fff; }
+    .login-btn { width:100%; padding:0.9rem; background:#1d7a9c; border:none; border-radius:2rem;
+      color:#fff; font-weight:600; font-size:1rem; cursor:pointer; }
+    .login-btn:hover { background:#0e5f7c; }
+    .login-hint { margin-top:1.3rem; font-size:0.8rem; text-align:center; color:#6b8b9b;
+      background:#f0f6fa; padding:0.7rem; border-radius:2rem; }
+    .error-msg { color:#c73e3e; font-size:0.85rem; text-align:center; margin-top:1rem; font-weight:500; }
 
-        .main-panel {
-            background: white; border-radius: 2rem; box-shadow: 0 20px 35px rgba(0,20,30,0.08);
-            padding: 2rem 2rem 2.5rem; display: none;
-        }
-        .top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; }
-        .welcome { font-size: 1.1rem; font-weight: 500; color: #1b4f64; }
-        .welcome i { margin-right: 0.4rem; color: #1d7a9c; }
-        .controls { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; }
-        .controls select, .controls input {
-            padding: 0.7rem 1.2rem; border-radius: 2rem; border: 1.5px solid #d9e6ed;
-            background: #f9fcfd; font-size: 0.9rem; outline: none;
-        }
-        .controls select:focus, .controls input:focus { border-color: #1d7a9c; background: white; }
-        .controls button {
-            padding: 0.7rem 1.5rem; border-radius: 2rem; border: none; background: #1d7a9c;
-            color: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: 0.2s;
-        }
-        .controls button:hover { background: #0e5f7c; }
-        .logout-btn { background: #eef3f7; color: #1d4d62; }
-        .logout-btn:hover { background: #d9e4ec; }
+    .main-panel { background:#fff; border-radius:2rem; box-shadow:0 20px 35px rgba(0,20,30,0.08);
+      padding:2rem 2rem 2.5rem; display:none; }
+    .top-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:2rem; gap:1rem; }
+    .welcome { font-size:1.1rem; font-weight:500; color:#1b4f64; }
+    .welcome i { margin-right:0.4rem; color:#1d7a9c; }
+    .controls { display:flex; flex-wrap:wrap; gap:0.8rem; align-items:center; }
+    .controls select, .controls input { padding:0.7rem 1.2rem; border-radius:2rem; border:1.5px solid #d9e6ed;
+      background:#f9fcfd; font-size:0.9rem; outline:none; }
+    .controls button { padding:0.7rem 1.5rem; border-radius:2rem; border:none; background:#1d7a9c;
+      color:#fff; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.4rem; }
+    .controls button:hover { background:#0e5f7c; }
+    .logout-btn { background:#eef3f7; color:#1d4d62; }
+    .logout-btn:hover { background:#d9e4ec; }
 
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 0.5rem; }
-        .nurse-card {
-            background: #fff; border-radius: 1.8rem; box-shadow: 0 8px 24px rgba(0,40,60,0.08);
-            padding: 1.5rem 1.2rem; border: 1px solid #e3eef4; transition: 0.25s; display: flex; flex-direction: column;
-        }
-        .nurse-card:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(0,70,100,0.12); border-color: #b9d7e6; }
-        .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px dashed #cde0ea; padding-bottom: 1rem; }
-        .avatar {
-            width: 60px; height: 60px; border-radius: 50%; background: #d4e8f2;
-            display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-            color: #1d5f7a; flex-shrink: 0; overflow: hidden; border: 2px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .name-title h3 { font-size: 1.2rem; font-weight: 600; color: #0b3b4f; line-height: 1.3; }
-        .name-title .empid {
-            font-size: 0.8rem; color: #6f8e9e; font-weight: 500; background: #eef5fa;
-            padding: 0.15rem 0.6rem; border-radius: 2rem; display: inline-block; margin-top: 0.2rem;
-        }
-        .details-grid { display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.88rem; margin-top: 0.2rem; flex: 1; }
-        .detail-row { display: flex; align-items: baseline; gap: 0.5rem; color: #1a3f50; }
-        .detail-row i { width: 18px; color: #1d7a9c; font-size: 0.8rem; text-align: center; }
-        .detail-label { font-weight: 600; color: #2b5c71; min-width: 90px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.2px; }
-        .detail-value { color: #1f4b5e; font-weight: 500; }
-        .quote-section {
-            margin-top: 1rem; background: #f5fafd; border-radius: 1.2rem; padding: 0.9rem 1rem;
-            font-size: 0.85rem; color: #235e78; border-left: 5px solid #1d7a9c;
-        }
-        .quote-section i { margin-right: 0.3rem; color: #1d7a9c; }
-        .quote-section .patient-name { font-weight: 600; margin-top: 0.3rem; font-size: 0.8rem; color: #427a94; }
-        .loading, .no-data { text-align: center; padding: 3rem 1rem; color: #617e8e; font-size: 1rem; }
-        .no-data i { font-size: 2.5rem; margin-bottom: 0.8rem; opacity: 0.6; }
-
-        @media (max-width: 600px) {
-            body { padding: 0.8rem; }
-            .login-card { padding: 1.8rem 1.5rem; }
-            .main-panel { padding: 1.5rem 1rem; }
-            .top-bar { flex-direction: column; align-items: stretch; }
-            .controls { justify-content: stretch; flex-wrap: wrap; }
-            .controls select, .controls input, .controls button { flex: 1 0 auto; }
-        }
-    </style>
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; margin-top:0.5rem; }
+    .nurse-card { background:#fff; border-radius:1.8rem; box-shadow:0 8px 24px rgba(0,40,60,0.08);
+      padding:1.5rem 1.2rem; border:1px solid #e3eef4; display:flex; flex-direction:column; }
+    .card-header { display:flex; align-items:center; gap:1rem; margin-bottom:1rem;
+      border-bottom:1px dashed #cde0ea; padding-bottom:1rem; }
+    .avatar { width:60px; height:60px; border-radius:50%; background:#d4e8f2;
+      display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#1d5f7a;
+      flex-shrink:0; overflow:hidden; }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+    .name-title h3 { font-size:1.2rem; font-weight:600; color:#0b3b4f; line-height:1.3; }
+    .name-title .empid { font-size:0.8rem; color:#6f8e9e; background:#eef5fa;
+      padding:0.15rem 0.6rem; border-radius:2rem; display:inline-block; margin-top:0.2rem; }
+    .details-grid { display:flex; flex-direction:column; gap:0.45rem; font-size:0.88rem; }
+    .detail-row { display:flex; align-items:baseline; gap:0.5rem; color:#1a3f50; }
+    .detail-row i { width:18px; color:#1d7a9c; font-size:0.8rem; text-align:center; }
+    .detail-label { font-weight:600; color:#2b5c71; min-width:90px; font-size:0.82rem; text-transform:uppercase; }
+    .detail-value { color:#1f4b5e; font-weight:500; }
+    .quote-section { margin-top:1rem; background:#f5fafd; border-radius:1.2rem; padding:0.9rem 1rem;
+      font-size:0.85rem; color:#235e78; border-left:5px solid #1d7a9c; }
+    .quote-section .patient-name { font-weight:600; margin-top:0.3rem; font-size:0.8rem; color:#427a94; }
+    .loading, .no-data { text-align:center; padding:3rem 1rem; color:#617e8e; }
+    .no-data i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.6; display:block; }
+  </style>
 </head>
 <body>
 <div class="app-container">
 
-    <div id="loginSection" class="login-card">
-        <h1><i class="fas fa-user-nurse" style="color: #1d7a9c; margin-right: 8px;"></i>Nurses Card</h1>
-        <p>Sign in with your unit credentials</p>
-        <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" id="usernameInput" placeholder="Unit ID (e.g. blrsd)" autocomplete="off">
-        </div>
-        <div class="input-group">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
-        </div>
-        <button class="login-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
-        <div id="loginError" class="error-msg"></div>
-        <div class="login-hint">
-            <i class="fas fa-info-circle"></i> Corp login: <strong>corp / corp123</strong> (all locations)<br>
-            Unit login: <strong>blrsd / blrsd123</strong>, <strong>chnsd / chnsd123</strong>, etc.
-        </div>
+  <div id="loginSection" class="login-card">
+    <h1><i class="fas fa-user-nurse" style="color:#1d7a9c; margin-right:8px;"></i>Nurses Card</h1>
+    <p>Sign in with your unit credentials</p>
+    <div class="input-group">
+      <i class="fas fa-user"></i>
+      <input type="text" id="usernameInput" placeholder="Unit ID (e.g. blrsd)" autocomplete="off">
     </div>
+    <div class="input-group">
+      <i class="fas fa-lock"></i>
+      <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+    </div>
+    <button class="login-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+    <div id="loginError" class="error-msg"></div>
+    <div class="login-hint">
+      Corp: <strong>corp / corp123</strong><br>
+      Unit: <strong>blrsd / blrsd123</strong>, <strong>chnsd / chnsd123</strong>, etc.
+    </div>
+  </div>
 
-    <div id="mainPanel" class="main-panel">
-        <div class="top-bar">
-            <div class="welcome" id="welcomeMsg"><i class="fas fa-user-circle"></i> Welcome</div>
-            <div class="controls">
-                <select id="locationSelect" disabled>
-                    <option value="">-- Select location --</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="Search by EmpID" disabled>
-                <button id="searchBtn" disabled><i class="fas fa-search"></i> Search</button>
-                <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>
-        </div>
-        <div id="cardsContainer" class="cards-grid"></div>
-        <div id="messageArea" class="loading">Enter search or select location</div>
+  <div id="mainPanel" class="main-panel">
+    <div class="top-bar">
+      <div class="welcome" id="welcomeMsg"></div>
+      <div class="controls">
+        <select id="locationSelect" disabled><option value="">-- Select location --</option></select>
+        <input type="text" id="searchInput" placeholder="Search by EmpID" disabled>
+        <button id="searchBtn" disabled><i class="fas fa-search"></i> Search</button>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
     </div>
+    <div id="cardsContainer" class="cards-grid"></div>
+    <div id="messageArea" class="loading">Select a location</div>
+  </div>
 
 </div>
 
 <script>
-    (function() {
-        // ---------- CONFIG ----------
-        // Apps Script Web App URL (your working deployment)
-        const WEB_APP_URL = '';
+  // ---------- Hardcoded credentials ----------
+  const UNIT_CREDENTIALS = {
+    'blrsd': { password: 'blrsd123', location: 'Bangalore' },
+    'chnsd': { password: 'chnsd123', location: 'Chennai' },
+    'dlhsd': { password: 'dlhsd123', location: 'Delhi' },
+    'guwsd': { password: 'guwsd123', location: 'Guwahati' },
+    'hydsd': { password: 'hydsd123', location: 'Hyderabad' },
+    'indsd': { password: 'indsd123', location: 'INDORE' },
+    'kolsd': { password: 'kolsd123', location: 'Kolkata' },
+    'madsd': { password: 'madsd123', location: 'Madurai' },
+    'mumsd': { password: 'mumsd123', location: 'Mumbai' },
+    'myssd': { password: 'myssd123', location: 'Mysore' }
+  };
+  const CORP_USER = 'corp';
+  const CORP_PASS = 'corp123';
 
-        // Unit credentials — edit here anytime
-        const UNIT_CREDENTIALS = {
-            'blrsd': { password: 'blrsd123', location: 'Bangalore' },
-            'chnsd': { password: 'chnsd123', location: 'Chennai' },
-            'dlhsd': { password: 'dlhsd123', location: 'Delhi' },
-            'guwsd': { password: 'guwsd123', location: 'Guwahati' },
-            'hydsd': { password: 'hydsd123', location: 'Hyderabad' },
-            'indsd': { password: 'indsd123', location: 'INDORE' },
-            'kolsd': { password: 'kolsd123', location: 'Kolkata' },
-            'madsd': { password: 'madsd123', location: 'Madurai' },
-            'mumsd': { password: 'mumsd123', location: 'Mumbai' },
-            'myssd': { password: 'myssd123', location: 'Mysore' }
-        };
+  const LOCATIONS = ['Bangalore','Chennai','Delhi','Guwahati','Hyderabad','INDORE','Kolkata','Madurai','Mumbai','Mysore'];
 
-        // Corp account (sees all locations)
-        const CORP_USER = 'corp';
-        const CORP_PASS = 'corp123';
+  let currentUser = null;
+  let currentLocation = '';
+  let allNurses = [];
+  let filteredNurses = [];
 
-        // gid for each location (from your sheet's edit URLs)
-        const LOCATION_GIDS = {
-            'Bangalore': '0',
-            'Chennai':   '168671702',
-            'Delhi':     '1866927428',
-            'Guwahati':  '1092640825',
-            'Hyderabad': '1480613194',
-            'INDORE':    '1352130848',
-            'Kolkata':   '771895746',
-            'Madurai':   '352785735',
-            'Mumbai':    '396810410',
-            'Mysore':    '1830509418'
-        };
+  const loginSection = document.getElementById('loginSection');
+  const mainPanel = document.getElementById('mainPanel');
+  const usernameInput = document.getElementById('usernameInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginError = document.getElementById('loginError');
+  const welcomeMsg = document.getElementById('welcomeMsg');
+  const locationSelect = document.getElementById('locationSelect');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const cardsContainer = document.getElementById('cardsContainer');
+  const messageArea = document.getElementById('messageArea');
 
-        // ---------- STATE ----------
-        let currentUser = null;
-        let currentLocation = '';
-        let allNursesForLocation = [];
-        let filteredNurses = [];
+  function attemptLogin() {
+    loginError.textContent = '';
+    const user = usernameInput.value.trim();
+    const pass = passwordInput.value.trim();
+    if (!user || !pass) { loginError.textContent = 'Enter unit ID and password.'; return; }
 
-        // DOM
-        const loginSection = document.getElementById('loginSection');
-        const mainPanel = document.getElementById('mainPanel');
-        const usernameInput = document.getElementById('usernameInput');
-        const passwordInput = document.getElementById('passwordInput');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
-        const welcomeMsg = document.getElementById('welcomeMsg');
-        const locationSelect = document.getElementById('locationSelect');
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const cardsContainer = document.getElementById('cardsContainer');
-        const messageArea = document.getElementById('messageArea');
-
-        // ---------- CSV PARSER ----------
-        function parseCSV(csvText) {
-            const rows = [];
-            let currentRow = [];
-            let currentField = '';
-            let inQuotes = false;
-            for (let i = 0; i < csvText.length; i++) {
-                const ch = csvText[i], next = csvText[i + 1];
-                if (inQuotes) {
-                    if (ch === '"' && next === '"') { currentField += '"'; i++; }
-                    else if (ch === '"') { inQuotes = false; }
-                    else { currentField += ch; }
-                } else {
-                    if (ch === '"') { inQuotes = true; }
-                    else if (ch === ',') { currentRow.push(currentField.trim()); currentField = ''; }
-                    else if (ch === '\n' || ch === '\r') {
-                        if (currentField !== '' || currentRow.length > 0) {
-                            currentRow.push(currentField.trim());
-                            rows.push([...currentRow]);
-                            currentRow = []; currentField = '';
-                        }
-                        if (ch === '\r' && next === '\n') i++;
-                    } else { currentField += ch; }
-                }
-            }
-            if (currentField !== '' || currentRow.length > 0) {
-                currentRow.push(currentField.trim());
-                rows.push([...currentRow]);
-            }
-            return rows;
-        }
-
-        async function fetchCSV(url) {
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const text = await resp.text();
-            if (text.trim().startsWith('<')) throw new Error('Got HTML instead of CSV');
-            return parseCSV(text);
-        }
-
-        // ---------- LOAD NURSES ----------
-        async function loadNursesForLocation(location) {
-            const gid = LOCATION_GIDS[location];
-            if (!gid) throw new Error(`No gid for ${location}`);
-            const url = WEB_APP_URL + '?gid=' + gid;
-            const rows = await fetchCSV(url);
-            if (rows.length < 2) return [];
-            return rows.slice(1).map(row => {
-                const get = (i) => (row[i] || '').trim();
-                return {
-                    unit: get(1),
-                    ltctc: get(2),
-                    name: get(3),
-                    empId: get(4),
-                    staffType: get(5),
-                    age: get(6),
-                    gender: get(7),
-                    qualification: get(8),
-                    designation: get(9),
-                    languages: get(10),
-                    regNo: get(11),
-                    knownFor: get(12),
-                    patientSays: get(13),
-                    patientName: get(14),
-                    pictureUrl: get(15)
-                };
-            }).filter(n => n.name || n.empId);
-        }
-
-        // ---------- RENDER ----------
-        function renderNurseCards(nurses) {
-            if (!nurses || nurses.length === 0) {
-                cardsContainer.innerHTML = '';
-                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-user-slash"></i><br>No nurses found.</div>`;
-                messageArea.style.display = 'block';
-                return;
-            }
-            messageArea.style.display = 'none';
-            cardsContainer.innerHTML = nurses.map(nurse => {
-                let avatarHtml = '';
-                if (nurse.pictureUrl && nurse.pictureUrl.startsWith('http')) {
-                    avatarHtml = `<img src="${nurse.pictureUrl}" alt="${nurse.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-user-nurse\\'></i>';">`;
-                } else {
-                    avatarHtml = `<i class="fas fa-user-nurse"></i>`;
-                }
-                const quote = nurse.patientSays ?
-                    `<div class="quote-section"><i class="fas fa-quote-left"></i> ${nurse.patientSays}${nurse.patientName ? `<div class="patient-name">— ${nurse.patientName}</div>` : ''}</div>` : '';
-
-                return `
-                    <div class="nurse-card">
-                        <div class="card-header">
-                            <div class="avatar">${avatarHtml}</div>
-                            <div class="name-title">
-                                <h3>${nurse.name || '—'}</h3>
-                                <span class="empid"><i class="fas fa-id-badge"></i> ${nurse.empId || '—'}</span>
-                            </div>
-                        </div>
-                        <div class="details-grid">
-                            <div class="detail-row"><i class="fas fa-building"></i><span class="detail-label">Unit</span><span class="detail-value">${nurse.unit || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-clock"></i><span class="detail-label">LTC/TC</span><span class="detail-value">${nurse.ltctc || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-user-tie"></i><span class="detail-label">Staff Type</span><span class="detail-value">${nurse.staffType || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-venus-mars"></i><span class="detail-label">Age / Gender</span><span class="detail-value">${nurse.age || '—'} / ${nurse.gender || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-graduation-cap"></i><span class="detail-label">Qualification</span><span class="detail-value">${nurse.qualification || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-briefcase"></i><span class="detail-label">Designation</span><span class="detail-value">${nurse.designation || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-language"></i><span class="detail-label">Languages</span><span class="detail-value">${nurse.languages || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-id-card"></i><span class="detail-label">Nurse Reg No</span><span class="detail-value">${nurse.regNo || '—'}</span></div>
-                            <div class="detail-row"><i class="fas fa-star"></i><span class="detail-label">Known For</span><span class="detail-value">${nurse.knownFor || '—'}</span></div>
-                        </div>
-                        ${quote}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterByEmpId(empId) {
-    console.log('Total nurses loaded:', allNursesForLocation.length);
-    console.log('First 3 nurses:', allNursesForLocation.slice(0, 3).map(n => ({ name: n.name, empId: n.empId })));
-    console.log('Search term:', JSON.stringify(empId));
-
-    if (!empId.trim()) {
-        filteredNurses = [...allNursesForLocation];
-    } else {
-        const term = empId.trim().toLowerCase();
-        filteredNurses = allNursesForLocation.filter(n =>
-            (n.empId || '').toLowerCase().includes(term)
-        );
+    if (user === CORP_USER && pass === CORP_PASS) {
+      currentUser = { isCorp: true, id: user, location: null };
+      showMainPanel();
+      return;
     }
-    console.log('Matches:', filteredNurses.length);
-    renderNurseCards(filteredNurses);
-}
 
-        async function loadLocationData(location) {
-            if (!location) return;
-            currentLocation = location;
-            cardsContainer.innerHTML = '';
-            messageArea.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading nurses...</div>`;
-            messageArea.style.display = 'block';
-            try {
-                allNursesForLocation = await loadNursesForLocation(location);
-                filteredNurses = [...allNursesForLocation];
-                searchInput.value = '';
-                renderNurseCards(filteredNurses);
-            } catch (err) {
-                console.error(err);
-                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading ${location}: ${err.message}</div>`;
-                cardsContainer.innerHTML = '';
-            }
-        }
+    const entry = UNIT_CREDENTIALS[user];
+    if (!entry || entry.password !== pass) {
+      loginError.textContent = 'Invalid unit ID or password.';
+      return;
+    }
+    currentUser = { isCorp: false, id: user, location: entry.location };
+    showMainPanel();
+  }
 
-        // ---------- LOGIN (no fetch — checks the hardcoded table) ----------
-        function attemptLogin() {
-            loginError.textContent = '';
-            const user = usernameInput.value.trim();
-            const pass = passwordInput.value.trim();
-            if (!user || !pass) {
-                loginError.textContent = 'Please enter both unit ID and password.';
-                return;
-            }
+  function showMainPanel() {
+    loginSection.style.display = 'none';
+    mainPanel.style.display = 'block';
 
-            // Corp
-            if (user === CORP_USER && pass === CORP_PASS) {
-                currentUser = { isCorp: true, location: null, id: user };
-                showMainPanel(true);
-                return;
-            }
+    locationSelect.innerHTML = '<option value="">-- Select location --</option>';
+    LOCATIONS.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc;
+      opt.textContent = loc;
+      locationSelect.appendChild(opt);
+    });
 
-            // Unit
-            const entry = UNIT_CREDENTIALS[user];
-            if (!entry || entry.password !== pass) {
-                loginError.textContent = 'Invalid unit ID or password.';
-                return;
-            }
-            if (!LOCATION_GIDS[entry.location]) {
-                loginError.textContent = `No data configured for "${entry.location}".`;
-                return;
-            }
+    if (currentUser.isCorp) {
+      welcomeMsg.innerHTML = '<i class="fas fa-user-shield"></i> Corporate · All locations';
+      locationSelect.disabled = false;
+      searchInput.disabled = false;
+      searchBtn.disabled = false;
+      locationSelect.value = 'Bangalore';
+      loadLocation('Bangalore');
+    } else {
+      welcomeMsg.innerHTML = '<i class="fas fa-user-nurse"></i> ' + currentUser.location + ' · ' + currentUser.id;
+      locationSelect.innerHTML = '<option value="' + currentUser.location + '" selected>' + currentUser.location + '</option>';
+      locationSelect.disabled = true;
+      searchInput.disabled = false;
+      searchBtn.disabled = false;
+      loadLocation(currentUser.location);
+    }
+  }
 
-            currentUser = { isCorp: false, location: entry.location, id: user };
-            showMainPanel(false);
-        }
+  function loadLocation(location) {
+    currentLocation = location;
+    allNurses = [];
+    filteredNurses = [];
+    cardsContainer.innerHTML = '';
+    messageArea.style.display = 'block';
+    messageArea.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading ' + location + '...';
 
-        function showMainPanel(isCorp) {
-            loginSection.style.display = 'none';
-            mainPanel.style.display = 'block';
+    google.script.run
+      .withSuccessHandler(function(nurses) {
+        allNurses = nurses || [];
+        filteredNurses = allNurses.slice();
+        searchInput.value = '';
+        renderCards();
+      })
+      .withFailureHandler(function(err) {
+        messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>Error: ' + (err && err.message ? err.message : err) + '</div>';
+      })
+      .getNurses(location);
+  }
 
-            locationSelect.innerHTML = '<option value="">-- Select location --</option>';
-            const locations = Object.keys(LOCATION_GIDS);
-            locations.forEach(loc => {
-                const opt = document.createElement('option');
-                opt.value = loc; opt.textContent = loc;
-                locationSelect.appendChild(opt);
-            });
+  function renderCards() {
+    if (!filteredNurses || filteredNurses.length === 0) {
+      cardsContainer.innerHTML = '';
+      messageArea.innerHTML = '<div class="no-data"><i class="fas fa-user-slash"></i>No nurses found.</div>';
+      messageArea.style.display = 'block';
+      return;
+    }
+    messageArea.style.display = 'none';
+    cardsContainer.innerHTML = filteredNurses.map(function(n) {
+      var avatar;
+      if (n.pictureUrl && n.pictureUrl.indexOf('http') === 0) {
+        avatar = '<img src="' + n.pictureUrl + '" alt="' + n.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=&quot;fas fa-user-nurse&quot;></i>\';">';
+      } else {
+        avatar = '<i class="fas fa-user-nurse"></i>';
+      }
+      var quote = n.patientSays
+        ? '<div class="quote-section"><i class="fas fa-quote-left"></i> ' + n.patientSays +
+          (n.patientName ? '<div class="patient-name">— ' + n.patientName + '</div>' : '') + '</div>'
+        : '';
 
-            if (isCorp) {
-                welcomeMsg.innerHTML = `<i class="fas fa-user-shield"></i> Corporate Account · All locations`;
-                locationSelect.disabled = false;
-                searchInput.disabled = false;
-                searchBtn.disabled = false;
-                if (locations.length > 0) {
-                    locationSelect.value = locations[0];
-                    loadLocationData(locations[0]);
-                }
-            } else {
-                const loc = currentUser.location;
-                welcomeMsg.innerHTML = `<i class="fas fa-user-nurse"></i> ${loc} · ${currentUser.id}`;
-                locationSelect.innerHTML = `<option value="${loc}" selected>${loc}</option>`;
-                locationSelect.disabled = true;
-                searchInput.disabled = false;
-                searchBtn.disabled = false;
-                loadLocationData(loc);
-            }
-        }
+      return '<div class="nurse-card">' +
+        '<div class="card-header"><div class="avatar">' + avatar + '</div>' +
+          '<div class="name-title"><h3>' + (n.name || '—') + '</h3>' +
+          '<span class="empid"><i class="fas fa-id-badge"></i> ' + (n.empId || '—') + '</span></div></div>' +
+        '<div class="details-grid">' +
+          row('fa-building','Unit', n.unit) +
+          row('fa-clock','LTC/TC', n.ltctc) +
+          row('fa-user-tie','Staff Type', n.staffType) +
+          row('fa-venus-mars','Age / Gender', (n.age || '—') + ' / ' + (n.gender || '—')) +
+          row('fa-graduation-cap','Qualification', n.qualification) +
+          row('fa-briefcase','Designation', n.designation) +
+          row('fa-language','Languages', n.languages) +
+          row('fa-id-card','Nurse Reg No', n.regNo) +
+          row('fa-star','Known For', n.knownFor) +
+        '</div>' + quote + '</div>';
+    }).join('');
+  }
 
-        // ---------- EVENTS ----------
-        loginBtn.addEventListener('click', attemptLogin);
-        passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') attemptLogin(); });
-        usernameInput.addEventListener('keypress', e => { if (e.key === 'Enter') attemptLogin(); });
+  function row(icon, label, value) {
+    return '<div class="detail-row"><i class="fas ' + icon + '"></i>' +
+      '<span class="detail-label">' + label + '</span>' +
+      '<span class="detail-value">' + (value || '—') + '</span></div>';
+  }
 
-        logoutBtn.addEventListener('click', () => {
-            currentUser = null;
-            loginSection.style.display = 'block';
-            mainPanel.style.display = 'none';
-            usernameInput.value = ''; passwordInput.value = '';
-            loginError.textContent = '';
-            cardsContainer.innerHTML = '';
-            messageArea.innerHTML = 'Enter search or select location';
-            messageArea.style.display = 'block';
-        });
+  function doSearch() {
+    var term = searchInput.value.trim().toLowerCase();
+    if (!term) {
+      filteredNurses = allNurses.slice();
+    } else {
+      filteredNurses = allNurses.filter(function(n) {
+        return (n.empId || '').toLowerCase().indexOf(term) !== -1 ||
+               (n.name || '').toLowerCase().indexOf(term) !== -1;
+      });
+    }
+    renderCards();
+  }
 
-        locationSelect.addEventListener('change', e => {
-            const loc = e.target.value;
-            if (loc) loadLocationData(loc);
-            else {
-                cardsContainer.innerHTML = '';
-                messageArea.innerHTML = 'Select a location';
-                messageArea.style.display = 'block';
-            }
-        });
+  loginBtn.addEventListener('click', attemptLogin);
+  passwordInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
+  usernameInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
 
-        searchBtn.addEventListener('click', () => {
-            if (!currentUser) return;
-            if (!currentLocation) { messageArea.innerHTML = 'Select a location first.'; return; }
-            filterByEmpId(searchInput.value);
-        });
-        searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
-    })();
+  logoutBtn.addEventListener('click', function() {
+    currentUser = null;
+    loginSection.style.display = 'block';
+    mainPanel.style.display = 'none';
+    usernameInput.value = '';
+    passwordInput.value = '';
+    loginError.textContent = '';
+    cardsContainer.innerHTML = '';
+    messageArea.innerHTML = 'Select a location';
+    messageArea.style.display = 'block';
+  });
+
+  locationSelect.addEventListener('change', function(e) {
+    if (e.target.value) loadLocation(e.target.value);
+  });
+
+  searchBtn.addEventListener('click', doSearch);
+  searchInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') doSearch(); });
 </script>
 </body>
 </html>
