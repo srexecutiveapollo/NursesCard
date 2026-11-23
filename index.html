@@ -68,6 +68,7 @@
 <body>
 <div class="app-container">
 
+  <!-- LOGIN -->
   <div id="loginSection" class="login-card">
     <h1><i class="fas fa-user-nurse" style="color:#1d7a9c; margin-right:8px;"></i>Nurses Card</h1>
     <p>Sign in with your unit credentials</p>
@@ -87,6 +88,7 @@
     </div>
   </div>
 
+  <!-- MAIN PANEL -->
   <div id="mainPanel" class="main-panel">
     <div class="top-bar">
       <div class="welcome" id="welcomeMsg"></div>
@@ -141,6 +143,7 @@
   const cardsContainer = document.getElementById('cardsContainer');
   const messageArea = document.getElementById('messageArea');
 
+  // ---------- LOGIN ----------
   function attemptLogin() {
     loginError.textContent = '';
     const user = usernameInput.value.trim();
@@ -191,6 +194,7 @@
     }
   }
 
+  // ---------- DATA LOAD (via google.script.run) ----------
   function loadLocation(location) {
     currentLocation = location;
     allNurses = [];
@@ -200,10 +204,23 @@
     messageArea.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading ' + location + '...';
 
     google.script.run
-      .withSuccessHandler(function(nurses) {
-        allNurses = nurses || [];
+      .withSuccessHandler(function(res) {
+        if (!res) {
+          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>No response from server.</div>';
+          return;
+        }
+        if (!res.ok) {
+          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>' + res.error + '</div>';
+          return;
+        }
+        allNurses = res.nurses || [];
         filteredNurses = allNurses.slice();
         searchInput.value = '';
+        if (allNurses.length === 0) {
+          cardsContainer.innerHTML = '';
+          messageArea.innerHTML = '<div class="no-data"><i class="fas fa-user-slash"></i>Sheet "' + location + '" has no data rows.</div>';
+          return;
+        }
         renderCards();
       })
       .withFailureHandler(function(err) {
@@ -212,6 +229,7 @@
       .getNurses(location);
   }
 
+  // ---------- RENDER ----------
   function renderCards() {
     if (!filteredNurses || filteredNurses.length === 0) {
       cardsContainer.innerHTML = '';
@@ -256,6 +274,7 @@
       '<span class="detail-value">' + (value || '—') + '</span></div>';
   }
 
+  // ---------- SEARCH ----------
   function doSearch() {
     var term = searchInput.value.trim().toLowerCase();
     if (!term) {
@@ -269,6 +288,7 @@
     renderCards();
   }
 
+  // ---------- EVENTS ----------
   loginBtn.addEventListener('click', attemptLogin);
   passwordInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
   usernameInput.addEventListener('keypress', function(e){ if (e.key === 'Enter') attemptLogin(); });
