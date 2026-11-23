@@ -3,141 +3,733 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurse Card Lookup</title>
+    <title>Nurses Cards · Location Wise</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-        input, select, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
-        .error { color: red; font-weight: bold; }
-        .hidden { display: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+        }
+        /* ----- login card ----- */
+        .login-card {
+            max-width: 420px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px rgba(0, 20, 30, 0.12);
+            padding: 2rem 2rem 2.5rem;
+            transition: 0.25s;
+        }
+        .login-card h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b3b4f;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .login-card p {
+            text-align: center;
+            color: #5b7a8a;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .input-group {
+            margin-bottom: 1.3rem;
+            position: relative;
+        }
+        .input-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f9fad;
+            font-size: 1rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 2.8rem;
+            border: 1.5px solid #d9e6ed;
+            border-radius: 1.5rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+            background: #f9fcfd;
+        }
+        .input-group input:focus {
+            border-color: #1d7a9c;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(29, 122, 156, 0.08);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: #1d7a9c;
+            border: none;
+            border-radius: 2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .login-btn:hover {
+            background: #0e5f7c;
+            transform: scale(1.01);
+        }
+        .login-hint {
+            margin-top: 1.3rem;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #6b8b9b;
+            background: #f0f6fa;
+            padding: 0.7rem;
+            border-radius: 2rem;
+        }
+        .error-msg {
+            color: #c73e3e;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        /* ----- main app (after login) ----- */
+        .main-panel {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px rgba(0, 20, 30, 0.08);
+            padding: 2rem 2rem 2.5rem;
+            display: none;
+        }
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .welcome {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1b4f64;
+        }
+        .welcome i {
+            margin-right: 0.4rem;
+            color: #1d7a9c;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .controls select, .controls input {
+            padding: 0.7rem 1.2rem;
+            border-radius: 2rem;
+            border: 1.5px solid #d9e6ed;
+            background: #f9fcfd;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .controls select:focus, .controls input:focus {
+            border-color: #1d7a9c;
+            background: white;
+        }
+        .controls button {
+            padding: 0.7rem 1.5rem;
+            border-radius: 2rem;
+            border: none;
+            background: #1d7a9c;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .controls button:hover {
+            background: #0e5f7c;
+        }
+        .logout-btn {
+            background: #eef3f7;
+            color: #1d4d62;
+        }
+        .logout-btn:hover {
+            background: #d9e4ec;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .nurse-card {
+            background: #ffffff;
+            border-radius: 1.8rem;
+            box-shadow: 0 8px 24px rgba(0, 40, 60, 0.08);
+            padding: 1.5rem 1.2rem 1.5rem 1.2rem;
+            border: 1px solid #e3eef4;
+            transition: 0.25s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .nurse-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px rgba(0, 70, 100, 0.12);
+            border-color: #b9d7e6;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed #cde0ea;
+            padding-bottom: 1rem;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #d4e8f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #1d5f7a;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .name-title h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b3b4f;
+            line-height: 1.3;
+        }
+        .name-title .empid {
+            font-size: 0.8rem;
+            color: #6f8e9e;
+            font-weight: 500;
+            background: #eef5fa;
+            padding: 0.15rem 0.6rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin-top: 0.2rem;
+        }
+        .details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            font-size: 0.88rem;
+            margin-top: 0.2rem;
+            flex: 1;
+        }
+        .detail-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            color: #1a3f50;
+        }
+        .detail-row i {
+            width: 18px;
+            color: #1d7a9c;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #2b5c71;
+            min-width: 90px;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+        .detail-value {
+            color: #1f4b5e;
+            font-weight: 500;
+        }
+        .quote-section {
+            margin-top: 1rem;
+            background: #f5fafd;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1rem;
+            font-size: 0.85rem;
+            color: #235e78;
+            border-left: 5px solid #1d7a9c;
+        }
+        .quote-section i {
+            margin-right: 0.3rem;
+            color: #1d7a9c;
+        }
+        .quote-section .patient-name {
+            font-weight: 600;
+            margin-top: 0.3rem;
+            font-size: 0.8rem;
+            color: #427a94;
+        }
+        .badge {
+            background: #e4f0f7;
+            padding: 0.25rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1d5f7a;
+            display: inline-block;
+        }
+        .loading, .no-data {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #617e8e;
+            font-size: 1rem;
+        }
+        .no-data i {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 600px) {
+            body { padding: 0.8rem; }
+            .login-card { padding: 1.8rem 1.5rem; }
+            .main-panel { padding: 1.5rem 1rem; }
+            .top-bar { flex-direction: column; align-items: stretch; }
+            .controls { justify-content: stretch; flex-wrap: wrap; }
+            .controls select, .controls input, .controls button { flex: 1 0 auto; }
+        }
     </style>
 </head>
 <body>
+<div class="app-container">
 
-    <h2>Nurse Card Lookup</h2>
+    <!-- LOGIN SECTION -->
+    <div id="loginSection" class="login-card">
+        <h1><i class="fas fa-user-nurse" style="color: #1d7a9c; margin-right: 8px;"></i>Nurses Card</h1>
+        <p>Sign in with your location credentials</p>
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="usernameInput" placeholder="Username (e.g. blrsd)" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+        </div>
+        <button class="login-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+        <div id="loginError" class="error-msg"></div>
+        <div class="login-hint">
+            <i class="fas fa-info-circle"></i> Corp login: <strong>corp / corp123</strong> (all locations)<br>
+            Location sample: blrsd / blrsd123
+        </div>
+    </div>
 
-    <label for="unitSelect">Select Unit:</label>
-    <select id="unitSelect">
-        <option value="">-- Select Unit --</option>
-    </select>
+    <!-- MAIN PANEL (after login) -->
+    <div id="mainPanel" class="main-panel">
+        <div class="top-bar">
+            <div class="welcome" id="welcomeMsg"><i class="fas fa-user-circle"></i> Welcome</div>
+            <div class="controls">
+                <select id="locationSelect" disabled>
+                    <option value="">-- Select location --</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search by EmpID" disabled>
+                <button id="searchBtn" disabled><i class="fas fa-search"></i> Search</button>
+                <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+        <div id="cardsContainer" class="cards-grid">
+            <!-- cards injected here -->
+        </div>
+        <div id="messageArea" class="loading">Enter search or select location</div>
+    </div>
 
-    <label for="empIdInput">Enter EmpID:</label>
-    <input type="text" id="empIdInput" placeholder="e.g., 101">
+</div>
 
-    <button onclick="lookupNurse()">Search</button>
+<script>
+    (function() {
+        // ---------- CONFIG ----------
+        // REPLACE THESE WITH YOUR PUBLISHED CSV URLS (File -> Share -> Publish to web -> CSV)
+        // User Profiles sheet (S-no, location, ID, Password)
+        const USER_PROFILES_CSV = 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=USER_PROFILES_GID&single=true&output=csv';
+        // Location sheets – one per city. Use exact names as in column B of User Profiles.
+        const LOCATION_CSV_MAP = {
+            'Bangalore': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=BANGALORE_GID&single=true&output=csv',
+            'Chennai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=CHENNAI_GID&single=true&output=csv',
+            'Delhi': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=DELHI_GID&single=true&output=csv',
+            'Guwahati': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=GUWAHATI_GID&single=true&output=csv',
+            'Hyderabad': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=HYDERABAD_GID&single=true&output=csv',
+            'INDORE': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=INDORE_GID&single=true&output=csv',
+            'Kolkata': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=KOLKATA_GID&single=true&output=csv',
+            'Madurai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MADURAI_GID&single=true&output=csv',
+            'Mumbai': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MUMBAI_GID&single=true&output=csv',
+            'Mysore': 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=MYSORE_GID&single=true&output=csv'
+        };
 
-    <div id="result" class="result hidden"></div>
+        // Corp credentials
+        const CORP_USER = 'corp';
+        const CORP_PASS = 'corp123';
 
-    <script>
-        // --- CONFIGURATION ---
-        // 1. Replace with your actual Google Spreadsheet ID
-        //    (the long string between /d/ and /edit in the sheet URL)
-        const SPREADSHEET_ID = '1kMbQg3Pz1Hwd1D4BQ9hp0c6SxvUKA4X02iH37a7VHJc';
+        // ---------- STATE ----------
+        let currentUser = null;          // { location, isCorp, id }
+        let userProfiles = [];           // array of { location, id, password }
+        let currentLocation = '';
+        let allNursesForLocation = [];   // raw data for current location
+        let filteredNurses = [];
 
-        // 2. Exact sheet names as they appear in your Google Spreadsheet
-        const UNIT_SHEETS = [
-            'Bangalore',
-            'Chennai',
-            'Delhi',
-            'Guwahati',
-            'Hyderabad',
-            'INDORE',
-            'Kolkata',
-            'Madurai',
-            'Mumbai',
-            'Mysore'
-        ];
+        // DOM elements
+        const loginSection = document.getElementById('loginSection');
+        const mainPanel = document.getElementById('mainPanel');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const welcomeMsg = document.getElementById('welcomeMsg');
+        const locationSelect = document.getElementById('locationSelect');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const cardsContainer = document.getElementById('cardsContainer');
+        const messageArea = document.getElementById('messageArea');
 
-        // --- Populate dropdown with unit names ---
-        const unitSelect = document.getElementById('unitSelect');
-        UNIT_SHEETS.forEach(unit => {
-            const option = document.createElement('option');
-            option.value = unit;
-            option.textContent = unit;
-            unitSelect.appendChild(option);
-        });
+        // ---------- UTILS ----------
+        function parseCSV(csvText) {
+            // simple CSV parser (handles quoted fields)
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
 
-        // --- Main Lookup Function ---
-        async function lookupNurse() {
-            const unit = unitSelect.value;
-            const empId = document.getElementById('empIdInput').value.trim();
-            const resultDiv = document.getElementById('result');
-
-            if (!unit) { alert('Please select a Unit.'); return; }
-            if (!empId) { alert('Please enter an EmpID.'); return; }
-
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = 'Searching...';
-
-            try {
-                // Fetch data from the SPECIFIC sheet matching the selected unit
-                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(unit)}`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const text = await response.text();
-
-                // Strip the JSONP wrapper: google.visualization.Query.setResponse({...});
-                const jsonString = text
-                    .replace(/^google\.visualization\.Query\.setResponse\(/, '')
-                    .replace(/\);?\s*$/, '');
-                const data = JSON.parse(jsonString);
-
-                if (!data.table || !data.table.rows || data.table.rows.length === 0) {
-                    resultDiv.innerHTML = '<p class="error">No data found in this sheet.</p>';
-                    return;
-                }
-
-                // Map headers (lowercased) -> column index
-                const headers = data.table.cols.map(c =>
-                    c.label ? c.label.toLowerCase().trim() : ''
-                );
-
-                // Find "EmpID" column. Add more aliases here if your header differs.
-                const empIdIndex = headers.findIndex(h =>
-                    h === 'empid' || h === 'emp id' || h === 'employee id' || h === 'employeeid'
-                );
-
-                if (empIdIndex === -1) {
-                    resultDiv.innerHTML = '<p class="error">No "EmpID" column found in this sheet.</p>';
-                    return;
-                }
-
-                // Search for the matching row
-                let foundNurse = null;
-                for (const row of data.table.rows) {
-                    const rowEmpId = row.c[empIdIndex] && row.c[empIdIndex].v != null
-                        ? String(row.c[empIdIndex].v).trim()
-                        : '';
-                    if (rowEmpId === empId) {
-                        foundNurse = {};
-                        data.table.cols.forEach((col, i) => {
-                            const header = col.label || `Column ${i + 1}`;
-                            const val = row.c[i] && row.c[i].v != null ? row.c[i].v : '';
-                            foundNurse[header] = val;
-                        });
-                        break;
+            for (let i = 0; i < csvText.length; i++) {
+                const ch = csvText[i];
+                const next = csvText[i + 1];
+                if (inQuotes) {
+                    if (ch === '"' && next === '"') {
+                        currentField += '"';
+                        i++;
+                    } else if (ch === '"') {
+                        inQuotes = false;
+                    } else {
+                        currentField += ch;
                     }
-                }
-
-                // Display
-                if (foundNurse) {
-                    let html = `<h3>Nurse Found in ${unit}:</h3><ul>`;
-                    for (const [key, value] of Object.entries(foundNurse)) {
-                        html += `<li><strong>${key}:</strong> ${value}</li>`;
-                    }
-                    html += '</ul>';
-                    resultDiv.innerHTML = html;
                 } else {
-                    resultDiv.innerHTML = '<p class="error">Nurse not found. Please check the EmpID and Unit.</p>';
+                    if (ch === '"') {
+                        inQuotes = true;
+                    } else if (ch === ',') {
+                        currentRow.push(currentField.trim());
+                        currentField = '';
+                    } else if (ch === '\n' || ch === '\r') {
+                        if (currentField !== '' || currentRow.length > 0) {
+                            currentRow.push(currentField.trim());
+                            rows.push([...currentRow]);
+                            currentRow = [];
+                            currentField = '';
+                        }
+                        if (ch === '\r' && next === '\n') i++;
+                    } else {
+                        currentField += ch;
+                    }
                 }
+            }
+            // last field / row
+            if (currentField !== '' || currentRow.length > 0) {
+                currentRow.push(currentField.trim());
+                rows.push([...currentRow]);
+            }
+            return rows;
+        }
+
+        async function fetchCSV(url) {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`Failed to load ${url}`);
+            const text = await resp.text();
+            return parseCSV(text);
+        }
+
+        // Load user profiles on startup
+        async function loadUserProfiles() {
+            try {
+                const rows = await fetchCSV(USER_PROFILES_CSV);
+                // expected: S-no, location, ID, Password  (cols 1,2,3,4 -> indices 0,1,2,3)
+                if (rows.length < 2) throw new Error('No user profiles found');
+                // skip header row
+                userProfiles = rows.slice(1).map(row => ({
+                    location: (row[1] || '').trim(),
+                    id: (row[2] || '').trim(),
+                    password: (row[3] || '').trim()
+                })).filter(u => u.location && u.id && u.password);
+                console.log('User profiles loaded:', userProfiles.length);
             } catch (err) {
-                console.error(err);
-                resultDiv.innerHTML = `<p class="error">Error: ${err.message}. Check that the sheet is public and the tab name is exactly "${unit}".</p>`;
+                console.error('Error loading profiles:', err);
+                loginError.textContent = 'Could not load user profiles. Check CSV URL.';
             }
         }
-    </script>
+
+        // Load nurses for a location
+        async function loadNursesForLocation(location) {
+            const url = LOCATION_CSV_MAP[location];
+            if (!url) throw new Error(`No CSV configured for ${location}`);
+            const rows = await fetchCSV(url);
+            if (rows.length < 2) return [];
+            // Expected columns (1-based as per prompt):
+            // 1 S-no, 2 Unit, 3 LTC/TC, 4 Name, 5 EmpID, 6 Staff Type, 7 Age, 8 Gender,
+            // 9 Qualification, 10 Desigination, 11 Languages Known, 12 Nurse REG No,
+            // 13 Known For, 14 What Patient Says, 15 Patient Name, 16 Picture (index 15)
+            // Note: we ignore S-no (col 1).
+            const dataRows = rows.slice(1); // skip header
+            return dataRows.map((row, idx) => {
+                // fill missing with empty string
+                const get = (i) => (row[i] || '').trim();
+                return {
+                    unit: get(1),           // col2
+                    ltctc: get(2),          // col3
+                    name: get(3),           // col4
+                    empId: get(4),          // col5
+                    staffType: get(5),      // col6
+                    age: get(6),            // col7
+                    gender: get(7),         // col8
+                    qualification: get(8),  // col9
+                    designation: get(9),    // col10
+                    languages: get(10),     // col11
+                    regNo: get(11),         // col12
+                    knownFor: get(12),      // col13
+                    patientSays: get(13),   // col14
+                    patientName: get(14),   // col15
+                    pictureUrl: get(15)     // col16 (index 15) -> actually col16 is index 15
+                };
+            }).filter(n => n.name || n.empId); // skip empty rows
+        }
+
+        // ---------- RENDERING ----------
+        function renderNurseCards(nurses) {
+            if (!nurses || nurses.length === 0) {
+                cardsContainer.innerHTML = '';
+                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-user-slash"></i><br>No nurses found for this search / location.</div>`;
+                messageArea.style.display = 'block';
+                return;
+            }
+            messageArea.style.display = 'none';
+            cardsContainer.innerHTML = nurses.map(nurse => {
+                // build picture
+                let avatarHtml = '';
+                if (nurse.pictureUrl && nurse.pictureUrl.startsWith('http')) {
+                    avatarHtml = `<img src="${nurse.pictureUrl}" alt="${nurse.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-user-nurse\\'></i>';">`;
+                } else {
+                    avatarHtml = `<i class="fas fa-user-nurse"></i>`;
+                }
+
+                const patientQuote = nurse.patientSays ? 
+                    `<div class="quote-section"><i class="fas fa-quote-left"></i> ${nurse.patientSays} ${nurse.patientName ? `<div class="patient-name">— ${nurse.patientName}</div>` : ''}</div>` : '';
+
+                return `
+                    <div class="nurse-card">
+                        <div class="card-header">
+                            <div class="avatar">${avatarHtml}</div>
+                            <div class="name-title">
+                                <h3>${nurse.name || '—'}</h3>
+                                <span class="empid"><i class="fas fa-id-badge"></i> ${nurse.empId || '—'}</span>
+                            </div>
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-row"><i class="fas fa-building"></i><span class="detail-label">Unit</span><span class="detail-value">${nurse.unit || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-clock"></i><span class="detail-label">LTC/TC</span><span class="detail-value">${nurse.ltctc || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-user-tie"></i><span class="detail-label">Staff Type</span><span class="detail-value">${nurse.staffType || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-venus-mars"></i><span class="detail-label">Age / Gender</span><span class="detail-value">${nurse.age || '—'} / ${nurse.gender || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-graduation-cap"></i><span class="detail-label">Qualification</span><span class="detail-value">${nurse.qualification || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-briefcase"></i><span class="detail-label">Designation</span><span class="detail-value">${nurse.designation || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-language"></i><span class="detail-label">Languages</span><span class="detail-value">${nurse.languages || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-id-card"></i><span class="detail-label">Nurse Reg No</span><span class="detail-value">${nurse.regNo || '—'}</span></div>
+                            <div class="detail-row"><i class="fas fa-star"></i><span class="detail-label">Known For</span><span class="detail-value">${nurse.knownFor || '—'}</span></div>
+                        </div>
+                        ${patientQuote}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter by empId
+        function filterByEmpId(empId) {
+            if (!empId.trim()) {
+                filteredNurses = [...allNursesForLocation];
+            } else {
+                const term = empId.trim().toLowerCase();
+                filteredNurses = allNursesForLocation.filter(n => n.empId.toLowerCase().includes(term));
+            }
+            renderNurseCards(filteredNurses);
+        }
+
+        // Load location data and populate
+        async function loadLocationData(location) {
+            if (!location) return;
+            currentLocation = location;
+            cardsContainer.innerHTML = '';
+            messageArea.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading nurses...</div>`;
+            messageArea.style.display = 'block';
+            try {
+                allNursesForLocation = await loadNursesForLocation(location);
+                filteredNurses = [...allNursesForLocation];
+                searchInput.value = ''; // reset search
+                renderNurseCards(filteredNurses);
+            } catch (err) {
+                console.error(err);
+                messageArea.innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><br>Error loading data for ${location}. Check CSV URL.</div>`;
+                cardsContainer.innerHTML = '';
+            }
+        }
+
+        // ---------- LOGIN FLOW ----------
+        async function attemptLogin() {
+            loginError.textContent = '';
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
+            if (!user || !pass) {
+                loginError.textContent = 'Please enter both username and password.';
+                return;
+            }
+
+            // ensure profiles loaded
+            if (userProfiles.length === 0) {
+                await loadUserProfiles();
+                if (userProfiles.length === 0) {
+                    loginError.textContent = 'User profiles not available. Try again later.';
+                    return;
+                }
+            }
+
+            // Check corp
+            if (user === CORP_USER && pass === CORP_PASS) {
+                // corp login
+                currentUser = { isCorp: true, location: null, id: user };
+                showMainPanel(true);
+                return;
+            }
+
+            // Check regular user
+            const matched = userProfiles.find(u => u.id === user && u.password === pass);
+            if (!matched) {
+                loginError.textContent = 'Invalid credentials.';
+                return;
+            }
+
+            // Check if location sheet exists
+            if (!LOCATION_CSV_MAP[matched.location]) {
+                loginError.textContent = `No data sheet configured for ${matched.location}.`;
+                return;
+            }
+
+            currentUser = { isCorp: false, location: matched.location, id: user };
+            showMainPanel(false);
+        }
+
+        function showMainPanel(isCorp) {
+            loginSection.style.display = 'none';
+            mainPanel.style.display = 'block';
+
+            // populate location dropdown
+            locationSelect.innerHTML = '<option value="">-- Select location --</option>';
+            const locations = Object.keys(LOCATION_CSV_MAP);
+            locations.forEach(loc => {
+                const opt = document.createElement('option');
+                opt.value = loc;
+                opt.textContent = loc;
+                locationSelect.appendChild(opt);
+            });
+
+            if (isCorp) {
+                welcomeMsg.innerHTML = `<i class="fas fa-user-shield"></i> Corporate Account · All locations`;
+                locationSelect.disabled = false;
+                searchInput.disabled = false;
+                searchBtn.disabled = false;
+                // auto-select first location
+                if (locations.length > 0) {
+                    locationSelect.value = locations[0];
+                    loadLocationData(locations[0]);
+                }
+            } else {
+                // regular user — only their location
+                const loc = currentUser.location;
+                welcomeMsg.innerHTML = `<i class="fas fa-user-nurse"></i> ${loc} · ${currentUser.id}`;
+                locationSelect.innerHTML = `<option value="${loc}" selected>${loc}</option>`;
+                locationSelect.disabled = true;
+                searchInput.disabled = false;
+                searchBtn.disabled = false;
+                loadLocationData(loc);
+            }
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        loginBtn.addEventListener('click', attemptLogin);
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+        usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            loginSection.style.display = 'block';
+            mainPanel.style.display = 'none';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            loginError.textContent = '';
+            cardsContainer.innerHTML = '';
+            messageArea.innerHTML = 'Enter search or select location';
+            messageArea.style.display = 'block';
+        });
+
+        locationSelect.addEventListener('change', (e) => {
+            const loc = e.target.value;
+            if (loc) {
+                loadLocationData(loc);
+            } else {
+                cardsContainer.innerHTML = '';
+                messageArea.innerHTML = 'Select a location';
+                messageArea.style.display = 'block';
+            }
+        });
+
+        searchBtn.addEventListener('click', () => {
+            if (!currentUser) return;
+            const empId = searchInput.value.trim();
+            if (!currentLocation) {
+                messageArea.innerHTML = 'Select a location first.';
+                return;
+            }
+            filterByEmpId(empId);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchBtn.click();
+            }
+        });
+
+        // ---------- INIT ----------
+        (async function init() {
+            await loadUserProfiles();
+        })();
+
+        // Expose a sample fallback if CSV fails (optional). You can remove if not needed.
+        // But keep it clean: if profiles fail, user cannot login. We'll just log.
+    })();
+</script>
 </body>
 </html>
