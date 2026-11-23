@@ -370,27 +370,23 @@
 <script>
     (function() {
      // ---------- CONFIG ----------
-const SHEET_ID = '1kMbQg3Pz1Hwd1D4BQ9hp0c6SxvUKA4X02iH37a7VHJc';
-const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwEeOytctcUEQ0-kjsTr-uND-OWpq15I-va6s387bIjPnQ84aPOlhk_jF-lpxAVUrYYHg/exec';
 
-// User Profiles worksheet
-const USER_PROFILES_CSV = BASE + '542840793';
+const USER_PROFILES_CSV = WEB_APP_URL + '?gid=542840793';
 
-// Location worksheets (gid values from your links)
 const LOCATION_CSV_MAP = {
-    'Bangalore': BASE + '0',
-    'Chennai':   BASE + '168671702',
-    'Delhi':     BASE + '1866927428',
-    'Guwahati':  BASE + '1092640825',
-    'Hyderabad': BASE + '1480613194',
-    'INDORE':    BASE + '1352130848',
-    'Kolkata':   BASE + '771895746',
-    'Madurai':   BASE + '352785735',
-    'Mumbai':    BASE + '396810410',
-    'Mysore':    BASE + '1830509418'
+    'Bangalore': WEB_APP_URL + '?gid=0',
+    'Chennai':   WEB_APP_URL + '?gid=168671702',
+    'Delhi':     WEB_APP_URL + '?gid=1866927428',
+    'Guwahati':  WEB_APP_URL + '?gid=1092640825',
+    'Hyderabad': WEB_APP_URL + '?gid=1480613194',
+    'INDORE':    WEB_APP_URL + '?gid=1352130848',
+    'Kolkata':   WEB_APP_URL + '?gid=771895746',
+    'Madurai':   WEB_APP_URL + '?gid=352785735',
+    'Mumbai':    WEB_APP_URL + '?gid=396810410',
+    'Mysore':    WEB_APP_URL + '?gid=1830509418'
 };
 
-// Corp credentials
 const CORP_USER = 'corp';
 const CORP_PASS = 'corp123';
 
