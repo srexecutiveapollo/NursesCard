@@ -313,14 +313,21 @@
         }
 
         function filterByEmpId(empId) {
-            if (!empId.trim()) {
-                filteredNurses = [...allNursesForLocation];
-            } else {
-                const term = empId.trim().toLowerCase();
-                filteredNurses = allNursesForLocation.filter(n => n.empId.toLowerCase().includes(term));
-            }
-            renderNurseCards(filteredNurses);
-        }
+    console.log('Total nurses loaded:', allNursesForLocation.length);
+    console.log('First 3 nurses:', allNursesForLocation.slice(0, 3).map(n => ({ name: n.name, empId: n.empId })));
+    console.log('Search term:', JSON.stringify(empId));
+
+    if (!empId.trim()) {
+        filteredNurses = [...allNursesForLocation];
+    } else {
+        const term = empId.trim().toLowerCase();
+        filteredNurses = allNursesForLocation.filter(n =>
+            (n.empId || '').toLowerCase().includes(term)
+        );
+    }
+    console.log('Matches:', filteredNurses.length);
+    renderNurseCards(filteredNurses);
+}
 
         async function loadLocationData(location) {
             if (!location) return;
