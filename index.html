@@ -8,9 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
-    body { background:#f4f7fc; display:flex; justify-content:center; padding:1.5rem; }
+    body { background:#f4f7fc; display:flex; justify-content:center; padding:1.5rem; min-height:100vh; }
     .app-container { max-width:1400px; width:100%; }
 
+    /* ---------- Login ---------- */
     .login-card { max-width:420px; margin:2rem auto; background:#fff; border-radius:2rem;
       box-shadow:0 20px 35px rgba(0,20,30,0.12); padding:2rem 2rem 2.5rem; }
     .login-card h1 { font-size:1.8rem; font-weight:600; color:#0b3b4f; text-align:center; margin-bottom:0.5rem; }
@@ -18,51 +19,70 @@
     .input-group { margin-bottom:1.3rem; position:relative; }
     .input-group i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#7f9fad; }
     .input-group input { width:100%; padding:0.9rem 1rem 0.9rem 2.8rem; border:1.5px solid #d9e6ed;
-      border-radius:1.5rem; font-size:0.95rem; outline:none; background:#f9fcfd; }
-    .input-group input:focus { border-color:#1d7a9c; background:#fff; }
+      border-radius:1.5rem; font-size:0.95rem; outline:none; background:#f9fcfd; transition:0.2s; }
+    .input-group input:focus { border-color:#1d7a9c; background:#fff; box-shadow:0 0 0 4px rgba(29,122,156,0.08); }
     .login-btn { width:100%; padding:0.9rem; background:#1d7a9c; border:none; border-radius:2rem;
-      color:#fff; font-weight:600; font-size:1rem; cursor:pointer; }
+      color:#fff; font-weight:600; font-size:1rem; cursor:pointer; transition:0.2s; }
     .login-btn:hover { background:#0e5f7c; }
     .login-hint { margin-top:1.3rem; font-size:0.8rem; text-align:center; color:#6b8b9b;
       background:#f0f6fa; padding:0.7rem; border-radius:2rem; }
     .error-msg { color:#c73e3e; font-size:0.85rem; text-align:center; margin-top:1rem; font-weight:500; }
 
+    /* ---------- Main ---------- */
     .main-panel { background:#fff; border-radius:2rem; box-shadow:0 20px 35px rgba(0,20,30,0.08);
       padding:2rem 2rem 2.5rem; display:none; }
-    .top-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:2rem; gap:1rem; }
+    .top-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+      margin-bottom:2rem; gap:1rem; }
     .welcome { font-size:1.1rem; font-weight:500; color:#1b4f64; }
     .welcome i { margin-right:0.4rem; color:#1d7a9c; }
     .controls { display:flex; flex-wrap:wrap; gap:0.8rem; align-items:center; }
-    .controls select, .controls input { padding:0.7rem 1.2rem; border-radius:2rem; border:1.5px solid #d9e6ed;
-      background:#f9fcfd; font-size:0.9rem; outline:none; }
+    .controls select, .controls input { padding:0.7rem 1.2rem; border-radius:2rem;
+      border:1.5px solid #d9e6ed; background:#f9fcfd; font-size:0.9rem; outline:none; transition:0.2s; }
+    .controls select:focus, .controls input:focus { border-color:#1d7a9c; background:#fff; }
     .controls button { padding:0.7rem 1.5rem; border-radius:2rem; border:none; background:#1d7a9c;
-      color:#fff; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.4rem; }
+      color:#fff; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.4rem; transition:0.2s; }
     .controls button:hover { background:#0e5f7c; }
     .logout-btn { background:#eef3f7; color:#1d4d62; }
     .logout-btn:hover { background:#d9e4ec; }
 
-    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; margin-top:0.5rem; }
+    /* ---------- Cards ---------- */
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:1.5rem; margin-top:0.5rem; }
     .nurse-card { background:#fff; border-radius:1.8rem; box-shadow:0 8px 24px rgba(0,40,60,0.08);
-      padding:1.5rem 1.2rem; border:1px solid #e3eef4; display:flex; flex-direction:column; }
+      padding:1.5rem 1.2rem; border:1px solid #e3eef4; transition:0.25s; display:flex; flex-direction:column; }
+    .nurse-card:hover { transform:translateY(-4px); box-shadow:0 16px 30px rgba(0,70,100,0.12); border-color:#b9d7e6; }
     .card-header { display:flex; align-items:center; gap:1rem; margin-bottom:1rem;
       border-bottom:1px dashed #cde0ea; padding-bottom:1rem; }
     .avatar { width:60px; height:60px; border-radius:50%; background:#d4e8f2;
       display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#1d5f7a;
-      flex-shrink:0; overflow:hidden; }
+      flex-shrink:0; overflow:hidden; border:2px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
     .avatar img { width:100%; height:100%; object-fit:cover; }
     .name-title h3 { font-size:1.2rem; font-weight:600; color:#0b3b4f; line-height:1.3; }
-    .name-title .empid { font-size:0.8rem; color:#6f8e9e; background:#eef5fa;
+    .name-title .empid { font-size:0.8rem; color:#6f8e9e; font-weight:500; background:#eef5fa;
       padding:0.15rem 0.6rem; border-radius:2rem; display:inline-block; margin-top:0.2rem; }
-    .details-grid { display:flex; flex-direction:column; gap:0.45rem; font-size:0.88rem; }
+    .details-grid { display:flex; flex-direction:column; gap:0.45rem; font-size:0.88rem; flex:1; }
     .detail-row { display:flex; align-items:baseline; gap:0.5rem; color:#1a3f50; }
     .detail-row i { width:18px; color:#1d7a9c; font-size:0.8rem; text-align:center; }
-    .detail-label { font-weight:600; color:#2b5c71; min-width:90px; font-size:0.82rem; text-transform:uppercase; }
+    .detail-label { font-weight:600; color:#2b5c71; min-width:90px; font-size:0.82rem;
+      text-transform:uppercase; letter-spacing:0.2px; }
     .detail-value { color:#1f4b5e; font-weight:500; }
     .quote-section { margin-top:1rem; background:#f5fafd; border-radius:1.2rem; padding:0.9rem 1rem;
       font-size:0.85rem; color:#235e78; border-left:5px solid #1d7a9c; }
+    .quote-section i { margin-right:0.3rem; color:#1d7a9c; }
     .quote-section .patient-name { font-weight:600; margin-top:0.3rem; font-size:0.8rem; color:#427a94; }
-    .loading, .no-data { text-align:center; padding:3rem 1rem; color:#617e8e; }
+
+    /* ---------- Status ---------- */
+    .loading, .no-data { text-align:center; padding:3rem 1rem; color:#617e8e; font-size:1rem; }
     .no-data i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.6; display:block; }
+
+    @media (max-width:600px) {
+      body { padding:0.8rem; }
+      .login-card { padding:1.8rem 1.5rem; }
+      .main-panel { padding:1.5rem 1rem; }
+      .top-bar { flex-direction:column; align-items:stretch; }
+      .controls { justify-content:stretch; flex-wrap:wrap; }
+      .controls select, .controls input, .controls button { flex:1 0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -88,7 +108,7 @@
     </div>
   </div>
 
-  <!-- MAIN PANEL -->
+  <!-- MAIN -->
   <div id="mainPanel" class="main-panel">
     <div class="top-bar">
       <div class="welcome" id="welcomeMsg"></div>
@@ -107,7 +127,7 @@
 
 <script>
   // ---------- Hardcoded credentials ----------
-  const UNIT_CREDENTIALS = {
+  var UNIT_CREDENTIALS = {
     'blrsd': { password: 'blrsd123', location: 'Bangalore' },
     'chnsd': { password: 'chnsd123', location: 'Chennai' },
     'dlhsd': { password: 'dlhsd123', location: 'Delhi' },
@@ -119,35 +139,35 @@
     'mumsd': { password: 'mumsd123', location: 'Mumbai' },
     'myssd': { password: 'myssd123', location: 'Mysore' }
   };
-  const CORP_USER = 'corp';
-  const CORP_PASS = 'corp123';
+  var CORP_USER = 'corp';
+  var CORP_PASS = 'corp123';
 
-  const LOCATIONS = ['Bangalore','Chennai','Delhi','Guwahati','Hyderabad','INDORE','Kolkata','Madurai','Mumbai','Mysore'];
+  var LOCATIONS = ['Bangalore','Chennai','Delhi','Guwahati','Hyderabad','INDORE','Kolkata','Madurai','Mumbai','Mysore'];
 
-  let currentUser = null;
-  let currentLocation = '';
-  let allNurses = [];
-  let filteredNurses = [];
+  var currentUser = null;
+  var currentLocation = '';
+  var allNurses = [];
+  var filteredNurses = [];
 
-  const loginSection = document.getElementById('loginSection');
-  const mainPanel = document.getElementById('mainPanel');
-  const usernameInput = document.getElementById('usernameInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginError = document.getElementById('loginError');
-  const welcomeMsg = document.getElementById('welcomeMsg');
-  const locationSelect = document.getElementById('locationSelect');
-  const searchInput = document.getElementById('searchInput');
-  const searchBtn = document.getElementById('searchBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const cardsContainer = document.getElementById('cardsContainer');
-  const messageArea = document.getElementById('messageArea');
+  var loginSection = document.getElementById('loginSection');
+  var mainPanel = document.getElementById('mainPanel');
+  var usernameInput = document.getElementById('usernameInput');
+  var passwordInput = document.getElementById('passwordInput');
+  var loginBtn = document.getElementById('loginBtn');
+  var loginError = document.getElementById('loginError');
+  var welcomeMsg = document.getElementById('welcomeMsg');
+  var locationSelect = document.getElementById('locationSelect');
+  var searchInput = document.getElementById('searchInput');
+  var searchBtn = document.getElementById('searchBtn');
+  var logoutBtn = document.getElementById('logoutBtn');
+  var cardsContainer = document.getElementById('cardsContainer');
+  var messageArea = document.getElementById('messageArea');
 
   // ---------- LOGIN ----------
   function attemptLogin() {
     loginError.textContent = '';
-    const user = usernameInput.value.trim();
-    const pass = passwordInput.value.trim();
+    var user = usernameInput.value.trim();
+    var pass = passwordInput.value.trim();
     if (!user || !pass) { loginError.textContent = 'Enter unit ID and password.'; return; }
 
     if (user === CORP_USER && pass === CORP_PASS) {
@@ -156,7 +176,7 @@
       return;
     }
 
-    const entry = UNIT_CREDENTIALS[user];
+    var entry = UNIT_CREDENTIALS[user];
     if (!entry || entry.password !== pass) {
       loginError.textContent = 'Invalid unit ID or password.';
       return;
@@ -170,8 +190,8 @@
     mainPanel.style.display = 'block';
 
     locationSelect.innerHTML = '<option value="">-- Select location --</option>';
-    LOCATIONS.forEach(loc => {
-      const opt = document.createElement('option');
+    LOCATIONS.forEach(function(loc) {
+      var opt = document.createElement('option');
       opt.value = loc;
       opt.textContent = loc;
       locationSelect.appendChild(opt);
@@ -194,7 +214,7 @@
     }
   }
 
-  // ---------- DATA LOAD (via google.script.run) ----------
+  // ---------- DATA LOAD ----------
   function loadLocation(location) {
     currentLocation = location;
     allNurses = [];
@@ -205,6 +225,7 @@
 
     google.script.run
       .withSuccessHandler(function(res) {
+        console.log('getNurses response:', res);
         if (!res) {
           messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>No response from server.</div>';
           return;
@@ -224,6 +245,7 @@
         renderCards();
       })
       .withFailureHandler(function(err) {
+        console.error('getNurses failed:', err);
         messageArea.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i>Error: ' + (err && err.message ? err.message : err) + '</div>';
       })
       .getNurses(location);
